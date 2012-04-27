@@ -3,11 +3,11 @@ emacs.font: Ubuntu Mono-13
 ! Emacs Lucid
 emacs*shadowThickness: 1
 ! ! Under a Light theme:
-! emacs*topShadowColor: #EEEEEE
-! emacs*bottomShadowColor: #EEEEEE
+emacs*topShadowColor: #EEEEEE
+emacs*bottomShadowColor: #EEEEEE
 ! ! Under a Dark theme:
-emacs*topShadowColor: #222222
-emacs*bottomShadowColor: #222222
+! emacs*topShadowColor: #222222
+! emacs*bottomShadowColor: #222222
 
 *customization: -color
 XTerm*termName: xterm-256color
@@ -15,7 +15,11 @@ XTerm*metaSendsEscape: true
 XTerm*scrollttyoutput: false 
 XTerm*faceName: UbuntuMono
 XTerm*faceSize: 13
-xterm*ttyModes: weras ^-
+XTerm*ttyModes: weras ^-
+XTerm.VT100.translations: #override \
+    Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
+    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0)
+
 
 ! 		!LIGHT!
 ! 	   xterm*background: #FFFFFF

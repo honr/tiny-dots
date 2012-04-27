@@ -29,7 +29,6 @@ import qualified XMonad.Actions.FlexibleResize as Actions.FlexibleResize
 import qualified XMonad.Actions.FloatSnap as Actions.FloatSnap
 import qualified XMonad.Actions.GroupNavigation as Actions.GroupNavigation
 import qualified XMonad.Actions.RandomBackground as Actions.RandomBackground
--- import qualified XMonad.Actions.SinkAll as Actions.SinkAll -- unused
 import qualified XMonad.Actions.TopicSpace as Actions.TopicSpace
 -- import qualified XMonad.Actions.UpdatePointer as Actions.UpdatePointer -- unused
 import qualified XMonad.Actions.WithAll as Actions.WithAll
@@ -90,8 +89,7 @@ _spaces = (Map.fromList
               ("browse", "~"),
               ("irc", "~"),
               ("mail", "~/Mail"),
-              ("agenda","~/Documents/Day Planner"),
-              ("film", "~/Videos/series"),
+              ("agenda","~/Documents"),
               ("terminals", "~")]))
 
 _workspaces = ["*scratch*",
@@ -112,13 +110,15 @@ _topicActions = (Map.fromList
                     ("browse", runBrowser),
                     ("irc", runChat),
                     ("mail", runMail),
-                    ("agenda", (spawn "emacsclient -nc ~/Documents/agenda.org"))]))
+                    ("agenda", (spawn "emacsclient -nc ~/Documents/agenda.org") >>
+                               (runCalendar))]))
 
 -- Creates the workspace if needed.
 goto :: Actions.TopicSpace.Topic -> X ()
 goto t = (newWorkspace t) >> (Actions.TopicSpace.switchTopic _topicConfig t)
 
-shift = (windows . StackSet.shift)
+shift :: Actions.TopicSpace.Topic -> X ()
+shift t = (newWorkspace t) >> ((windows . StackSet.shift) t)
 
 -- Themes
 _normalBorderColor :: String
@@ -150,11 +150,18 @@ chatCmd = (inTerminal ircCmd)
 ircCmd = "ssh -t personal-server emacsclient -t"
 runChat = (spawn chatCmd)
 
-browserCmd = "firefox"
+runClrl = (spawn (inTerminal "clove -i clojure"))
+
+
+browserCmd = "browser1"
 runBrowser = (spawn browserCmd)
+ -- TODO: This is unreliable; properly escape or use execve.
+runInBrowser uri = (spawn (browserCmd ++ " --new-window '" ++ uri ++ "'"))
 -- pasteBrowser = safePromptSelection browserCmd
 
-runMail = (spawn "thunderbird")
+-- Using Gmail for mail and calendar.
+runMail = (runInBrowser "https://mail.google.com/mail")
+runCalendar = (runInBrowser "https://www.google.com/calendar")
 
 runCmdLine = (Prompt.Shell.shellPrompt _XPConfig)
 
@@ -195,6 +202,7 @@ _emacsKeys  = \conf ->
                ("M-C-S-e", (spawn "gedit")),
                ("M-C-e", runEditor),
                ("M-C-y", runBrowser),
+               ("M-C-u", runClrl),
                ("M-S-1", runCmdLine),
                ("M-C-d", (Layout.WorkspaceDir.changeDir _XPConfig)),
                ("M-C-t", runFileManager),
@@ -297,6 +305,7 @@ _emacsKeys  = \conf ->
                ("M-=", (sendMessage Expand)),
                ("M-<F10>", (withFocused (windows . StackSet.sink))),
                ("M-t", (withFocused (windows . StackSet.sink))),
+               ("M-M1-t", (Actions.WithAll.withAll' StackSet.sink)),
 
                ("M-[", (sendMessage (IncMasterN 1))),
                ("M-]", (sendMessage (IncMasterN (-1)))),
@@ -310,6 +319,7 @@ _emacsKeys  = \conf ->
                ("M-s", (Prompt.Workspace.workspacePrompt _XPConfig goto)),
                ("M-S-s", (Prompt.Workspace.workspacePrompt _XPConfig shift)),
                ("M-a", (Prompt.Window.windowPromptGoto _XPConfig)),
+               ("M-S-a", (Prompt.Window.windowPromptBring _XPConfig)),
 
                ("M-q", (kill)),
                ("M-S-q", (Actions.WithAll.killAll)),
@@ -457,6 +467,9 @@ _manageHook = manageHook defaultConfig
              className =? "Thunderbird" --> unfloat,
              className =? "Firefox" --> unfloat,
              className =? "Chromium" --> unfloat,
+             className =? "Browser1" --> unfloat,
+             className =? "Browser2" --> unfloat,
+             className =? "Browser3" --> unfloat,
             -- checkDock --> doIgnore,
              className =? "Inkscape" --> unfloat]
             -- <+> composeOne [

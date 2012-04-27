@@ -1,0 +1,7 @@
+# Text widget options
+define textopt {-background white -foreground black  -font UbuntuMono}
+
+# Tag options for diff regions
+define difftag {-background gray -foreground black  -font UbuntuMono}
+
+# Or perhaps: replace UbuntuMono with {UbuntuMono 11 bold}

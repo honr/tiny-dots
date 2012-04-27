@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd
+source $HOME/.bashrc
+xinput-scroll-direction.sh
+
+exec gnome-session --session xmonad

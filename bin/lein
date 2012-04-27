@@ -1,0 +1,13 @@
+#!/bin/bash
+
+LEINJARFULLPATH="$HOME/.m2/repository/leiningen/leiningen/1.5.2/leiningen-1.5.2-standalone.jar"
+LEINJARURL="https://github.com/downloads/technomancy/leiningen/${LEINJARFULLPATH##*/}"
+
+if [ ! -e "$LEINJARFULLPATH" ] ; then
+    mkdir -p "${LEINJARFULLPATH%/*}"
+    printf "Downloading standalone leiningen jar from:\n$LEINJARURL\n\n"
+    curl --insecure -f -L -o "$LEINJARFULLPATH" "$LEINJARURL"
+fi
+
+java -cp "$LEINJARFULLPATH" \
+    clojure.main -e "(use 'leiningen.core)(leiningen.core/-main)" /dev/null "$@"

@@ -1,0 +1,87 @@
+.\" Copyright (C), 2011  Ali
+.\" You may distribute this file under the terms of the GNU Free
+.\" Documentation License.
+.TH "pool.deploy" 1 2011-09-07 
+.SH NAME
+pool.deploy \- a simple deploy script
+.SH SYNOPSIS
+.LP
+.SY pool.deploy
+\-a
+TREE
+.YS
+
+.SY pool.deploy
+\-n
+.OP \-g
+TREE
+.YS
+
+.SY pool.deploy
+\-s
+.OP \-h REMOTE
+.OP \-k
+.OP \-l
+SRC
+DEST
+.YS
+
+.SY pool.deploy
+\-z
+.OP \-k
+.OP \-l
+TREE
+.YS
+
+.SH DESCRIPTION
+
+This program prepares and/or deploys a directory.  We assume that \`\fB/neutral\fP\' is a non-existing directory, and use it to mean user's home directory
+
+.SH OPTIONS
+.LP
+The following options are supported:
+.TP 4
+.B -a TREE
+Activate a presumably neutralized tree.  Symlinks pointing to directories under \`\fB/neutral\fP\' will now point to under your home directory.
+
+.TP 4
+.B -n TREE
+Neutralize tree. Changes symbolic links to point to /neutral instead of your home directory. With \fB\-g\fP also runs git add on the tree.
+
+.TP 4
+.B -s SRC DEST
+Sync (deploy) tree.  Deploys tree to the destination, which can be local or an SSH remote directory.  Uses \`\fBrsync\fP\' underneath.
+  \fB\-h\fP REMOTE specify remote home directory
+  \fB\-k\fP keep the temporary directory
+  \fB\-l\fP folow symlinks, like \`\fBrsync -L\fP\'.
+
+.TP 4
+.B -z TREE
+Create tarball.  This tarball can, for example, be deployed on a remote machine.
+  \fB\-k\fP keep the temporary directory
+  \fB\-l\fP folow symlinks, like \`\fBrsync -L\fP\'.
+
+.SH EXAMPLES
+.LP
+.EX
+pool.deploy -sl alpha/ ug:~/.local/
+pool.deploy -s  alpha/ alp:~/.local/
+pool.deploy -sl cnd/   cnd05.w:~/.local
+pool.deploy -z  cnd/
+pool.deploy -zk cnd/
+pool.deploy -s  susa/  ~/
+pool.deploy -ng susa/
+.EE
+
+.SH FILES
+Generates a temporary directory named \fB$TREE\fP-active.  If such directory exists, it will be deleted first.
+.SH "SEE ALSO"
+.SH BUGS
+.SH KNOWN ISSUES
+.IP * 4
+Uses \`\fB/neutral\fP\', and assumes it is a non-existing directory.
+.IP * 4
+Creates a temporary directory write beside the source directory named \fB$TREE\fP-active.
+
+.SH AUTHOR
+Ali <ali@hovel.ca>

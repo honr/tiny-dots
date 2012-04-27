@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Clove Daemon
+Exec=clove-daemon --foreground
+NoDisplay=true
+X-GNOME-Provides=clove-daemon
+X-GNOME-Autostart-Notify=true

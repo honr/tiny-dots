@@ -1,0 +1,145 @@
+#!/bin/bash
+
+# TODO: Create a journal file describing all actions taken
+#       place, and use that to revert an action (install).
+
+CMDNAME="pool.deploy"
+
+NEUTRAL_HOME=/neutral
+x=1
+FOLLOW_SYMLINKS=""
+while getopts "agh:klnsx:z" opt; do
+    case "$opt" in
+        s) mode="sync";;
+        z) mode="compress";;
+	n) mode="neutralize";;
+	a) mode="activate";;
+	g) GITADD="t";;
+	h) REMOTE_HOME="$OPTARG" ;;
+	k) KEEP="t" ;;
+        l) FOLLOW_SYMLINKS="t" ;;
+	x) DEPLOY_EXTRA="$OPTARG" ;;
+    esac
+    x=$OPTIND
+done
+shift $(($x-1))
+
+function usage () {
+    echo "$CMDNAME -n tree  : neutralize tree"
+    echo "$CMDNAME -ng tree : neutralize tree, also git add tree"
+    echo "$CMDNAME -a tree : activate tree"
+    echo "$CMDNAME -s [-l | -h REMOTE] [-k] dir remote : sync tree"
+    echo "          -l: follow symlinks, like rsync -L"
+    echo "          -h REMOTE: specify remote home directory"
+    echo "          -k: keep temp dir"
+    echo "$CMDNAME -z [-l] [-k] dir : create tarball" 
+    echo "          -l: follow symlinks, like rsync -L"
+    echo "          -k: keep temp dir"
+
+    echo "  Examples:"
+    echo "  $CMDNAME -sl main/ some-remote:~/.local/"
+    echo "  $CMDNAME -s  main/ some-remote:~/.local/"
+    echo "  $CMDNAME -sl remote2/ user@some-remote.w:~/.local # sync (push) to remote"
+    echo "  $CMDNAME -z  remote2/ # create a .tar.gz"
+    echo "  $CMDNAME -zk remote2/ # same as above, but do not remove target"
+    echo "                  # directory in the end."
+    echo "  $CMDNAME -s main/ ~/ # sync to localhost, actiave deployment"
+    echo "  $CMDNAME -ng main/ # neutralize and register main/ tree"
+}
+# are the trailing slashes required?
+
+function mlr() {
+    OLDLINK="$(readlink "$1")"
+    case "$OLDLINK" in
+	"$2/"*)
+	    NEWLINK="${OLDLINK/#"$2"/$3}"
+	    ln -fsn "$NEWLINK" "$1"
+	    # echo "$NEWLINK" "$1" "$OLDLINK"
+	    ;;
+    esac
+}
+
+export -f mlr
+
+function ln_tree() {
+    TREE="$1"
+    OLDTOP="$2"
+    NEWTOP="$3"
+    command='mlr "$1" "'"$OLDTOP"'" "'"$NEWTOP"'"'
+    find "$TREE" -type l -exec bash -c "$command" - "{}" \;
+    # find "$TREE" -lname "$OLDTOP"/\* -exec bash -c "$command" - "{}" \;
+}
+
+case "$mode" in
+    neutralize)
+	ln_tree "${1%%/}" "$HOME" "$NEUTRAL_HOME"
+	if [ -n "$GITADD" ] ; then
+	    git add -f "${1%%/}"
+	fi
+	;;
+
+    activate)
+	ln_tree "${1%%/}" "$NEUTRAL_HOME" "$HOME"
+	;;
+
+    sync)
+	DISTTREE="${1%%/}" # remove trailing "/"
+	DISTTREE_ACTIVE="${DISTTREE}-active"
+	REMOTE="$2"
+	if [ -z "$REMOTE_HOME" ] ; then
+	    if [ -e "$REMOTE" ] ; then
+		REMOTE_HOME="$HOME"
+	    else
+		REMOTE_HOME="$(ssh "${REMOTE%%:*}" 'echo $HOME')"
+	    fi
+	fi
+	if [ -z "$REMOTE_HOME" ] ; then
+	    echo 'error: $REMOTE_HOME is nil'
+	    exit 1
+	fi
+	
+	cp -R "$DISTTREE" "$DISTTREE_ACTIVE"
+	if [ -n "${FOLLOW_SYMLINKS}" ] ; then
+	    ln_tree "${DISTTREE_ACTIVE}" "$NEUTRAL_HOME" "$HOME"
+	    rsync -avzL --no-o --no-g --exclude '.git/' "${DISTTREE_ACTIVE}/" "$REMOTE"
+	else
+	    ln_tree "${DISTTREE_ACTIVE}" "$NEUTRAL_HOME" "${REMOTE_HOME}"
+	    rsync -avz --no-o --no-g --exclude '.git/' "${DISTTREE_ACTIVE}/" "$REMOTE"
+	fi
+
+        # clean afterwards	
+	if [ -z "$KEEP" ] ; then
+	    rm -Rf "$DISTTREE_ACTIVE"
+	fi
+
+	# run deploy-extra if it is asked for
+	if [ -n "$DEPLOY_EXTRA" ] ; then
+	    echo "(deploy-extra $DEPLOY_EXTRA)"
+	    ./pool.deploy-extra "$DEPLOY_EXTRA"
+	fi
+	;;
+
+    compress)
+	DISTTREE="${1%%/}" # remove trailing "/"
+	TARGDIR="neutral"
+	TARGFILE="${DISTTREE}.tar.gz"
+	
+	if [ ! -d "$TARGDIR" ] ; then mkdir "$TARGDIR" ; fi
+	if [ -n "${FOLLOW_SYMLINKS}" ] ; then
+	    rsync -avL --no-o --no-g --exclude '.git/' "$DISTTREE/" "$TARGDIR/"
+	else
+	    rsync -av --no-o --no-g --exclude '.git/' "$DISTTREE/" "$TARGDIR/"
+	fi
+	
+	if [ -e "$TARGFILE" ] ; then rm "$TARGFILE" ; fi
+	tar czf "$TARGFILE" "$TARGDIR"
+	
+        # clean afterwards
+	if [ -z "$KEEP" ] ; then
+	    rm -Rf "$TARGDIR"
+	fi
+	;;
+    *)
+	usage
+	exit 1
+esac
