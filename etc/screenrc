@@ -1,0 +1,45 @@
+# -*- Mode: Conf -*-
+
+escape "^Zz"
+# chdir  # Change to the home directory
+defscrollback 65536  # Set the default number of scrollback lines
+msgwait 1
+shelltitle $HOST  # Set the title of all shell windows
+ignorecase on
+altscreen on
+nonblock on
+defflow off
+
+## Under a dark theme:
+caption always "%{.kG}%-w%{.gW}%n %t%{-}%+w %=%{..G} @%H %{..w} %Y/%m/%d %c "
+## Under a light theme:
+# caption always "%{.Wg}%-w%{.gW}%n %t%{-}%+w %=%{..g} @%H %{..K} %Y/%m/%d %c "
+
+bindkey -k k1 copy
+markkeys "h=^B:j=^N:k=^P:l=^F:0=^A:0=^A:^b=[:^f=]"
+markkeys "^g=':^c=^g"  # Double check this.
+markkeys @=\033
+bindkey -m ^e stuff "\$^f"
+markkeys ' '=^@
+bindkey -m \033f stuff "w"
+bindkey -m \033b stuff "b"
+bindkey -m \033m stuff "\^"
+bindkey -m \033g stuff "G"
+bindkey -m \033< stuff "g"
+bindkey -m \033> stuff "G"
+bindkey -m -k kP stuff "["
+bindkey -m -k kN stuff "]"
+bindkey -m \033v stuff "["
+bindkey -m ^v stuff "]"
+bindkey -m \033w stuff "^ "
+bind "y" paste .
+bind "^y" paste .
+
+# Tell screen that your term can scroll.
+termcapinfo xterm* 'ti@:te@:kmous=\E[M'
+
+# 256 colors.
+termcapinfo xterm* 'Co#256'
+defbce "on" 
+# term screen-256color-bce
+term xterm-256color
