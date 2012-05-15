@@ -24,56 +24,42 @@
     (when (every? seq seqs)
       (lazy-seq (step v-original-seqs)))))
 
-(defn spit-matrix [filename coll & {sep :sep}]
+(defn- coll-maybe [x]
+  (if (coll? x)
+    x
+    (list x)))
+
+(defn- spit-rows [filename coll]
+  (with-open [w (java.io.PrintWriter. filename)]
+    (doseq [row coll]
+      (when row
+        (.println w row)))))
+
+(defn- sh-run-rows [coll]
+  (doseq [row coll]
+    (when row
+      (println (:out (apply rose.clu/sh row))))))
+
+(defn- spit-matrix [filename coll & {sep :sep}]
+  ;; (spit-matrix "data" [[1 2 3] [4 5 6]])
+  ;; (spit-matrix "data2" [[1 2 3] [4 5 6]] :sep ",")
   (let [sep (or sep " ")]
-    (spit 
+    (spit-rows
      filename
-     (string/join "\n"
-                  (apply map (fn [& row] 
-                               (string/join sep (map #(if %
-                                                        (.doubleValue %)
-                                                        Double/NaN)
-                                                     row)))
-                         coll)))))
+     (apply map (fn [& row] 
+                  (string/join sep (map #(if %
+                                           (.doubleValue %)
+                                           Double/NaN)
+                                        row)))
+            coll))))
 
-;; (spit-matrix "data" [[1 2 3] [4 5 6]])
-;; (spit-matrix "data2" [[1 2 3] [4 5 6]] :sep ",")
+(def ^{:private true :dynamic true} *font*
+  {:plain (cond rose.utils/os-linux?
+                (rose.file/path :home ".fonts" "times.ttf")
 
-(def ^{:private true} font
-  (atom {:plain (cond rose.utils/os-linux?
-                      (rose.file/path :home ".fonts" "times.ttf")
-
-                      rose.utils/os-macosx?
-                      "/Library/Fonts/Times New Roman.ttf")
-         :ps "Times"}))
-
-(defn- process-prm-out [file-base term settings]
-  ({"png"
-    [(format "set term png enhanced font \"%s\"" (or (:font settings) (@font :plain)))
-     (format "set output \"%s.png\"" file-base)]
-
-    "eps"
-    [(format "set term postscript eps 22 enhanced font \"%s\"" (or (:font settings) (@font :ps)))
-     (format "set output \"%s.eps\"" file-base)]
-
-    "pdf"
-    [(format "set term postscript eps 22 enhanced font \"%s\"" (or (:font settings) (@font :ps)))
-     (format "set output \"%s.eps\"" file-base)]
-
-    "svg"
-    ["set term svg"
-     (format "set output \"%s.svg\"" file-base)]
-    
-    "tex" ;; actually pstricks
-    ["set term pstricks"
-     (format "set output \"%s.tex\"" file-base)]
-
-    ;; todo: add tex
-    
-    nil
-    [(cond
-       rose.utils/os-linux? "set term wxt enhanced"
-       rose.utils/os-macosx? "set term x11")]} term))
+                rose.utils/os-macosx?
+                "/Library/Fonts/Times New Roman.ttf")
+   :ps "Times"})
 
 (def line-pallettes
   {:pallette {:two  (into [] (cartesian-product (range 1 10) [6 2]))
@@ -94,7 +80,7 @@
                 (mod p (count (get line-pallettes :point))))])
        (get-in line-pallettes [:pallette plt])))
 
-(defn- process-prm-plt [plt & [lw ps]]
+(defn- process-prm-plt [num-used-lines plt & [lw ps]]
   (let [pallette (get-in line-pallettes [:pallette plt])]
     (map #(format
     	   "set style line %d lc %d pt %d lw %.1f ps %.1f"
@@ -103,12 +89,8 @@
     	   (second (pallette %)) ; point type
     	   (.doubleValue (or lw 1))    ; line width
     	   (.doubleValue (or ps 1.5))) ; point size
-    	 (range (count pallette)))))
-
-(defn- process-prm-ls [filename t]
-  [(if (coll? t)
-     (str "plot" (string/join ",\\\n    " (map #(format " '%s' using 1:%d with linespoints ls %d title '%s'" filename (+ 2 %1) (+ 1 %1) %2) (range (count t)) t)))
-     (str "plot" (string/join ",\\\n    " (map #(format " '%s' using 1:%d with linespoints" filename (+ 2 %)) (range t)))))])
+    	 (range (min (count pallette)
+                     num-used-lines)))))
 
 (defn- process-prm-set [arg]
   (cond
@@ -132,82 +114,114 @@
     (string? arg)
     (str "set " arg)))
 
-(defn- coll-maybe [x]
-  (if (coll? x)
-    x
-    (list x)))
+;; set format xy "$10^{%T}$"
 
-(defn ploti [commands & cols]
-  (let [[file-base out-type out-settings] (let [[file-maybe & [out-cmd-rest]] (coll-maybe (:out commands))
-                                                [_ b e] (re-matches #"(.*)\.([^.]*)" file-maybe)]
-                                            [(or b "/tmp/" *username* "-gnuplot-dummy") e out-cmd-rest])
-	file-data (str file-base ".data")
-	file-gnuplot (str file-base ".gnuplot")]
-    (spit-matrix file-data cols)
-    (spit file-gnuplot
-          (string/join "\n" 
-                       (filter identity 
-                               (concat
-                                (process-prm-out file-base out-type out-settings)
-                                (apply process-prm-plt (coll-maybe (:plt commands)))
-                                (map process-prm-set (:set commands))
-                                (process-prm-ls file-data (or (:ls commands) (dec (count cols))))
-                                (when (= :replot (:console commands)) ["set term wxt enhanced" "replot"])
-                                (when-not (or (:console commands) (:out commands)) ["pause mouse close"])))))
-    (cond
-      (not (:console commands))
-      (:out (rose.clu/sh "gnuplot" file-gnuplot))
+(defn process-prm-out [out console]
+  (let [[file-base term settings] (let [[file-maybe & [out-cmd-rest]] (coll-maybe out)
+                                        [_ b e] (re-matches #"(.*)\.([^.]*)" file-maybe)]
+                                    [(or b "/tmp/" *username* "-gnuplot-dummy") e out-cmd-rest])
+        file-data (str file-base ".data")
+        file-gnuplot (str file-base ".gnuplot")]
+    {:file-data file-data
+     :file-gnuplot file-gnuplot
+     :out-init
+     ({"png"
+       [(format "set term png enhanced font \"%s\"" (or (:font settings) (*font* :plain)))
+        (format "set output \"%s.png\"" file-base)]
+
+       "eps"
+       [(format "set term postscript eps 22 enhanced font \"%s\"" (or (:font settings) (*font* :ps)))
+        (format "set output \"%s.eps\"" file-base)]
+
+       "pdf"
+       [(format "set term postscript eps 22 enhanced font \"%s\"" (or (:font settings) (*font* :ps)))
+        (format "set output \"%s.eps\"" file-base)]
+
+       "svg"
+       ["set term svg"
+        (format "set output \"%s.svg\"" file-base)]
+       
+       "tex" ;; Actually it is pstricks.
+       ["set term pstricks"
+        (format "set output \"%s.tex\"" file-base)]
+
+       ;; TODO: Add tex.
+       
+       nil
+       [(cond
+         rose.utils/os-linux? "set term wxt enhanced"
+         rose.utils/os-macosx? "set term x11")]} term)
+
+     :out-end (concat
+               (when (= :replot console) ["set term wxt enhanced" "replot"])
+               (when (and (not console) (not out)) ["pause mouse close"]))
+     
+     ;; Vector of commands lines to run, each command line is itself a vector.
+     :sh
+     [(cond
+       (not console)
+       ["gnuplot" file-gnuplot]
+       
+       rose.utils/os-linux?
+       ["gnome-terminal" "--geometry" "80x8" "-e" (format "gnuplot \"%s\" -" file-gnuplot)]
+
+       rose.utils/os-macosx?
+       ["xterm" "-geometry" "80x8" "-e" (format "gnuplot \"%s\" -" file-gnuplot)])
       
-      rose.utils/os-linux?
-      (:out (rose.clu/sh "gnome-terminal" "--geometry" "80x8" "-e" (format "gnuplot \"%s\" -" file-gnuplot)))
+      (when (= term "pdf")
+        ["epstopdf" "--outfile" (str file-base ".pdf") (str file-base ".eps")])]}))
 
-      rose.utils/os-macosx?
-      (:out (rose.clu/sh "xterm" "-geometry" "80x8" "-e" (format "gnuplot \"%s\" -" file-gnuplot))))
-    
-    (when (= out-type "pdf")
-      (:out (rose.clu/sh "epstopdf" "--outfile" (str file-base ".pdf") (str file-base ".eps"))))))
+(defn process-prm-plot [filename fn-plot-line legends]
+        [(str "plot \\\n"
+              (string/join
+               ", \\\n    "
+               (map (fn [i legend]
+                      (format "  '%s' using %s title '%s'"
+                              filename
+                              (fn-plot-line i)
+                              legend))
+                    (range (count legends))
+                    legends)))])
+
+(defn plot-generic [opts
+                    matrix
+                    legends
+                    fn-plot-line]
+  (let [out (process-prm-out (:out opts) (:console opts))]
+    (spit-matrix (out :file-data) matrix)
+    (spit-rows
+     (out :file-gnuplot)
+     (concat
+      (out :out-init)
+      (apply process-prm-plt (count legends) (coll-maybe (:plt opts)))
+      (map process-prm-set (:set opts))
+      (process-prm-plot (out :file-data) fn-plot-line legends)
+      (out :out-end)))
+    (sh-run-rows (out :sh))))
 
 ;; TODO:
-;; 1. The model of xs, [y1s, y2s, ..., yns], [l1, l2, ..., ln] is not sufficient
-;;    We need
-;;      - [x1s y1s], [x2s y2s], ..., [xns, yns], [l1, l2, ..., ln]
-;;      - [x1s, x2s, ..., xns], ys, [l1, l2, ..., ln]
-;;    suggestion:
-;;    (plot [[x1 y1 l1] [x2 y2 l2] [x3 y3 l3]] opts)
-;;    (plot x1 [[y1 l1] [y2 l2] [y3 l3]] opts)
-;;
-;; 2. Output feature: replot.
-;; 3. Do not write down the line styles that are not used.
+;; 1. Output feature: replot. Should we merge console and out?
+;; 2. Do not write down the line styles that are not used.
 
-(defn plot []
-  (let [[file-base out-type out-settings] (let [[file-maybe & [out-cmd-rest]] (coll-maybe (:out commands))
-                                                [_ b e] (re-matches #"(.*)\.([^.]*)" file-maybe)]
-                                            [(or b "/tmp/" *username* "-gnuplot-dummy") e out-cmd-rest])
-	file-data (str file-base ".data")
-	file-gnuplot (str file-base ".gnuplot")]
-    (spit-matrix file-data cols)
-    (spit file-gnuplot
-          (string/join "\n" 
-                       (filter identity 
-                               (concat
-                                (process-prm-out file-base out-type out-settings)
-                                (apply process-prm-plt (coll-maybe (:plt commands)))
-                                (map process-prm-set (:set commands))
-                                (process-prm-ls file-data (or (:ls commands) (dec (count cols))))
-                                (when (= :replot (:console commands)) ["set term wxt enhanced" "replot"])
-                                (when-not (or (:console commands) (:out commands)) ["pause mouse close"])))))
-    (cond
-      (not (:console commands))
-      (:out (rose.clu/sh "gnuplot" file-gnuplot))
-      
-      rose.utils/os-linux?
-      (:out (rose.clu/sh "gnome-terminal" "--geometry" "80x8" "-e" (format "gnuplot \"%s\" -" file-gnuplot)))
+(defn plot
+  ([x-y-ls opts] ;; (plot [[x1s y1s l1] [x2s y2s l2] ... [xns yns ln]] opts)
+     (plot-generic opts
+                   (mapcat (fn [[x y legend]] [x y]) x-y-ls)
+                   (map (fn [[x y legend]] legend) x-y-ls)
+                   (fn [i]
+                     (format "%d:%d with linespoints ls %d"
+                             (+ 1 (* 2 i))
+                             (+ 2 (* 2 i))
+                             (+ 1 i)))))
+  ([xs y-ls opts] ;; (plot xs [[y1s l1] [y2s l2] ... [yns ln]] opts)
+     (plot-generic opts
+                   (cons xs (map first y-ls))
+                   (map second y-ls)
+                   (fn [i]
+                     (format "1:%d with linespoints ls %d"
+                             (+ 2 i)
+                             (+ 1 i))))))
 
-      rose.utils/os-macosx?
-      (:out (rose.clu/sh "xterm" "-geometry" "80x8" "-e" (format "gnuplot \"%s\" -" file-gnuplot))))
-    
-    (when (= out-type "pdf")
-      (:out (rose.clu/sh "epstopdf" "--outfile" (str file-base ".pdf") (str file-base ".eps"))))))
 
 (comment
   (ploti {:out "/tmp/a" ;; or ["a.png"] or "a.png" or ["a.png" {:font "Times"}]
@@ -223,22 +237,3 @@
          (map #(Math/sin (* 0.06 %)) (range 1 64)))
   
   )
-
-;; plot 'data' with lines
-(defn rggobi [& cols]
-  (spit-matrix "data" cols :sep ",")
-  (:out (rose.clu/sh "ggobi" "-d" "csv" "data")))
-
-;; set logscale
-
-;;   (apply gploti
-;; 	 {:set ["logscale"]
-;; 	  :tx tx
-;; 	  :ty "prob. failure"
-;; 	  :ls (count res)
-;; 	  }
-;; 	 x res)
-
-;; (gploti {:console true :set ["term x11"] :ls ["aa"]} (range 10) (range 10) )
-
-;; set format xy "$10^{%T}$"
