@@ -13,8 +13,12 @@ emacs*bottomShadowColor: #EEEEEE
 XTerm*termName: xterm-256color
 XTerm*metaSendsEscape: true
 XTerm*scrollttyoutput: false 
-XTerm*faceName: UbuntuMono
-XTerm*faceSize: 13
+XTerm.SimpleMenu.borderColor: gray20
+XTerm*saveLines: 8192
+XTerm*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
+XTerm*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
+XTerm.VT100.faceName: UbuntuMono
+XTerm.VT100.faceSize: 13
 XTerm*ttyModes: weras ^-
 XTerm.VT100.translations: #override \
     Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
