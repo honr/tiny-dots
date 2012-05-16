@@ -59,6 +59,7 @@
 
                 rose.utils/os-macosx?
                 "/Library/Fonts/Times New Roman.ttf")
+   :x "Times"
    :ps "Times"})
 
 (def line-pallettes
@@ -80,8 +81,10 @@
                 (mod p (count (get line-pallettes :point))))])
        (get-in line-pallettes [:pallette plt])))
 
-(defn- process-prm-plt [num-used-lines plt & [lw ps]]
-  (let [pallette (get-in line-pallettes [:pallette plt])]
+(defn- process-prm-plt [num-used-lines plt lw ps]
+  (let [pallette (if (coll? plt)
+                   plt
+                   (get-in line-pallettes [:pallette plt]))]
     (map #(format
     	   "set style line %d lc %d pt %d lw %.1f ps %.1f"
     	   (inc %)
@@ -116,50 +119,70 @@
 
 ;; set format xy "$10^{%T}$"
 
-(defn process-prm-out [out console]
-  (let [[file-base term settings] (let [[file-maybe & [out-cmd-rest]] (coll-maybe out)
-                                        [_ b e] (re-matches #"(.*)\.([^.]*)" file-maybe)]
-                                    [(or b "/tmp/" *username* "-gnuplot-dummy") e out-cmd-rest])
+(defn process-prm-out [out opts]
+  (let [[file-base term] (let [[_ b e] (re-matches #"(.*)\.([^.]*)" out)]
+                           [(or b "/tmp/" *username* "-gnuplot-dummy") e])
         file-data (str file-base ".data")
         file-gnuplot (str file-base ".gnuplot")]
     {:file-data file-data
      :file-gnuplot file-gnuplot
      :out-init
      ({"png"
-       [(format "set term png enhanced font \"%s\"" (or (:font settings) (*font* :plain)))
+       [(format "set term png enhanced font \"%s\" size %d,%d"
+                (or (opts :font) (*font* :plain))
+                (or (opts :width) 600)
+                (or (opts :height) 400))
         (format "set output \"%s.png\"" file-base)]
 
        "eps"
-       [(format "set term postscript eps 22 enhanced font \"%s\"" (or (:font settings) (*font* :ps)))
+       [(format "set term postscript eps 22 enhanced font \"%s\" size %d,%d"
+                (or (opts :font) (*font* :ps))
+                (or (opts :width) 600)
+                (or (opts :height) 400))
         (format "set output \"%s.eps\"" file-base)]
 
        "pdf"
-       [(format "set term postscript eps 22 enhanced font \"%s\"" (or (:font settings) (*font* :ps)))
+       [(format "set term postscript eps 22 enhanced font \"%s\" size %d,%d"
+                (or (opts :font) (*font* :ps))
+                (or (opts :width) 600)
+                (or (opts :height) 400))
         (format "set output \"%s.eps\"" file-base)]
 
        "svg"
-       ["set term svg"
+       [(format "set term svg size %d,%d"
+                (or (opts :width) 600)
+                (or (opts :height) 400))
         (format "set output \"%s.svg\"" file-base)]
        
-       "tex" ;; Actually it is pstricks.
+       "pstricks"
        ["set term pstricks"
         (format "set output \"%s.tex\"" file-base)]
 
-       ;; TODO: Add tex.
+       ;; TODO: Add tex output.
+
+       "canvas"
+       [(format "set terminal canvas size %d,%d fsize %d lw 1 jsdir '%s'"
+                (or (opts :width) 600)
+                (or (opts :height) 400)
+                (or (opts :fsize) 12)
+                (or (opts :jsdir) "/usr/share/gnuplot/gnuplot/4.4/js"))
+        (format "set output '%s.html'" file-base)]
+
        
        nil
        [(cond
-         rose.utils/os-linux? "set term wxt enhanced"
+         rose.utils/os-linux? (format "set term wxt enhanced persist font '%s'"
+                                      (or (opts :font) (*font* :x)))
          rose.utils/os-macosx? "set term x11")]} term)
 
      :out-end (concat
-               (when (= :replot console) ["set term wxt enhanced" "replot"])
-               (when (and (not console) (not out)) ["pause mouse close"]))
+               (when (= :replot (opts :console)) ["set term wxt enhanced" "replot"])
+               (when (and (not (opts :console)) (not out)) ["pause mouse close"]))
      
      ;; Vector of commands lines to run, each command line is itself a vector.
      :sh
      [(cond
-       (not console)
+       (not (opts :console))
        ["gnuplot" file-gnuplot]
        
        rose.utils/os-linux?
@@ -171,31 +194,39 @@
       (when (= term "pdf")
         ["epstopdf" "--outfile" (str file-base ".pdf") (str file-base ".eps")])]}))
 
-(defn process-prm-plot [filename fn-plot-line legends]
+(defn process-prm-plot [filename fn-plot-line with-what legends raw-plot]
         [(str "plot \\\n"
               (string/join
-               ", \\\n    "
-               (map (fn [i legend]
-                      (format "  '%s' using %s title '%s'"
-                              filename
-                              (fn-plot-line i)
-                              legend))
-                    (range (count legends))
-                    legends)))])
+               ", \\\n"
+               (concat
+                (map (fn [i legend]
+                       (format "  '%s' using %s with %s ls %d title '%s'"
+                               filename
+                               (fn-plot-line i)
+                               with-what
+                               (inc i)
+                               legend))
+                     (range (count legends))
+                     legends)
+                raw-plot)))])
 
 (defn plot-generic [opts
                     matrix
                     legends
                     fn-plot-line]
-  (let [out (process-prm-out (:out opts) (:console opts))]
+  (let [out (process-prm-out (:out opts) opts)]
     (spit-matrix (out :file-data) matrix)
     (spit-rows
      (out :file-gnuplot)
      (concat
       (out :out-init)
-      (apply process-prm-plt (count legends) (coll-maybe (:plt opts)))
+      (process-prm-plt (count legends) (:plt opts) (:lw opts) (:ps opts))
       (map process-prm-set (:set opts))
-      (process-prm-plot (out :file-data) fn-plot-line legends)
+      (process-prm-plot (out :file-data)
+                        fn-plot-line
+                        (or (opts :with) "linespoints")
+                        legends
+                        (opts :raw-plot))
       (out :out-end)))
     (sh-run-rows (out :sh))))
 
@@ -208,19 +239,12 @@
      (plot-generic opts
                    (mapcat (fn [[x y legend]] [x y]) x-y-ls)
                    (map (fn [[x y legend]] legend) x-y-ls)
-                   (fn [i]
-                     (format "%d:%d with linespoints ls %d"
-                             (+ 1 (* 2 i))
-                             (+ 2 (* 2 i))
-                             (+ 1 i)))))
+                   (fn [i] (format "%d:%d" (+ 1 (* 2 i)) (+ 2 (* 2 i))))))
   ([xs y-ls opts] ;; (plot xs [[y1s l1] [y2s l2] ... [yns ln]] opts)
      (plot-generic opts
                    (cons xs (map first y-ls))
                    (map second y-ls)
-                   (fn [i]
-                     (format "1:%d with linespoints ls %d"
-                             (+ 2 i)
-                             (+ 1 i))))))
+                   (fn [i] (format "1:%d" (+ 2 i))))))
 
 
 (comment

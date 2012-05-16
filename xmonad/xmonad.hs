@@ -133,12 +133,13 @@ terminalCmd = "xterm"
 runTerminal :: X()
 runTerminal = (spawn terminalCmd)
 runColourTerminal = (Actions.RandomBackground.randomBg
-                      (Actions.RandomBackground.HSV 0x18 0x00))
-                      --                            0xCC 0xFF
-                      --                            0x44 0x00
+                      (Actions.RandomBackground.HSV 0xEE 0xFF))
+                      -- 0x18 0x00
+                      -- 0xCC 0xFF
+                      -- 0x44 0x00
 runColourScreenTerminal = do
     c <- (Actions.RandomBackground.randomBg'
-           (Actions.RandomBackground.HSV 0x18 0x00))
+           (Actions.RandomBackground.HSV 0xEE 0xFF))
     (spawn (terminalCmd ++ " -bg " ++ c ++ " -e screen -xR"))
 
 inTerminal cmd = (terminalCmd ++ " -e " ++ cmd)
