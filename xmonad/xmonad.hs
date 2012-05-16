@@ -19,7 +19,8 @@ import qualified System.IO
 -- Contrib:
 -- import qualified XMonad.Actions.Commands as Actions.Commands -- unused
 import qualified XMonad.Actions.CycleWS as Actions.CycleWS
--- import qualified XMonad.Actions.CycleWindows as Actions.CycleWindows -- unused
+import qualified XMonad.Actions.CycleRecentWS as Actions.CycleRecentWS
+import qualified XMonad.Actions.CycleWindows as Actions.CycleWindows
 -- import qualified XMonad.Actions.DeManage as Actions.DeManage -- unused
 import qualified XMonad.Actions.DwmPromote as Actions.DwmPromote
 import qualified XMonad.Actions.DynamicWorkspaces as Actions.DynamicWorkspaces
@@ -30,7 +31,7 @@ import qualified XMonad.Actions.FloatSnap as Actions.FloatSnap
 import qualified XMonad.Actions.GroupNavigation as Actions.GroupNavigation
 import qualified XMonad.Actions.RandomBackground as Actions.RandomBackground
 import qualified XMonad.Actions.TopicSpace as Actions.TopicSpace
--- import qualified XMonad.Actions.UpdatePointer as Actions.UpdatePointer -- unused
+import qualified XMonad.Actions.UpdatePointer as Actions.UpdatePointer
 import qualified XMonad.Actions.WithAll as Actions.WithAll
 -- import qualified XMonad.Hooks.DynamicLog as Hooks.DynamicLog -- unused
 import qualified XMonad.Hooks.EwmhDesktops as Hooks.EwmhDesktops
@@ -39,13 +40,14 @@ import qualified XMonad.Hooks.ManageHelpers as Hooks.ManageHelpers
 import qualified XMonad.Hooks.Minimize as Hooks.Minimize
 import qualified XMonad.Hooks.Place as Hooks.Place
 import qualified XMonad.Layout.Accordion as Layout.Accordion
--- import qualified XMonad.Layout.BoringWindows as Layout.BoringWindows -- unused
+import qualified XMonad.Layout.BoringWindows as Layout.BoringWindows
 import qualified XMonad.Layout.Circle as Layout.Circle
 import qualified XMonad.Layout.Minimize as Layout.Minimize
 import qualified XMonad.Layout.NoBorders as Layout.NoBorders
 import qualified XMonad.Layout.PerWorkspace as Layout.PerWorkspace
 -- import qualified XMonad.Layout.SimpleFloat as Layout.SimpleFloat -- unused
 -- import qualified XMonad.Layout.Tabbed as Layout.Tabbed -- unused
+import qualified XMonad.Layout.ThreeColumns as Layout.ThreeColumns
 import qualified XMonad.Layout.WindowNavigation as Layout.WindowNavigation
 import qualified XMonad.Layout.WorkspaceDir as Layout.WorkspaceDir
 import qualified XMonad.Prompt as Prompt
@@ -289,10 +291,13 @@ _emacsKeys  = \conf ->
                ("M-S-b", (sendMessage (Layout.WindowNavigation.Swap
                                         Layout.WindowNavigation.L))),
 
-               ("M-<Tab>", (windows StackSet.focusDown)),
-               ("M-S-<Tab>", (windows StackSet.focusUp)),
+               -- ("M-<Tab>", (Layout.BoringWindows.focusDown)),
+               -- ("M-S-<Tab>", (Layout.BoringWindows.focusUp)),
+               ("M-<Tab>", (Actions.CycleWindows.cycleRecentWindows [xK_Super_L] xK_Tab xK_grave) >>
+                           (Actions.UpdatePointer.updatePointer (Actions.UpdatePointer.Relative 1 1))),
+
                ("M-<Return>", (Actions.DwmPromote.dwmpromote)),
-               ("M-S-<Return>", (windows StackSet.focusMaster)),
+               ("M-S-<Return>", (Layout.BoringWindows.focusMaster)),
 
                ("M-C-1", (screenWorkspace 0) >>= (flip whenJust (windows . StackSet.view))),
                ("M-C-2", (screenWorkspace 1) >>= (flip whenJust (windows . StackSet.view))),
@@ -355,8 +360,7 @@ _emacsKeys  = \conf ->
                ("M-C-S-h", (Actions.CycleWS.shiftTo
                              Actions.CycleWS.Prev Actions.CycleWS.EmptyWS)),
 
-               -- Toggle between current and previous
-               ("M-`", (Actions.CycleWS.toggleWS)),
+               ("M-`", Actions.CycleRecentWS.cycleRecentWS [xK_Super_L] xK_grave xK_Tab),
 
                ("M-S-<Backspace>", (Actions.WithAll.killAll) >>
                                    (Actions.DynamicWorkspaces.removeWorkspace)),
@@ -418,20 +422,22 @@ _mouseBindings (XConfig {XMonad.modMask = modMask}) =
 _layout = Hooks.ManageDocks.avoidStruts
           -- $ _onWorkspace "agenda" _full
           (Layout.WindowNavigation.windowNavigation
-            (Layout.WorkspaceDir.workspaceDir "~" 
-              (_tiled |||
-              (Mirror _tiled) |||
-              Layout.Circle.Circle |||
-              Layout.Accordion.Accordion |||
-              _full)))
+            (Layout.WorkspaceDir.workspaceDir "~"
+              (Layout.NoBorders.smartBorders
+                (Layout.BoringWindows.boringWindows
+                  (_tiled |||
+                  (Mirror _tiled) |||
+                  Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2) |||
+                  Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2) |||
+                  Layout.Circle.Circle |||
+                  Layout.Accordion.Accordion |||
+                  Full)))))
 
 _tiled = (Layout.Minimize.minimize (Tall nmaster delta ratio))
          where
            nmaster = 1
            delta   = 3/100
            ratio   = 1/2
-
-_full = (Layout.NoBorders.noBorders Full)
 
 _onWorkspace t l = (Layout.PerWorkspace.onWorkspace
                       t
