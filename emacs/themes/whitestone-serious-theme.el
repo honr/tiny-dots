@@ -39,7 +39,7 @@
  '(font-lock-type-face ((t (:foreground "#A20"))))
  '(font-lock-variable-name-face ((t (:bold t))))
  '(font-lock-warning-face ((t (:bold t :foreground "#D03"))))
- '
+
  ;; dired
  '(dired-directory ((t (:foreground "#06F"))))
  '(dired-symlink ((t (:foreground "#808"))))
