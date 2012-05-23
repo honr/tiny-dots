@@ -135,6 +135,7 @@ runTerminal = (spawn terminalCmd)
 runColourTerminal = (Actions.RandomBackground.randomBg
                       (Actions.RandomBackground.HSV 0xEE 0xFF))
                       -- 0x18 0x00
+                      -- 0xEE 0xFF
                       -- 0xCC 0xFF
                       -- 0x44 0x00
 runColourScreenTerminal = do
