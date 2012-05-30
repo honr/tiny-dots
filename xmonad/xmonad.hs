@@ -124,24 +124,26 @@ shift t = (newWorkspace t) >> ((windows . StackSet.shift) t)
 
 -- Themes
 _normalBorderColor :: String
-_normalBorderColor = "#000000"
 _focusedBorderColor :: String
-_focusedBorderColor = "#0066CC"
+_normalBorderColor = "#000000"
+_focusedBorderColor = "#0066CC" -- "#0066CC"
+_randomBackgroundColors = [0x18, 0x00] -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
 
 -- Applications
 terminalCmd = "xterm"
 runTerminal :: X()
 runTerminal = (spawn terminalCmd)
 runColourTerminal = (Actions.RandomBackground.randomBg
-                      (Actions.RandomBackground.HSV 0xEE 0xFF))
-                      -- 0x18 0x00
-                      -- 0xEE 0xFF
-                      -- 0xCC 0xFF
-                      -- 0x44 0x00
+                      (Actions.RandomBackground.HSV x y))
+                     where
+                        [x, y] = _randomBackgroundColors
 runColourScreenTerminal = do
     c <- (Actions.RandomBackground.randomBg'
-           (Actions.RandomBackground.HSV 0xEE 0xFF))
+           (Actions.RandomBackground.HSV x y))
     (spawn (terminalCmd ++ " -bg " ++ c ++ " -e screen -xR"))
+    where
+        [x, y] = _randomBackgroundColors
+
 
 inTerminal cmd = (terminalCmd ++ " -e " ++ cmd)
 
@@ -191,6 +193,9 @@ editorCmd = "emacsclient -nc"
 runEditor :: X ()
 runEditor = (spawn editorCmd)
 
+runEditorHere :: X ()
+runEditorHere = (spawn (editorCmd ++ " " ++ "."))
+
 -- Keys
 _keys :: XConfig Layout -> Map.Map (KeyMask, KeySym) (X())
 _keys = \conf -> (Util.EZConfig.mkKeymap conf (_emacsKeys conf))
@@ -205,6 +210,7 @@ _emacsKeys  = \conf ->
                -- ("M-h n", manTerminal),
                ("M-C-S-e", (spawn "gedit")),
                ("M-C-e", runEditor),
+               ("M-e", runEditorHere),
                ("M-C-y", runBrowser),
                ("M-C-u", runClrl),
                ("M-S-1", runCmdLine),
