@@ -127,7 +127,7 @@ _normalBorderColor :: String
 _focusedBorderColor :: String
 _normalBorderColor = "#000000"
 _focusedBorderColor = "#0066CC" -- "#0066CC"
-_randomBackgroundColors = [0x18, 0x00] -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
+_randomBackgroundColors = [0xEE, 0xFF] -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
 
 -- Applications
 terminalCmd = "xterm"

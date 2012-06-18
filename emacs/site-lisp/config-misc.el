@@ -4,3 +4,8 @@
                               (size 6 -1 :right) " " (mode 16 16 :center) " "
                               filename)
                         (mark " " (name 16 -1) " " filename)))
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward
+      uniquify-strip-common-suffix t
+      uniquify-separator " *")
