@@ -10,11 +10,6 @@ altscreen on
 nonblock on
 defflow off
 
-## Under a dark theme:
-caption always "%{.kG}%-w%{.gW}%n %t%{-}%+w %=%{..G} @%H %{..w} %Y/%m/%d %c "
-## Under a light theme:
-# caption always "%{.Wg}%-w%{.gW}%n %t%{-}%+w %=%{..g} @%H %{..K} %Y/%m/%d %c "
-
 bindkey -k k1 copy
 markkeys "h=^B:j=^N:k=^P:l=^F:0=^A:0=^A:^b=[:^f=]"
 markkeys "^g=':^c=^g"  # Double check this.
@@ -43,3 +38,13 @@ termcapinfo xterm* 'Co#256'
 defbce "on" 
 # term screen-256color-bce
 term xterm-256color
+
+# backtick 1 0 1 pwd
+# %?%{.Rw}[:%u]%{-}%?
+
+caption always "%{-s .} %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.GW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
+
+## Under a dark theme:
+# caption always "%{.kG}%-w%{.gW}%n %t%{-}%+w %=%{..G} @%H %{..w} %Y/%m/%d %c "
+## Under a light theme:
+# caption always "%{.Wg}%-w%{.gW}%n %t%{-}%+w %=%{..g} @%H %{..K} %Y/%m/%d %c "
