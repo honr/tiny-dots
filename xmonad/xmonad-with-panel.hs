@@ -47,6 +47,7 @@ import qualified XMonad.Hooks.Place as Hooks.Place
 import qualified XMonad.Layout.Accordion as Layout.Accordion
 import qualified XMonad.Layout.BoringWindows as Layout.BoringWindows
 import qualified XMonad.Layout.Circle as Layout.Circle
+import qualified XMonad.Layout.LimitWindows as Layout.LimitWindows
 import qualified XMonad.Layout.Minimize as Layout.Minimize
 import qualified XMonad.Layout.NoBorders as Layout.NoBorders
 import qualified XMonad.Layout.PerWorkspace as Layout.PerWorkspace
@@ -79,8 +80,8 @@ main = do
       (defaultConfig
         {borderWidth = 2,
          terminal = terminalCmd,
-         normalBorderColor = _normalBorderColor,
-         focusedBorderColor = _focusedBorderColor,
+         normalBorderColor = (\ (Colors {normal_border = c}) -> c) _colors,
+         focusedBorderColor = (\ (Colors {focused_border = c}) -> c) _colors,
          workspaces = _workspaces,
          layoutHook = _layout,
          keys = _keys,
@@ -131,13 +132,21 @@ shift :: Actions.TopicSpace.Topic -> X ()
 shift t = (newWorkspace t) >> ((windows . StackSet.shift) t)
 
 -- Themes
-_normalBorderColor :: String
-_focusedBorderColor :: String
-_normalBorderColor = "#000000"
-_focusedBorderColor = "#0066CC" -- "#0066CC"
+data Colors = Colors { normal_border :: String,
+                       term_background :: [Double],
+                       focused_border :: String }
+              
+_colors_light = Colors { normal_border = "#000000",
+                         focused_border = "#0066CC", 
+                         term_background = [0xEE, 0xFF] }
+                
+_colors_dark = Colors { normal_border = "#000000",
+                        focused_border = "#0066CC", 
+                        term_background = [0x18, 0x00] } -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
+               
+_colors = _colors_light
 
-_randomBackgroundColors = [0xEE, 0xFF] -- Light -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
--- _randomBackgroundColors = [0x18, 0x00] -- Dark -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
+_randomBackgroundColors = (\ (Colors {term_background = c}) -> c) _colors
 
 -- _randomBackgroundColors = do
 --     case System.Environment.getEnv "THEMETYPE" of
@@ -338,6 +347,10 @@ _emacsKeys  = \conf ->
                ("M-[", (sendMessage (IncMasterN 1))),
                ("M-]", (sendMessage (IncMasterN (-1)))),
 
+               ("M-S-[", (Layout.LimitWindows.increaseLimit)),
+               ("M-S-]", (Layout.LimitWindows.decreaseLimit)),
+
+
                -- Toggle full screen
                ("M-S-<F10>", (sendMessage Hooks.ManageDocks.ToggleStruts) >>
                              (refresh)),
@@ -449,6 +462,7 @@ _layout = Hooks.ManageDocks.avoidStruts
               (Layout.NoBorders.smartBorders
                 (Layout.BoringWindows.boringWindows
                   (_tiled |||
+                  (Layout.LimitWindows.limitWindows 5 _tiled) |||
                   (Mirror _tiled) |||
                   Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2) |||
                   Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2) |||
@@ -534,7 +548,7 @@ prettyPrinter dbus = Hooks.DynamicLog.defaultPP
     , Hooks.DynamicLog.ppVisible  = pangoColor "yellow" . Hooks.DynamicLog.wrap "(" ")" . pangoSanitize
     , Hooks.DynamicLog.ppHidden   = const ""
     , Hooks.DynamicLog.ppUrgent   = pangoColor "red"
-    , Hooks.DynamicLog.ppLayout   = const ""
+    , Hooks.DynamicLog.ppLayout   = pangoColor "blue" . Hooks.DynamicLog.wrap "{" "}" . pangoSanitize -- const ""
     , Hooks.DynamicLog.ppSep      = " ┆ "
     }
 
