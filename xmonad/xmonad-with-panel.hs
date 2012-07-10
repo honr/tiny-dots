@@ -53,6 +53,7 @@ import qualified XMonad.Layout.NoBorders as Layout.NoBorders
 import qualified XMonad.Layout.PerWorkspace as Layout.PerWorkspace
 -- import qualified XMonad.Layout.SimpleFloat as Layout.SimpleFloat -- unused
 -- import qualified XMonad.Layout.Tabbed as Layout.Tabbed -- unused
+-- import qualified XMonad.Layout.Spacing as Layout.Spacing -- unused
 import qualified XMonad.Layout.ThreeColumns as Layout.ThreeColumns
 import qualified XMonad.Layout.WindowNavigation as Layout.WindowNavigation
 import qualified XMonad.Layout.WorkspaceDir as Layout.WorkspaceDir
@@ -78,10 +79,10 @@ main = do
   (xmonad
     (Hooks.EwmhDesktops.ewmh
       (defaultConfig
-        {borderWidth = 2,
+        {borderWidth = 4,
          terminal = terminalCmd,
-         normalBorderColor = (\ (Colors {normal_border = c}) -> c) _colors,
-         focusedBorderColor = (\ (Colors {focused_border = c}) -> c) _colors,
+         normalBorderColor = normal_border _colors,
+         focusedBorderColor = focused_border _colors,
          workspaces = _workspaces,
          layoutHook = _layout,
          keys = _keys,
@@ -132,21 +133,21 @@ shift :: Actions.TopicSpace.Topic -> X ()
 shift t = (newWorkspace t) >> ((windows . StackSet.shift) t)
 
 -- Themes
+_colors = _colors_dark
+
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
                        focused_border :: String }
-              
-_colors_light = Colors { normal_border = "#000000",
-                         focused_border = "#0066CC", 
-                         term_background = [0xEE, 0xFF] }
-                
-_colors_dark = Colors { normal_border = "#000000",
-                        focused_border = "#0066CC", 
-                        term_background = [0x18, 0x00] } -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
-               
-_colors = _colors_light
 
-_randomBackgroundColors = (\ (Colors {term_background = c}) -> c) _colors
+_colors_light = Colors { normal_border = "#000000",
+                         focused_border = "#0066CC",
+                         term_background = [0xEE, 0xFF] }
+
+_colors_dark = Colors { normal_border = "#000000",
+                        focused_border = "#0088FF",
+                        term_background = [0x18, 0x00] } -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
+
+_randomBackgroundColors = term_background _colors
 
 -- _randomBackgroundColors = do
 --     case System.Environment.getEnv "THEMETYPE" of
@@ -239,16 +240,16 @@ _emacsKeys  = \conf ->
                ("M-C-u", runClrl),
                ("M-S-1", runCmdLine),
                ("M-C-d", (Layout.WorkspaceDir.changeDir _XPConfig)),
-               ("M-C-t", runFileManager),
+               ("M-C-t", runFileManager)] ++
 
-               ("M-d a", (goto "agenda")),
+              [("M-d a", (goto "agenda")),
                ("M-d i", (goto "irc")),
                ("M-d m", (goto "mail")),
                ("M-d r", (goto "terminals")),
                ("M-d s", (goto "*scratch*")),
-               ("M-d y", (goto "browse")),
+               ("M-d y", (goto "browse"))] ++
 
-               ("M-m", (withFocused Layout.Minimize.minimizeWindow)),
+              [("M-m", (withFocused Layout.Minimize.minimizeWindow)),
                ("M-S-m", (sendMessage Layout.Minimize.RestoreNextMinimizedWin)),
 
                -- Layouts
@@ -258,71 +259,25 @@ _emacsKeys  = \conf ->
                ("M-<Space>", (sendMessage NextLayout)),
                ("M-<F1>", (sendMessage (JumpToLayout "Full"))),
                ("M-<F2>", (sendMessage (JumpToLayout "Minimize Tall"))),
-               ("M-<F3>", (sendMessage (JumpToLayout "Mirror Minimize Tall"))),
-
-               ("M-<Up>", (sendMessage (Layout.WindowNavigation.Go
-                                         Layout.WindowNavigation.U))),
-               ("M-<Right>", (sendMessage (Layout.WindowNavigation.Go
-                                            Layout.WindowNavigation.R))),
-               ("M-<Down>", (sendMessage (Layout.WindowNavigation.Go
-                                           Layout.WindowNavigation.D))),
-               ("M-<Left>", (sendMessage (Layout.WindowNavigation.Go
-                                           Layout.WindowNavigation.L))),
-
-               ("M-p", (sendMessage (Layout.WindowNavigation.Go
-                                      Layout.WindowNavigation.U))),
-               ("M-f", (sendMessage (Layout.WindowNavigation.Go
-                                      Layout.WindowNavigation.R))),
-               ("M-n", (sendMessage (Layout.WindowNavigation.Go
-                                      Layout.WindowNavigation.D))),
-               ("M-b", (sendMessage (Layout.WindowNavigation.Go
-                                      Layout.WindowNavigation.L))),
-
-               ("M-C-<Up>", (withFocused (Actions.FloatSnap.snapMove
-                                           Actions.FloatSnap.U Nothing))),
-               ("M-C-<Right>", (withFocused (Actions.FloatSnap.snapMove
-                                              Actions.FloatSnap.R Nothing))),
-               ("M-C-<Down>", (withFocused (Actions.FloatSnap.snapMove
-                                             Actions.FloatSnap.D Nothing))),
-               ("M-C-<Left>", (withFocused (Actions.FloatSnap.snapMove
-                                             Actions.FloatSnap.L Nothing))),
-
-               ("M-M1-<Up>", (withFocused (Actions.FloatSnap.snapGrow
-                                            Actions.FloatSnap.U Nothing))),
-               ("M-M1-<Right>", (withFocused (Actions.FloatSnap.snapGrow
-                                               Actions.FloatSnap.R Nothing))),
-               ("M-M1-<Down>", (withFocused (Actions.FloatSnap.snapGrow
-                                              Actions.FloatSnap.D Nothing))),
-               ("M-M1-<Left>", (withFocused (Actions.FloatSnap.snapGrow
-                                              Actions.FloatSnap.L Nothing))),
-
-               ("M-M1-S-<Up>", (withFocused (Actions.FloatSnap.snapShrink
-                                             Actions.FloatSnap.U Nothing))),
-               ("M-M1-S-<Right>", (withFocused (Actions.FloatSnap.snapShrink
-                                                Actions.FloatSnap.R Nothing))),
-               ("M-M1-S-<Down>", (withFocused (Actions.FloatSnap.snapShrink
-                                               Actions.FloatSnap.D Nothing))),
-               ("M-M1-S-<Left>", (withFocused (Actions.FloatSnap.snapShrink
-                                               Actions.FloatSnap.L Nothing))),
-
-               ("M-S-<Up>", (sendMessage (Layout.WindowNavigation.Swap
-                                           Layout.WindowNavigation.U))),
-               ("M-S-<Right>", (sendMessage (Layout.WindowNavigation.Swap
-                                              Layout.WindowNavigation.R))),
-               ("M-S-<Down>", (sendMessage (Layout.WindowNavigation.Swap
-                                             Layout.WindowNavigation.D))),
-               ("M-S-<Left>", (sendMessage (Layout.WindowNavigation.Swap
-                                             Layout.WindowNavigation.L))),
-
-               ("M-S-p", (sendMessage (Layout.WindowNavigation.Swap
-                                        Layout.WindowNavigation.U))),
-               ("M-S-f", (sendMessage (Layout.WindowNavigation.Swap
-                                        Layout.WindowNavigation.R))),
-               ("M-S-n", (sendMessage (Layout.WindowNavigation.Swap
-                                        Layout.WindowNavigation.D))),
-               ("M-S-b", (sendMessage (Layout.WindowNavigation.Swap
-                                        Layout.WindowNavigation.L))),
-
+               ("M-<F3>", (sendMessage (JumpToLayout "Mirror Minimize Tall")))
+               -- ("M-<F4>", (sendMessage (JumpToLayout "Minimize Circle"))),
+               ] ++
+              (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++ ["p", "f", "n", "b"]
+                   nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
+                               Layout.WindowNavigation.D, Layout.WindowNavigation.L]
+                   floatsnap_dirs = [Actions.FloatSnap.U, Actions.FloatSnap.R,
+                                     Actions.FloatSnap.D, Actions.FloatSnap.L]
+               in [("M-" ++ a, (sendMessage (Layout.WindowNavigation.Go b)))
+                       | (a, b) <- zip key_dirs (cycle nav_dirs)] ++
+                  [("M-S-" ++ a, (sendMessage (Layout.WindowNavigation.Swap b)))
+                       | (a, b) <- zip key_dirs (cycle nav_dirs)] ++
+                  [("M-C-" ++ a, (withFocused (Actions.FloatSnap.snapMove b Nothing)))
+                       | (a, b) <- zip key_dirs (cycle floatsnap_dirs)] ++
+                  [("M-M1-" ++ a, (withFocused (Actions.FloatSnap.snapGrow b Nothing)))
+                       | (a, b) <- zip key_dirs (cycle floatsnap_dirs)] ++
+                  [("M-M1-S-" ++ a, (withFocused (Actions.FloatSnap.snapShrink b Nothing)))
+                       | (a, b) <- zip key_dirs (cycle floatsnap_dirs)]) ++
+              [
                -- ("M-<Tab>", (Layout.BoringWindows.focusDown)),
                -- ("M-S-<Tab>", (Layout.BoringWindows.focusUp)),
                ("M-<Tab>", (Actions.CycleWindows.cycleRecentWindows [xK_Super_L] xK_Tab xK_grave) >>
@@ -363,9 +318,9 @@ _emacsKeys  = \conf ->
                ("M-S-a", (Prompt.Window.windowPromptBring _XPConfig)),
 
                ("M-q", (kill)),
-               ("M-S-q", (Actions.WithAll.killAll)),
+               ("M-S-q", (Actions.WithAll.killAll))] ++
 
-               ("M-j", (Actions.CycleWS.moveTo
+              [("M-j", (Actions.CycleWS.moveTo
                          Actions.CycleWS.Next _WSTagGroups)),
                ("M-k", (Actions.CycleWS.moveTo
                          Actions.CycleWS.Prev _WSTagGroups)),
@@ -378,7 +333,6 @@ _emacsKeys  = \conf ->
                          Actions.CycleWS.Next _WSTagNonGroups)),
                ("M-,", (Actions.CycleWS.moveTo
                          Actions.CycleWS.Prev _WSTagNonGroups)),
-
                ("M-l", (Actions.CycleWS.moveTo
                          Actions.CycleWS.Next Actions.CycleWS.NonEmptyWS)),
                ("M-h", (Actions.CycleWS.moveTo
@@ -394,9 +348,9 @@ _emacsKeys  = \conf ->
                ("M-C-S-l", (Actions.CycleWS.shiftTo
                              Actions.CycleWS.Next Actions.CycleWS.EmptyWS)),
                ("M-C-S-h", (Actions.CycleWS.shiftTo
-                             Actions.CycleWS.Prev Actions.CycleWS.EmptyWS)),
-
-               ("M-`", Actions.CycleRecentWS.cycleRecentWS [xK_Super_L] xK_grave xK_Tab),
+                             Actions.CycleWS.Prev Actions.CycleWS.EmptyWS))]
+              ++
+              [("M-`", Actions.CycleRecentWS.cycleRecentWS [xK_Super_L] xK_grave xK_Tab),
 
                ("M-S-<Backspace>", (Actions.WithAll.killAll) >>
                                    (Actions.DynamicWorkspaces.removeWorkspace)),
@@ -457,18 +411,20 @@ _mouseBindings (XConfig {XMonad.modMask = modMask}) =
 -- Work in progress ...
 _layout = Hooks.ManageDocks.avoidStruts
           -- $ _onWorkspace "agenda" _full
-          (Layout.WindowNavigation.windowNavigation
+          (Layout.WindowNavigation.configurableNavigation
+            Layout.WindowNavigation.noNavigateBorders
             (Layout.WorkspaceDir.workspaceDir "~"
               (Layout.NoBorders.smartBorders
                 (Layout.BoringWindows.boringWindows
                   (_tiled |||
-                  (Layout.LimitWindows.limitWindows 5 _tiled) |||
-                  (Mirror _tiled) |||
-                  Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2) |||
-                  Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2) |||
-                  Layout.Circle.Circle |||
-                  Layout.Accordion.Accordion |||
-                  Full)))))
+                   (Layout.LimitWindows.limitWindows 5 _tiled) |||
+                   (Mirror _tiled) |||
+                   (Layout.LimitWindows.limitWindows 5 (Mirror _tiled)) |||
+                   (Layout.Minimize.minimize (Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2))) |||
+                   (Layout.Minimize.minimize (Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2))) |||
+                   (Layout.Minimize.minimize Layout.Circle.Circle) |||
+                   (Layout.Minimize.minimize Layout.Accordion.Accordion) |||
+                   Full)))))
 
 _tiled = (Layout.Minimize.minimize (Tall nmaster delta ratio))
          where
@@ -548,7 +504,7 @@ prettyPrinter dbus = Hooks.DynamicLog.defaultPP
     , Hooks.DynamicLog.ppVisible  = pangoColor "yellow" . Hooks.DynamicLog.wrap "(" ")" . pangoSanitize
     , Hooks.DynamicLog.ppHidden   = const ""
     , Hooks.DynamicLog.ppUrgent   = pangoColor "red"
-    , Hooks.DynamicLog.ppLayout   = pangoColor "blue" . Hooks.DynamicLog.wrap "{" "}" . pangoSanitize -- const ""
+    , Hooks.DynamicLog.ppLayout   = const ""
     , Hooks.DynamicLog.ppSep      = " ┆ "
     }
 
@@ -559,7 +515,7 @@ getWellKnownName dbus = do
                  DBus.Client.Simple.ReplaceExisting,
                  DBus.Client.Simple.DoNotQueue]
   return ()
-  
+
 dbusOutput :: DBus.Client.Simple.Client -> String -> IO ()
 dbusOutput dbus str = DBus.Client.Simple.emit dbus
                              "/org/xmonad/Log"
