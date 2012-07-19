@@ -1,1 +1,0 @@
-/neutral/Pool/bin/xinput-scroll-direction.sh

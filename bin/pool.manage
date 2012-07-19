@@ -1,0 +1,163 @@
+#!/bin/bash
+
+# Symlinks sadly cannot link to paths relative to home; They are
+# either absolute or relative to where they are.  This script helps
+# keep track of symlinks and install a set of them according to a
+# file.
+# NOTE: Assumes paths do not have weird! characters such as \n, $, >
+
+function usage() {
+    local CMDNAME="$(basename "$0")"
+    echo "# All commands operate on a book keeping file specified as BOOK"
+    echo "$CMDNAME BOOK mkdir         DIRECTORY        # Register a directory"
+    echo "$CMDNAME BOOK symlink       TARGET LINK-NAME # Register a symlink"
+    echo "$CMDNAME BOOK symlink       LINK-NAME        # Same, readlink to get TARGET."
+    echo "$CMDNAME BOOK register-tree TREE             # Register TREE."
+    echo ""
+    echo "# Install symlinks and directories from TREE.book to DESTINATION directory"
+    echo "$CMDNAME BOOK install [-l | -h REMOTE] [-k] [-z] DESTINATION"
+    echo "          -l: Follow symlinks, like rsync -L."
+    echo "          -h REMOTE-HOME: Specify remote home directory."
+    echo "          -k: Do not delete temp directory, useful for debugging."
+    echo "          -z: Install into a tar.gz file.  REMOTE-HOME still useful."
+
+    echo "Examples:"
+    echo "$CMDNAME foo.book install -l user@remote:~/.local"
+    echo "$CMDNAME foo.book install user@remote:~/.local"
+    echo "$CMDNAME foo.book install -z foo.tar.gz # create a tar.gz"
+    echo "$CMDNAME foo.book install -zk foo.tar.gz # same except not removing"
+    echo "                  # target directory in the end."
+    echo "$CMDNAME foo.book install ~ # sync to localhost, actiave deployment"
+}
+
+# We need at least two arguments: The book keeping filename and the
+# command.
+if [ -z "$1" -o -z "$2" ] ; then
+    usage
+    exit 1
+fi
+BOOK="$1"
+shift
+
+
+function cmd-mkdir () {
+    local SOURCE="$1"
+    
+    local THEDIR="${SOURCE/$HOME/\$HOME}"
+    sort -u <(cat "$BOOK" ; echo "${THEDIR}>") > "$BOOK.new"
+    mv "$BOOK.new" "$BOOK"
+}
+
+function cmd-symlink () {
+    local SOURCE="$1"
+    local DESTINATION="$2"
+    # Place a pointer from source to destination in the book (a text
+    # file).
+
+    if [ -z "$DESTINATION" ] ; then
+        DESTINATION="$SOURCE"
+        SOURCE="$(readlink "$SOURCE")"
+    fi
+    SOURCE="${SOURCE/$HOME/\$HOME}"
+    DESTINATION="${DESTINATION/$HOME/\$HOME}"
+    sort -u <(grep -v -F "${DESTINATION}>" "$BOOK" 2>/dev/null ; echo "${DESTINATION}>${SOURCE}") > "$BOOK.new"
+    mv "$BOOK.new" "$BOOK"
+}
+
+function cmd-register-tree () {
+    # NOTE: This is a one time use command, transforms former symlinky
+    # tree into the newer "book" file format.
+    local TREE="$1"
+
+
+    local NEUTRAL_HOME=/neutral
+    find "$TREE" \
+        -type d -printf "%p\n" -or \
+        -type l -printf "%p>%l\n" | \
+        sed \
+        -e "s/^$TREE/\$HOME/" \
+        -e "s|>$NEUTRAL_HOME|>\$HOME|" \
+        -e "s|>$HOME|>\$HOME|" | \
+        sort > "$BOOK"
+}
+
+function cmd-install () {
+    local x=1
+    local FOLLOW_SYMLINKS
+    local COMPRESS
+    while getopts "h:klz" opt; do
+        case "$opt" in
+	    h) DEST_HOME="$OPTARG" ;;
+	    k) KEEP="t" ;;
+            l) FOLLOW_SYMLINKS="t" ;;
+            z) COMPRESS="t" ;;
+        esac
+        x=$OPTIND
+    done
+    shift $(($x-1))
+    local DESTINATION="$1"
+
+
+    local RSYNC_LINK RSYNC_COMPRESS REMOTE_DESTINATION
+    if [ -n "$FOLLOW_SYMLINKS" ] ; then
+        RSYNC_LINK="-L"
+    fi
+    if [ "${DESTINATION#*:}" != "${DESTINATION}" ] ; then
+        # Has a `:' character in the DESTINATION. It must be a remote
+        # destination.
+        REMOTE_DESTINATION="t"
+        RSYNC_COMPRESS="--compress"
+    fi
+    if [ -n "$COMPRESS" ] ; then
+        DESTINATION_TAR="$DESTINATION"
+        DESTINATION="$DESTINATION.directory"
+        mkdir "$DESTINATION"
+    fi
+
+    if [ -z "$DEST_HOME" ] ; then
+	if [ -z "$REMOTE_DESTINATION" -o -n "$FOLLOW_SYMLINKS" ] ; then
+	    DEST_HOME="$HOME"
+	else
+	    DEST_HOME="$(ssh "${DESTINATION%%:*}" 'echo $HOME')"
+	fi
+    fi
+    if [ -z "$DEST_HOME" ] ; then
+	echo 'error: $DEST_HOME is nil'
+	exit 1
+    fi
+        
+    # Step 1: Build up the target tree in a directory here.
+    local DEST_TEMPORARY_TREE="$BOOK.temporary-tree"
+    mkdir "$DEST_TEMPORARY_TREE"
+
+    local link
+    local link_source
+    while IFS='>' read link link_source ; do
+        if [ -z "$link_source" ] ; then
+            # This is a directory, not a symlink.
+            mkdir "${link/\$HOME/$DEST_TEMPORARY_TREE}"
+        else
+            ln -sfn \
+                "${link_source/\$HOME/$DEST_HOME}" \
+                "${link/\$HOME/$DEST_TEMPORARY_TREE}"
+        fi
+    done < "$BOOK"
+
+    # Step 2: rsync this target tree to dest_home
+    rsync \
+        -av $RSYNC_LINK $RSYNC_COMPRESS --no-o --no-g \
+        --exclude '.git/' "${DEST_TEMPORARY_TREE}/" "$DESTINATION"
+
+    if [ -n "$COMPRESS" ] ; then
+        tar czf "$DESTINATION_TAR" -C "$DESTINATION" .
+        rm -Rf "$DESTINATION"
+    fi
+
+    # Clean up
+    if [ -z "$KEEP" ] ; then
+	rm -Rf "$DEST_TEMPORARY_TREE"
+    fi
+}
+
+"cmd-$@"
+exit 0

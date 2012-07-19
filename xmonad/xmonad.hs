@@ -147,7 +147,6 @@ runColourScreenTerminal = do
 
 inTerminal cmd = (terminalCmd ++ " -e " ++ cmd)
 
--- saveSession cmd = "/bin/bash -c '" ++ cmd ++ "; /bin/bash'"
 -- runInTerminal f = transformPromptSelection f (terminalCmd ++ " -e ")
 -- pasteTerminal = runInTerminal saveSession
 -- manTerminal = runInTerminal manPage

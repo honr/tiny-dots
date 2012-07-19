@@ -1,1 +1,0 @@
-/neutral/Pool/etc/bash/generic.clj.bash
