@@ -9,3 +9,13 @@
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-strip-common-suffix t
       uniquify-separator " *")
+
+(defun set-theme (kind)
+  (interactive)
+  (load-theme 'whitestone-serious t t)
+  (load-theme 'fruitsalad-dark t t)
+  (cond
+   ((eq kind :dark) (progn (disable-theme 'whitestone-serious)
+                          (enable-theme 'fruitsalad-dark)))
+   ((eq kind :light) (progn (disable-theme 'fruitsalad-dark)
+                           (enable-theme 'whitestone-serious)))))

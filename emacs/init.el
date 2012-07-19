@@ -74,6 +74,8 @@
    '(custom-theme-directory "~/.emacs.d/themes")
    '(custom-safe-themes t)
    '(custom-enabled-themes '(whitestone-serious))
+   '(indent-tabs-mode nil)
+   '(tab-width 2)
    '(read-buffer-completion-ignore-case t)
    '(read-file-name-completion-ignore-case t)
    '(fill-column 78))

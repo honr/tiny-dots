@@ -15,8 +15,6 @@
 ;;;   For each target we ...
 ;;;    
 
-
-
 (ns bin.ruler
   (:refer-clojure :exclude [test derive])
   (:require [rose.clu]
@@ -199,16 +197,18 @@
       (filter-prefix cur (map #(str (first %))
                               (:publics (read-rules)))))))
 
-(defn ^{:cli {}} build [^RulerBuildTarget targ & args]
+(defn build {:cli {}} [^RulerBuildTarget targ & args]
   (let [rules-ns (read-rules)]
-    (apply (ns-resolve (:ns rules-ns) (symbol targ)) args)))
+    (binding [*cwd* (rules-ns :dir)]    ; Some libraries are still ignoring
+                                        ; *cwd*.  Must fix them!
+      (apply (ns-resolve (rules-ns :ns) (symbol targ)) args))))
 
-(defn ^{:cli {}} test [& args]
+(defn test {:cli {}} [& args]
   (println "... going to test ..."))
 
 (defonce large-derivations-cache (ref {}))
 
-(defn ^{:cli {}} derive [target]
+(defn derive {:cli {}} [target]
   (let [their-rules (read-rules)
         their-ns (:ns their-rules)]
     (dosync
@@ -221,7 +221,7 @@
               *cache-obsolete* (ref {})]
       (drv target))))
 
-(defn ^{:cli {}} reset-cache []
+(defn reset-cache {:cli {}} []
   (let [their-rules (read-rules)
         their-ns (:ns their-rules)]
     (println "Cache was:")
