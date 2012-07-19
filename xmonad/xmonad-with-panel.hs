@@ -155,7 +155,7 @@ _randomBackgroundColors = term_background _colors
 --          _ -> return [0xEE, 0xFF]
 
 -- Applications
-terminalCmd = "xterm"
+terminalCmd = "uxterm"
 runTerminal :: X()
 runTerminal = (spawn terminalCmd)
 runColourTerminal = (Actions.RandomBackground.randomBg
@@ -258,10 +258,10 @@ _emacsKeys  = \conf ->
                ("M-S-<Space>", (setLayout (XMonad.layoutHook conf))),
                ("M-<Space>", (sendMessage NextLayout)),
                ("M-<F1>", (sendMessage (JumpToLayout "Full"))),
-               ("M-<F2>", (sendMessage (JumpToLayout "Minimize Tall"))),
-               ("M-<F3>", (sendMessage (JumpToLayout "Mirror Minimize Tall")))
-               -- ("M-<F4>", (sendMessage (JumpToLayout "Minimize Circle"))),
-               ] ++
+               ("M-<F2>", (sendMessage (JumpToLayout "Tall"))),
+               ("M-<F3>", (sendMessage (JumpToLayout "Mirror Tall"))),
+               ("M-<F4>", (sendMessage (JumpToLayout "ThreeCol")))] ++
+
               (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++ ["p", "f", "n", "b"]
                    nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
                                Layout.WindowNavigation.D, Layout.WindowNavigation.L]
@@ -416,21 +416,20 @@ _layout = Hooks.ManageDocks.avoidStruts
             (Layout.WorkspaceDir.workspaceDir "~"
               (Layout.NoBorders.smartBorders
                 (Layout.BoringWindows.boringWindows
-                  (_tiled |||
-                   (Layout.LimitWindows.limitWindows 5 _tiled) |||
-                   (Mirror _tiled) |||
-                   (Layout.LimitWindows.limitWindows 5 (Mirror _tiled)) |||
-                   (Layout.Minimize.minimize (Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2))) |||
-                   (Layout.Minimize.minimize (Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2))) |||
-                   (Layout.Minimize.minimize Layout.Circle.Circle) |||
-                   (Layout.Minimize.minimize Layout.Accordion.Accordion) |||
-                   Full)))))
+                  (Layout.Minimize.minimize
+                    (_tiled2 |||
+                     (Layout.LimitWindows.limitWindows 5 _tiled2) |||
+                     (Mirror _tiled2) |||
+                     (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2)) |||
+                     _tiled3 |||
+                     _tiled3mid |||
+                     Layout.Circle.Circle |||
+                     Layout.Accordion.Accordion |||
+                     Full))))))
 
-_tiled = (Layout.Minimize.minimize (Tall nmaster delta ratio))
-         where
-           nmaster = 1
-           delta   = 3/100
-           ratio   = 1/2
+_tiled2 = Tall 1 (3/100) (1/2)
+_tiled3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
+_tiled3mid = Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2)
 
 _onWorkspace t l = (Layout.PerWorkspace.onWorkspace
                       t

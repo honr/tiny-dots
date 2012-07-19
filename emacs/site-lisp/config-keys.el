@@ -12,13 +12,13 @@
   (interactive)
   (kill-new buffer-file-name))
 
-(global-set-key [f4] (lambda () (interactive) (eshell t)))
+;; (global-set-key [f4] (lambda () (interactive) (eshell t)))
 (global-set-key [f5] 'compile)
-(global-set-key [M-f2] 'browse-url)
-(global-set-key [M-S-F2] 'browse-url-at-point)
+;; (global-set-key [M-f2] 'browse-url)
+;; (global-set-key [M-S-F2] 'browse-url-at-point)
 (global-set-key [f7] 'dict)
-(global-set-key "\C-x\C-d" 'find-dired)
-(global-set-key "\C-xd" 'rgrep)
+(global-set-key (kbd "C-x C-d") 'find-dired)
+(global-set-key (kbd "C-x d") 'rgrep)
 
 ;; (global-set-key (kbd "C-S-k") 'comment-or-uncomment-line)
 ;; (global-set-key [C-S-w] 'comment-region-and-duplicate)
@@ -155,7 +155,7 @@
 	      "'\"\n"
 	      "end tell")))
     (gnu/linux (start-process-shell-command "external-xterm" nil
-					    "xterm"))))
+					    "uxterm"))))
 
 (global-set-key (kbd "S-<f4>") 'terminal-here)
 
