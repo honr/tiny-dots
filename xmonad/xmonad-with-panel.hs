@@ -96,23 +96,23 @@ main = do
          startupHook = gnomeRegister >> startupHook defaultConfig})))
 
 -- Workspaces
-_spaces = (Map.fromList
-            ([("*scratch*", "~"),
-              ("browse", "~"),
-              ("irc", "~"),
-              ("mail", "~/Mail"),
-              ("agenda","~/Documents"),
-              ("terminals", "~")]))
+_topicConfig = (Actions.TopicSpace.defaultTopicConfig
+                 {Actions.TopicSpace.topicDirs = _topicDirs,
+                  Actions.TopicSpace.topicActions = _topicActions,
+                  Actions.TopicSpace.defaultTopicAction = (const (return ())),
+                  Actions.TopicSpace.defaultTopic = "*scratch*",
+                  Actions.TopicSpace.maxTopicHistory = 128})
 
 _workspaces = ["*scratch*",
                "browse"]
 
-_topicConfig = (Actions.TopicSpace.TopicConfig
-                 {Actions.TopicSpace.topicDirs = _spaces,
-                  Actions.TopicSpace.topicActions = _topicActions,
-                  Actions.TopicSpace.defaultTopicAction = (const (return ())),
-                  Actions.TopicSpace.defaultTopic = "*scratch*",
-                  Actions.TopicSpace.maxTopicHistory = 10})
+_topicDirs = (Map.fromList $
+              [("*scratch*", "~"),
+               ("browse", "~"),
+               ("irc", "~"),
+               ("mail", "~/Mail"),
+               ("agenda","~/Documents"),
+               ("terminals", "~/src")])
 
 _topicActions = (Map.fromList
                   ([("terminals", Monad.replicateM_ 2 runColourTerminal),
@@ -133,7 +133,7 @@ shift :: Actions.TopicSpace.Topic -> X ()
 shift t = (newWorkspace t) >> ((windows . StackSet.shift) t)
 
 -- Themes
-_colors = _colors_dark
+_colors = _colors_light
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
@@ -147,8 +147,6 @@ _colors_dark = Colors { normal_border = "#000000",
                         focused_border = "#0088FF",
                         term_background = [0x18, 0x00] } -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
 
-_randomBackgroundColors = term_background _colors
-
 -- _randomBackgroundColors = do
 --     case System.Environment.getEnv "THEMETYPE" of
 --          Nothing ->  [0x18, 0x00]
@@ -161,30 +159,29 @@ runTerminal = (spawn terminalCmd)
 runColourTerminal = (Actions.RandomBackground.randomBg
                       (Actions.RandomBackground.HSV x y))
                      where
-                        [x, y] = _randomBackgroundColors
-runColourScreenTerminal = do
+                        [x, y] = term_background _colors
+
+runInColourTerminal cmd = do
     c <- (Actions.RandomBackground.randomBg'
            (Actions.RandomBackground.HSV x y))
-    (spawn (terminalCmd ++ " -bg " ++ c ++ " -e screen -xR"))
+    (spawn (terminalCmd ++ " -bg " ++ c ++ " -e " ++ cmd))
     where
-        [x, y] = _randomBackgroundColors
+        [x, y] = term_background _colors
 
+runColourScreenTerminal = (runInColourTerminal "screen -xR")
 
-inTerminal cmd = (terminalCmd ++ " -e " ++ cmd)
+-- inTerminal cmd = (terminalCmd ++ " -e " ++ cmd)
 
 -- saveSession cmd = "/bin/bash -c '" ++ cmd ++ "; /bin/bash'"
 -- runInTerminal f = transformPromptSelection f (terminalCmd ++ " -e ")
 -- pasteTerminal = runInTerminal saveSession
 -- manTerminal = runInTerminal manPage
 
-chatCmd = (inTerminal ircCmd)
-ircCmd = "ssh -t personal-server emacsclient -t"
-runChat = (spawn chatCmd)
+runChat = (runInColourTerminal "ssh -t personal-server emacsclient -t")
 
-runClrl = (spawn (inTerminal "clove -i clojure"))
+runCloveClojure = (runInColourTerminal "clove -i clojure")
 
-
-browserCmd = "browser1"
+browserCmd = "chromium"
 runBrowser = (spawn browserCmd)
  -- TODO: This is unreliable; properly escape or use execve.
 runInBrowser uri = (spawn (browserCmd ++ " --new-window '" ++ uri ++ "'"))
@@ -237,7 +234,7 @@ _emacsKeys  = \conf ->
                ("M-C-e", runEditor),
                ("M-e", runEditorHere),
                ("M-C-y", runBrowser),
-               ("M-C-u", runClrl),
+               ("M-C-u", runCloveClojure),
                ("M-S-1", runCmdLine),
                ("M-C-d", (Layout.WorkspaceDir.changeDir _XPConfig)),
                ("M-C-t", runFileManager)] ++
@@ -414,28 +411,27 @@ _layout = Hooks.ManageDocks.avoidStruts
           (Layout.WindowNavigation.configurableNavigation
             Layout.WindowNavigation.noNavigateBorders
             (Layout.WorkspaceDir.workspaceDir "~"
-              (Layout.NoBorders.smartBorders
-                (Layout.BoringWindows.boringWindows
-                  (Layout.Minimize.minimize
-                    (_tiled2 |||
-                     (Layout.LimitWindows.limitWindows 5 _tiled2) |||
-                     (Mirror _tiled2) |||
-                     (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2)) |||
-                     _tiled3 |||
-                     _tiled3mid |||
-                     Layout.Circle.Circle |||
-                     Layout.Accordion.Accordion |||
-                     Full))))))
+              (Layout.BoringWindows.boringWindows
+                (Layout.Minimize.minimize
+                  (_tiled2 |||
+                   (Layout.LimitWindows.limitWindows 5 _tiled2) |||
+                   (Mirror _tiled2) |||
+                   (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2)) |||
+                   _tiled3 |||
+                   _tiled3mid |||
+                   Layout.Circle.Circle |||
+                   Layout.Accordion.Accordion |||
+                   (Layout.NoBorders.noBorders Full))))))
 
 _tiled2 = Tall 1 (3/100) (1/2)
 _tiled3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
 _tiled3mid = Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2)
 
-_onWorkspace t l = (Layout.PerWorkspace.onWorkspace
-                      t
-                      (Layout.WorkspaceDir.workspaceDir (_folderOf t) l))
+-- _onWorkspace t l = (Layout.PerWorkspace.onWorkspace
+--                       t
+--                       (Layout.WorkspaceDir.workspaceDir (_folderOf t) l))
 
-_folderOf = (Maybe.fromMaybe "~" . flip Map.lookup _spaces)
+-- _folderOf = (Maybe.fromMaybe "~" . flip Map.lookup _topicDirs)
 
 -- Theme
 myFont               = "xft:Ubuntu Mono:pixelsize=16"
@@ -465,9 +461,6 @@ _manageHook = manageHook defaultConfig
              className =? "Thunderbird" --> unfloat,
              className =? "Firefox" --> unfloat,
              className =? "Chromium" --> unfloat,
-             className =? "Browser1" --> unfloat,
-             className =? "Browser2" --> unfloat,
-             className =? "Browser3" --> unfloat,
             -- checkDock --> doIgnore,
              className =? "Inkscape" --> unfloat]
             -- <+> composeOne [
