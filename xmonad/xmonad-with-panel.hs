@@ -180,6 +180,7 @@ runColourScreenTerminal = (runInColourTerminal "screen -xR")
 runChat = (runInColourTerminal "ssh -t personal-server emacsclient -t")
 
 runCloveClojure = (runInColourTerminal "clove -i clojure")
+runGhci = (runInColourTerminal "ghci")
 
 browserCmd = "chromium"
 runBrowser = (spawn browserCmd)
@@ -235,6 +236,7 @@ _emacsKeys  = \conf ->
                ("M-e", runEditorHere),
                ("M-C-y", runBrowser),
                ("M-C-u", runCloveClojure),
+               ("M-C-o", runGhci),
                ("M-S-1", runCmdLine),
                ("M-C-d", (Layout.WorkspaceDir.changeDir _XPConfig)),
                ("M-C-t", runFileManager)] ++
@@ -451,6 +453,17 @@ _XPConfig = (Prompt.defaultXPConfig
 	       -- historySize = 100,
 	       -- historyFilter = deleteConsecutive,
 	       -- Prompt.autoComplete = Just 1000000, -- wait 0.1 second
+               Prompt.promptKeymap = Map.union
+                                     Prompt.defaultXPKeymap
+                                     (Map.fromList
+                                      [((controlMask, xK_b), Prompt.moveCursor Prompt.Prev),
+                                       ((controlMask, xK_f), Prompt.moveCursor Prompt.Next),
+                                       ((mod1Mask, xK_b), Prompt.moveWord Prompt.Prev),
+                                       ((mod1Mask, xK_f), Prompt.moveWord Prompt.Next),
+                                       ((mod1Mask, xK_d), Prompt.killWord Prompt.Next),
+                                       ((mod1Mask, xK_BackSpace), Prompt.killWord Prompt.Prev),
+                                       ((controlMask, xK_p), Prompt.moveHistory StackSet.focusUp'),
+                                       ((controlMask, xK_n), Prompt.moveHistory StackSet.focusDown')]),
                Prompt.searchPredicate = List.isInfixOf})
 
 _manageHook = manageHook defaultConfig
