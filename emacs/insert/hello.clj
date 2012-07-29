@@ -10,7 +10,7 @@
            [org.joda.time
             DateTime Months Weeks MutableDateTime]))
 
-(defn ^{:cli {:v Boolean}} main []
+(defn main {:cli {:v Boolean}} []
   "Greets or prints the version."
   (if (clu/*opts* :v)
     (println "Version: 0.1")
