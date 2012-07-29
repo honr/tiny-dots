@@ -20,6 +20,20 @@ XTerm.VT100.translations: #override \
     Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
     Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0)
 
+UXTerm*termName: xterm-256color
+UXTerm*metaSendsEscape: true
+UXTerm*scrollttyoutput: false
+UXTerm.SimpleMenu.borderColor: gray20
+UXTerm*saveLines: 8192
+UXTerm*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
+UXTerm*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
+UXTerm.VT100.faceName: UbuntuMono
+UXTerm.VT100.faceSize: 11
+UXTerm*ttyModes: weras ^-
+UXTerm.VT100.translations: #override \
+    Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
+    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0)
+
      xterm*background: #303030
      xterm*foreground: #dddddd
 xterm.SimpleMenu*background: #404040
