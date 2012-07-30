@@ -66,26 +66,29 @@
 
   (setq gdb-many-windows t)
   (setq gdb-show-main t)
-  
+
+  (require 'newcomment)
+
   (custom-set-variables
-   '(vc-follow-symlinks t)
-   '(mouse-wheel-progressive-speed nil)
-   '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
-   '(custom-theme-directory "~/.emacs.d/themes")
+
+   ;; '(custom-enabled-themes '(whitestone-serious))
+   '(custom-enabled-themes '(dark-forge))
    '(custom-safe-themes t)
-   '(custom-enabled-themes '(whitestone-serious))
-   ;; '(custom-enabled-themes '(fruitsalad-dark))
-   '(indent-tabs-mode nil)
-   '(glasses-separator "-")
-   ;; '(glasses-face nil)
+   '(custom-theme-directory "~/.emacs.d/themes")
+   '(fill-column 78)
    '(glasses-original-separator "")
+   '(glasses-separator "-")
    '(glasses-uncapitalize-p t)
    '(glasses-uncapitalize-regexp "[a-zA-Z_]")
-
-   '(tab-width 2)
+   '(indent-tabs-mode nil)
+   '(mouse-wheel-progressive-speed nil)
+   '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
    '(read-buffer-completion-ignore-case t)
    '(read-file-name-completion-ignore-case t)
-   '(fill-column 78))
+   '(show-trailing-whitespace t)
+   '(tab-width 2)
+   '(vc-follow-symlinks t)
+)
 
   (load-library-if-exists "config-custom-variables")
 
