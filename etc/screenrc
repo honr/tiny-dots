@@ -38,4 +38,4 @@ term screen-256color-bce
 # backtick 1 0 1 pwd
 # %?%{.Rw}[:%u]%{-}%?
 
-caption always "%{-s .} %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.GW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
+caption always "%{-s .} %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.gW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
