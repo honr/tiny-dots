@@ -34,7 +34,7 @@ UXTerm.VT100.translations: #override \
     Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
     Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0)
 
-     xterm*background: #303030
+     xterm*background: #000000
      xterm*foreground: #dddddd
 xterm.SimpleMenu*background: #404040
 xterm.SimpleMenu*foreground: #c0c0c0
