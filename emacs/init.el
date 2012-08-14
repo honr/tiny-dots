@@ -60,6 +60,12 @@
       (tool-bar-mode -1))
   ;; (mouse-avoidance-mode 'banish)
 
+  ;; The original format is:
+  ;;   (multiple-frames "%b" ("" invocation-name "@" system-name))
+  (setq frame-title-format
+        ;; %f: filename, %b: buffer name, %m: mode.
+        (list "%b (%m)  +Emacs"))
+
   (auto-insert-mode t)
   (setq auto-insert-directory "~/.emacs.d/insert/")
   (add-to-list 'auto-insert-alist '(clojure-mode . "hello.clj"))
@@ -81,6 +87,8 @@
    '(glasses-uncapitalize-p t)
    '(glasses-uncapitalize-regexp "[a-zA-Z_]")
    '(indent-tabs-mode nil)
+   '(iswitchb-default-method 'maybe-frame)
+   '(mouse-avoidance-mode 'banish)
    '(mouse-wheel-progressive-speed nil)
    '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
    '(read-buffer-completion-ignore-case t)

@@ -30,14 +30,10 @@ bindkey -m \033w stuff "^ "
 bind "y" paste .
 bind "^y" paste .
 
-# Tell screen that your term can scroll.
-termcapinfo xterm* 'ti@:te@:kmous=\E[M'
-
-# 256 colors.
-termcapinfo xterm* 'Co#256'
+termcapinfo xterm* 'Co#256:ti@:te@:kmous=\E[M'
 defbce "on"
-# term screen-256color-bce
-term xterm-256color
+term screen-256color-bce
+# term xterm-256color
 
 # backtick 1 0 1 pwd
 # %?%{.Rw}[:%u]%{-}%?

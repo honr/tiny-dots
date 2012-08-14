@@ -1,56 +1,6 @@
-emacs.toolBar: 0
-emacs.font: Ubuntu Mono-11
 emacs*topShadowColor: #222222
 emacs*bottomShadowColor: #222222
-! Emacs Lucid
-emacs*shadowThickness: 1
-
-*customization: -color
-XTerm*termName: xterm-256color
-XTerm*metaSendsEscape: true
-XTerm*scrollttyoutput: false
-XTerm.SimpleMenu.borderColor: gray20
-XTerm*saveLines: 8192
-XTerm*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-XTerm*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-XTerm.VT100.faceName: UbuntuMono
-XTerm.VT100.faceSize: 11
-XTerm*ttyModes: weras ^-
-XTerm.VT100.translations: #override \
-    Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
-    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0)
-
-UXTerm*termName: xterm-256color
-UXTerm*metaSendsEscape: true
-UXTerm*scrollttyoutput: false
-UXTerm.SimpleMenu.borderColor: gray20
-UXTerm*saveLines: 8192
-UXTerm*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-UXTerm*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-UXTerm.VT100.faceName: UbuntuMono
-UXTerm.VT100.faceSize: 11
-UXTerm*ttyModes: weras ^-
-UXTerm.VT100.translations: #override \
-    Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
-    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0)
-
-     xterm*background: #000000
-     xterm*foreground: #dddddd
+xterm*background: #000000
+xterm*foreground: #dddddd
 xterm.SimpleMenu*background: #404040
 xterm.SimpleMenu*foreground: #c0c0c0
-         xterm*color0: #303030
-         xterm*color1: #804040
-         xterm*color2: #508030
-         xterm*color3: #707040
-         xterm*color4: #105090
-         xterm*color5: #704070
-         xterm*color6: #407070
-         xterm*color7: #808080
-         xterm*color8: #000000
-         xterm*color9: #c01010
-        xterm*color10: #10c010
-        xterm*color11: #a0a000
-        xterm*color12: #0080ff
-        xterm*color13: #a000a0
-        xterm*color14: #00a0a0
-        xterm*color15: #ffffff

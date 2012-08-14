@@ -119,7 +119,7 @@ _topicActions = (Map.fromList
                     ("*scratch*", do
                        runColourTerminal
                        runEditor),
-                    ("browse", runBrowser),
+                    ("browse", runChrome),
                     ("irc", runChat),
                     ("mail", runMail),
                     ("agenda", (spawn "emacsclient -nc ~/Documents/agenda.org") >>
@@ -133,7 +133,7 @@ shift :: Actions.TopicSpace.Topic -> X ()
 shift t = (newWorkspace t) >> ((windows . StackSet.shift) t)
 
 -- Themes
-_colors = _colors_light
+_colors = _colors_dark
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
@@ -182,15 +182,19 @@ runChat = (runInColourTerminal "ssh -t personal-server emacsclient -t")
 runCloveClojure = (runInColourTerminal "clove -i clojure")
 runGhci = (runInColourTerminal "ghci")
 
-browserCmd = "chromium"
-runBrowser = (spawn browserCmd)
+chromeCmd = "chromium"
+runChrome = (spawn chromeCmd)
  -- TODO: This is unreliable; properly escape or use execve.
-runInBrowser uri = (spawn (browserCmd ++ " --new-window '" ++ uri ++ "'"))
--- pasteBrowser = safePromptSelection browserCmd
+runInChrome uri = (spawn (chromeCmd ++ " --new-window '" ++ uri ++ "'"))
+-- pasteChrome = safePromptSelection ChromeCmd
+
+firefoxCmd = "firefox"
+runFirefox = (spawn firefoxCmd)
+runInFirefox uri = (spawn (firefoxCmd ++ " -new-window '" ++ uri ++ "'"))
 
 -- Using Gmail for mail and calendar.
-runMail = (runInBrowser "https://mail.google.com/mail")
-runCalendar = (runInBrowser "https://www.google.com/calendar")
+runMail = (runInChrome "https://mail.google.com/mail")
+runCalendar = (runInChrome "https://www.google.com/calendar")
 
 runCmdLine = (Prompt.Shell.shellPrompt _XPConfig)
 
@@ -229,12 +233,13 @@ _emacsKeys  = \conf ->
                ("M-C-S-r", runColourTerminal),
                ("M-C-r", runColourScreenTerminal),
                -- ("M-v M-t", pasteTerminal),
-               -- ("M-v M-y", pasteBrowser),
+               -- ("M-v M-y", pasteChrome),
                -- ("M-h n", manTerminal),
                ("M-C-S-e", (spawn "gedit")),
                ("M-C-e", runEditor),
                ("M-e", runEditorHere),
-               ("M-C-y", runBrowser),
+               ("M-C-c", runChrome),
+               ("M-C-y", runFirefox),
                ("M-C-u", runCloveClojure),
                ("M-C-o", runGhci),
                ("M-S-1", runCmdLine),

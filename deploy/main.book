@@ -36,4 +36,4 @@ $HOME/.local/share/man/man1/pool.deploy.1>$HOME/Pool/man/pool.deploy.1
 $HOME/.pythonrc>$HOME/Pool/python/pythonrc
 $HOME/.screenrc>$HOME/Pool/etc/screenrc
 $HOME/.xmonad>$HOME/Pool/xmonad
-$HOME/.Xresources>$HOME/Pool/etc/Xresources-light
+$HOME/.Xresources>$HOME/Pool/etc/Xresources
