@@ -150,9 +150,23 @@
 	     (concat
 	      "tell application \"Terminal\"\n"
 	      "activate\n"
-	      "do script \"cd '"
-	      (expand-file-name default-directory) 
-	      "'\"\n"
+        (if (string-prefix-p "/ssh:" default-directory)
+            (let* ((abc (split-string default-directory ":"))
+                   (a (car abc))
+                   (b (cadr abc))
+                   (c (caddr abc)))
+              (concat "do script \"ssh '" b "'"
+                      " -t " 
+                      "'"
+                      "cd " c "; "
+                      "F=" (substring 
+                            (caddr (split-string buffer-file-name ":"))
+                            (length c))
+                      " bash"
+                      "'\"\n"))
+          (concat "do script \"cd '"
+                  (expand-file-name default-directory) 
+                  "'\"\n"))
 	      "end tell")))
     (gnu/linux (start-process-shell-command "external-xterm" nil
 					    "uxterm"))))
