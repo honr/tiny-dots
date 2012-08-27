@@ -22,9 +22,9 @@
 (deftheme whitestone-serious
   "A serious looking black on white theme.")
 
-(custom-theme-set-faces 
+(custom-theme-set-faces
  'whitestone-serious
- 
+
  '(default ((t (:background "#ffffff" :foreground "#222222"))))
  '(cursor ((t (:background "#66cc33"))))
 
@@ -37,7 +37,7 @@
  '(font-lock-preprocessor-face ((t (:foreground "#610"))))
  '(font-lock-string-face ((t (:foreground "#666666" :background "#EEEEEE"))))
  '(font-lock-type-face ((t (:foreground "#A20"))))
- '(font-lock-variable-name-face ((t (:bold t))))
+ '(font-lock-variable-name-face ((t (:foreground "#222222" :bold t))))
  '(font-lock-warning-face ((t (:bold t :foreground "#D03"))))
 
  ;; dired
@@ -47,7 +47,7 @@
  '(dired-marked ((t (:bold t :foreground "#080"))))
  '(dired-flagged ((t (:bold t :foreground "#FFFFFF" :background "#990000"))))
  '(dired-perm-write ((t (:bold t :foreground "#A20"))))
- 
+
  '(scroll-bar ((t (:background "#DDDDDD"))))
  '(fringe ((t (:background "#FFFFFF" :foreground "#BBBBBB"))))
  ;; (fringe ((t (:inherit default))))

@@ -20,7 +20,7 @@
   (normal-top-level-add-subdirs-to-load-path))
 (setq Info-additional-directory-list
       (mapcar 'expand-file-name  ; The trailing slash is *IMPORTANT*.
-                    (list "~/.emacs.d/info/")))
+              (list "~/.emacs.d/info/")))
 
 (defun load-library-if-exists (lib-name)
   (when (locate-file lib-name load-path (get-load-suffixes))
@@ -95,8 +95,7 @@
    '(read-file-name-completion-ignore-case t)
    '(show-trailing-whitespace t)
    '(tab-width 2)
-   '(vc-follow-symlinks t)
-)
+   '(vc-follow-symlinks t))
 
   (load-library-if-exists "config-custom-variables")
 

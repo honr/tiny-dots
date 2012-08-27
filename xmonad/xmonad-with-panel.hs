@@ -153,7 +153,7 @@ _colors_dark = Colors { normal_border = "#000000",
 --          _ -> return [0xEE, 0xFF]
 
 -- Applications
-terminalCmd = "uxterm"
+terminalCmd = "xterm"
 runTerminal :: X()
 runTerminal = (spawn terminalCmd)
 runColourTerminal = (Actions.RandomBackground.randomBg
