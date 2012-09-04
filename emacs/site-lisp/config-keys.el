@@ -132,7 +132,7 @@
   (interactive
    (let ((files (dired-get-marked-files t current-prefix-arg)))
      (list (when current-prefix-arg
-	     (dired-read-shell-command 
+	     (dired-read-shell-command
 	      (concat "! on "
 		      "%s: ")
 	      current-prefix-arg
@@ -156,16 +156,19 @@
                    (b (cadr abc))
                    (c (caddr abc)))
               (concat "do script \"ssh '" b "'"
-                      " -t " 
+                      " -t "
                       "'"
                       "cd " c "; "
-                      "F=" (substring 
-                            (caddr (split-string buffer-file-name ":"))
-                            (length c))
-                      " bash"
+                      (when buffer-file-name
+                        (concat
+                         "F=" (substring
+                               (caddr (split-string buffer-file-name ":"))
+                               (length c))
+                         " "))
+                      "bash"
                       "'\"\n"))
           (concat "do script \"cd '"
-                  (expand-file-name default-directory) 
+                  (expand-file-name default-directory)
                   "'\"\n"))
 	      "end tell")))
     (gnu/linux (start-process-shell-command "external-xterm" nil
@@ -191,7 +194,7 @@
 
 (defun external-directory-browser-here ()
   (interactive)
-  (start-process-shell-command 
+  (start-process-shell-command
    "external-nautilus" nil "xdg-open ."))
 
 (global-set-key (kbd "M-<f4>") 'external-directory-browser-here)
