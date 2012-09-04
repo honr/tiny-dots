@@ -16,9 +16,11 @@
   (load-theme 'fruitsalad-dark t t)
   (load-theme 'dark-forge t t)
   (cond
-   ((eq kind :dark) (progn (disable-theme 'whitestone-serious)
-                           ;; (enable-theme 'fruitsalad-dark)
-                           (enable-theme 'dark-forge)))
-   ((eq kind :light) (progn ;; (disable-theme 'fruitsalad-dark)
-                            (disable-theme 'dark-forge)
-                            (enable-theme 'whitestone-serious)))))
+   ((eq kind :dark) (progn
+                      (disable-theme 'whitestone-serious)
+                      ;; (enable-theme 'fruitsalad-dark)
+                      (enable-theme 'dark-forge)))
+   ((eq kind :light) (progn
+                       ;; (disable-theme 'fruitsalad-dark)
+                       (disable-theme 'dark-forge)
+                       (enable-theme 'whitestone-serious)))))

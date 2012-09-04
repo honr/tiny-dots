@@ -13,9 +13,9 @@
 
 (require 'clojure-mode)
 (add-hook 'clojure-mode-hook
-	  (lambda ()
-	    (paredit-mode +1)
-	    (subword-mode t)))
+          (lambda ()
+            (paredit-mode +1)
+            (subword-mode t)))
 (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
 
 (setq nxml-sexp-element-flag t)

@@ -106,9 +106,9 @@
 (global-set-key (kbd "M-g W") "Ω")
 
 (global-set-key (kbd "M-g \"")
-		(lambda () (interactive) (insert "“”") (forward-char -1)))
+                (lambda () (interactive) (insert "“”") (forward-char -1)))
 (global-set-key (kbd "M-g '")
-		(lambda () (interactive) (insert "‘’") (forward-char -1)))
+                (lambda () (interactive) (insert "‘’") (forward-char -1)))
 
 (require 'browse-kill-ring)
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
@@ -120,24 +120,24 @@
 (ad-activate 'yank-pop)
 
 (when (not (boundp 'xdg-open-program))
-    (error "xdg-open-program not defined"))
+  (error "xdg-open-program not defined"))
 ;; xdg-open-program must be defined.
 (defun xdg-open-filelist (filelist &optional rest)
   (apply 'call-process
-	 (or rest
-	     xdg-open-program) nil 0 nil filelist)
+         (or rest
+             xdg-open-program) nil 0 nil filelist)
   (message (format "%s %s" rest filelist)))
 
 (defun dired-xdg-open (&optional arg filelist)
   (interactive
    (let ((files (dired-get-marked-files t current-prefix-arg)))
      (list (when current-prefix-arg
-	     (dired-read-shell-command
-	      (concat "! on "
-		      "%s: ")
-	      current-prefix-arg
-	      files))
-	   files)))
+             (dired-read-shell-command
+              (concat "! on "
+                      "%s: ")
+              current-prefix-arg
+              files))
+           files)))
   (xdg-open-filelist filelist arg))
 
 (define-key dired-mode-map (kbd "C-;") 'dired-xdg-open)
@@ -147,32 +147,32 @@
   (interactive)
   (case system-type
     (darwin (ns-do-applescript
-	     (concat
-	      "tell application \"Terminal\"\n"
-	      "activate\n"
-        (if (string-prefix-p "/ssh:" default-directory)
-            (let* ((abc (split-string default-directory ":"))
-                   (a (car abc))
-                   (b (cadr abc))
-                   (c (caddr abc)))
-              (concat "do script \"ssh '" b "'"
-                      " -t "
-                      "'"
-                      "cd " c "; "
-                      (when buffer-file-name
-                        (concat
-                         "F=" (substring
-                               (caddr (split-string buffer-file-name ":"))
-                               (length c))
-                         " "))
-                      "bash"
-                      "'\"\n"))
-          (concat "do script \"cd '"
-                  (expand-file-name default-directory)
-                  "'\"\n"))
-	      "end tell")))
+             (concat
+              "tell application \"Terminal\"\n"
+              "activate\n"
+              (if (string-prefix-p "/ssh:" default-directory)
+                  (let* ((abc (split-string default-directory ":"))
+                         (a (car abc))
+                         (b (cadr abc))
+                         (c (caddr abc)))
+                    (concat "do script \"ssh '" b "'"
+                            " -t "
+                            "'"
+                            "cd " c "; "
+                            (when buffer-file-name
+                              (concat
+                               "F=" (substring
+                                     (caddr (split-string buffer-file-name ":"))
+                                     (length c))
+                               " "))
+                            "bash"
+                            "'\"\n"))
+                (concat "do script \"cd '"
+                        (expand-file-name default-directory)
+                        "'\"\n"))
+              "end tell")))
     (gnu/linux (start-process-shell-command "external-xterm" nil
-					    "uxterm"))))
+                                            "xterm"))))
 
 (global-set-key (kbd "S-<f4>") 'terminal-here)
 

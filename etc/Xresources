@@ -16,21 +16,12 @@ XTerm.VT100.faceSize: 11
 XTerm*ttyModes: weras ^-
 XTerm.VT100.translations: #override \
     Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
-    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0)
+    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0) \n\
+    Ctrl Shift <Key>n: spawn-new-terminal()
 
-UXTerm*termName: xterm-256color
-UXTerm*metaSendsEscape: true
-UXTerm*scrollttyoutput: false
-UXTerm.SimpleMenu.borderColor: gray20
-UXTerm*saveLines: 8192
-UXTerm*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-UXTerm*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-UXTerm.VT100.faceName: UbuntuMono
-UXTerm.VT100.faceSize: 11
-UXTerm*ttyModes: weras ^-
-UXTerm.VT100.translations: #override \
-    Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
-    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0)
+XTerm*fontMenu.Label: Unicode Fonts
+XTerm.VT100.utf8:	1
+XTerm*utf8Title: true
 
 ! xterm*color0:  #000000
 ! xterm*color1:  #804040
