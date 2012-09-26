@@ -77,8 +77,8 @@
 
   (custom-set-variables
 
-   ;; '(custom-enabled-themes '(whitestone-serious))
-   '(custom-enabled-themes '(dark-forge))
+   '(custom-enabled-themes '(whitestone-serious))
+   ;; '(custom-enabled-themes '(dark-forge))
    '(custom-safe-themes t)
    '(custom-theme-directory "~/.emacs.d/themes")
    '(fill-column 78)
