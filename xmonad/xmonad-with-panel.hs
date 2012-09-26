@@ -141,7 +141,7 @@ data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
                        focused_border :: String }
 
-_colors_light = Colors { normal_border = "#000000",
+_colors_light = Colors { normal_border = "#AAAAAA",
                          focused_border = "#0066CC",
                          term_background = [0xEE, 0xFF] }
 
@@ -267,7 +267,7 @@ _emacsKeys  = \conf ->
                ("M-<F2>", (sendMessage (JumpToLayout "Tall"))),
                ("M-<F3>", (sendMessage (JumpToLayout "Mirror Tall"))),
                ("M-<F4>", (sendMessage (JumpToLayout "ThreeCol"))),
-               ("M-<F5>", (sendMessage (JumpToLayout "GridRatio 1.2")))] ++
+               ("M-<F5>", (sendMessage (JumpToLayout "GridRatio 1.1")))] ++
 
               (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++ ["p", "f", "n", "b"]
                    nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
@@ -429,7 +429,7 @@ _layout = Hooks.ManageDocks.avoidStruts
                    (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2)) |||
                    _tiled3 |||
                    _tiled3mid |||
-                   (Layout.Grid.GridRatio 1.2) |||
+                   (Layout.Grid.GridRatio 1.1) |||
                    Layout.Circle.Circle |||
                    Layout.Accordion.Accordion |||
                    (Layout.NoBorders.noBorders Full))))))
