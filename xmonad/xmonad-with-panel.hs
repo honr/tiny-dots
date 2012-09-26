@@ -480,6 +480,7 @@ _manageHook = manageHook defaultConfig
             [Hooks.ManageHelpers.isFullscreen --> Hooks.ManageHelpers.doFullFloat,
              appName =? "Dialog" --> Hooks.ManageHelpers.doCenterFloat,
              className =? "Emacs" --> unfloat,
+             className =? "Emacs24" --> unfloat,
              className =? "Thunderbird" --> unfloat,
              className =? "Firefox" --> unfloat,
              className =? "Chromium" --> unfloat,

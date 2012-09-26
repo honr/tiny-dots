@@ -5,12 +5,14 @@ $HOME/.emacs.d/insert>$HOME/Pool/emacs/insert
 $HOME/.emacs.d/site-lisp
 $HOME/.emacs.d/site-lisp/pool>$HOME/Pool/emacs/site-lisp
 $HOME/.emacs.d/themes>$HOME/Pool/emacs/themes
+$HOME/.gnomerc>$HOME/Pool/etc/gnomerc
 $HOME/.inputrc>$HOME/Pool/etc/inputrc
 $HOME/.local
 $HOME/.local/bin
 $HOME/.local/bin/grepless>$HOME/Pool/bin/grepless
 $HOME/.local/bin/lein>$HOME/Pool/bin/lein
 $HOME/.local/bin/pool.deploy>$HOME/Pool/bin/pool.deploy
+$HOME/.local/bin/pool.manage>$HOME/Pool/bin/pool.manage
 $HOME/.local/bin/thesaurus.clj>$HOME/Pool/bin/thesaurus.clj
 $HOME/.local/bin/weather.clj>$HOME/Pool/bin/weather.clj
 $HOME/.local/bin/xinput-scroll-direction.sh>$HOME/Pool/bin/xinput-scroll-direction.sh
