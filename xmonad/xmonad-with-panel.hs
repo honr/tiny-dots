@@ -47,6 +47,8 @@ import qualified XMonad.Hooks.Place as Hooks.Place
 import qualified XMonad.Layout.Accordion as Layout.Accordion
 import qualified XMonad.Layout.BoringWindows as Layout.BoringWindows
 import qualified XMonad.Layout.Circle as Layout.Circle
+-- import qualified XMonad.Layout.GridVariants as Layout.GridVariants
+import qualified XMonad.Layout.Grid as Layout.Grid
 import qualified XMonad.Layout.LimitWindows as Layout.LimitWindows
 import qualified XMonad.Layout.Minimize as Layout.Minimize
 import qualified XMonad.Layout.NoBorders as Layout.NoBorders
@@ -133,7 +135,7 @@ shift :: Actions.TopicSpace.Topic -> X ()
 shift t = (newWorkspace t) >> ((windows . StackSet.shift) t)
 
 -- Themes
-_colors = _colors_dark
+_colors = _colors_light
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
@@ -264,7 +266,8 @@ _emacsKeys  = \conf ->
                ("M-<F1>", (sendMessage (JumpToLayout "Full"))),
                ("M-<F2>", (sendMessage (JumpToLayout "Tall"))),
                ("M-<F3>", (sendMessage (JumpToLayout "Mirror Tall"))),
-               ("M-<F4>", (sendMessage (JumpToLayout "ThreeCol")))] ++
+               ("M-<F4>", (sendMessage (JumpToLayout "ThreeCol"))),
+               ("M-<F5>", (sendMessage (JumpToLayout "GridRatio 1.2")))] ++
 
               (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++ ["p", "f", "n", "b"]
                    nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
@@ -426,6 +429,7 @@ _layout = Hooks.ManageDocks.avoidStruts
                    (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2)) |||
                    _tiled3 |||
                    _tiled3mid |||
+                   (Layout.Grid.GridRatio 1.2) |||
                    Layout.Circle.Circle |||
                    Layout.Accordion.Accordion |||
                    (Layout.NoBorders.noBorders Full))))))
@@ -514,7 +518,7 @@ prettyPrinter dbus = Hooks.DynamicLog.defaultPP
     , Hooks.DynamicLog.ppVisible  = pangoColor "yellow" . Hooks.DynamicLog.wrap "(" ")" . pangoSanitize
     , Hooks.DynamicLog.ppHidden   = const ""
     , Hooks.DynamicLog.ppUrgent   = pangoColor "red"
-    , Hooks.DynamicLog.ppLayout   = const ""
+    , Hooks.DynamicLog.ppLayout   = (Hooks.DynamicLog.wrap "<span weight='normal'>" "</span>") . pangoSanitize -- const ""
     , Hooks.DynamicLog.ppSep      = " ┆ "
     }
 
@@ -536,7 +540,7 @@ dbusOutput dbus str = DBus.Client.Simple.emit dbus
 pangoColor :: String -> String -> String
 pangoColor fg = Hooks.DynamicLog.wrap left right
   where
-    left  = "<span foreground=\"" ++ fg ++ "\">"
+    left  = "<span foreground='" ++ fg ++ "'>"
     right = "</span>"
 
 pangoSanitize :: String -> String
