@@ -145,34 +145,54 @@
 
 (defun terminal-here ()
   (interactive)
-  (case system-type
-    (darwin (ns-do-applescript
-             (concat
-              "tell application \"Terminal\"\n"
-              "activate\n"
-              (if (string-prefix-p "/ssh:" default-directory)
-                  (let* ((abc (split-string default-directory ":"))
-                         (a (car abc))
-                         (b (cadr abc))
-                         (c (caddr abc)))
-                    (concat "do script \"ssh '" b "'"
-                            " -t "
-                            "'"
-                            "cd " c "; "
-                            (when buffer-file-name
-                              (concat
-                               "F=" (substring
-                                     (caddr (split-string buffer-file-name ":"))
-                                     (length c))
-                               " "))
-                            "bash"
-                            "'\"\n"))
-                (concat "do script \"cd '"
-                        (expand-file-name default-directory)
-                        "'\"\n"))
-              "end tell")))
-    (gnu/linux (start-process-shell-command "external-xterm" nil
-                                            "xterm"))))
+  (if (and (equal 'darwin system-type)
+           (equal 'ns window-system))
+      (ns-do-applescript
+       (concat
+        "tell application \"Terminal\"\n"
+        "activate\n"
+        (if (string-prefix-p "/ssh:" default-directory)
+            (let* ((abc (split-string default-directory ":"))
+                   (a (car abc))
+                   (b (cadr abc))
+                   (c (caddr abc)))
+              (concat "do script \"ssh '" b "'"
+                      " -t "
+                      "'"
+                      "cd " c "; "
+                      (when buffer-file-name
+                        (concat
+                         "F=" (substring
+                               (caddr (split-string buffer-file-name ":"))
+                               (length c))
+                         " "))
+                      "bash"
+                      "'\"\n"))
+          (concat "do script \"cd '"
+                  (expand-file-name default-directory)
+                  "'\"\n"))
+        "end tell"))
+    ;; Under a terminal. For darwin we assume this is under Xquartz.
+    (start-process-shell-command
+     "external-xterm" nil "xterm" "-bg '#FFFFFF'"
+     (if (string-prefix-p "/ssh:" default-directory)
+         (let* ((abc (split-string default-directory ":"))
+                (a (car abc))
+                (b (cadr abc))
+                (c (caddr abc)))
+           (concat "-e \"ssh '" b "'"
+                   " -t "
+                   "'"
+                   "cd " c "; "
+                   (when buffer-file-name
+                     (concat
+                      "F=" (substring
+                            (caddr (split-string buffer-file-name ":"))
+                            (length c))
+                      " "))
+                   "bash"
+                   "'\""))
+       ""))))
 
 (global-set-key (kbd "S-<f4>") 'terminal-here)
 
