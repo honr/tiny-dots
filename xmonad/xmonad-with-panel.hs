@@ -139,15 +139,24 @@ _colors = _colors_light
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
-                       focused_border :: String }
+                       focused_border :: String,
+                       dynamiclog_current :: String,
+                       dynamiclog_visible :: String,
+                       dynamiclog_urgent :: String }
 
 _colors_light = Colors { normal_border = "#AAAAAA",
                          focused_border = "#0066CC",
-                         term_background = [0xEE, 0xFF] }
+                         term_background = [0xEE, 0xFF],
+                         dynamiclog_current = "#008800",
+                         dynamiclog_visible = "#444400",
+                         dynamiclog_urgent = "#880000" }
 
 _colors_dark = Colors { normal_border = "#000000",
                         focused_border = "#0088FF",
-                        term_background = [0x18, 0x00] } -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
+                        term_background = [0x18, 0x00],  -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
+                        dynamiclog_current = "green",
+                        dynamiclog_visible = "yellow",
+                        dynamiclog_urgent = "red" }
 
 -- _randomBackgroundColors = do
 --     case System.Environment.getEnv "THEMETYPE" of
@@ -515,10 +524,10 @@ prettyPrinter :: DBus.Client.Simple.Client -> Hooks.DynamicLog.PP
 prettyPrinter dbus = Hooks.DynamicLog.defaultPP
     { Hooks.DynamicLog.ppOutput   = dbusOutput dbus
     , Hooks.DynamicLog.ppTitle    = pangoSanitize
-    , Hooks.DynamicLog.ppCurrent  = pangoColor "green" . Hooks.DynamicLog.wrap "[" "]" . pangoSanitize
-    , Hooks.DynamicLog.ppVisible  = pangoColor "yellow" . Hooks.DynamicLog.wrap "(" ")" . pangoSanitize
+    , Hooks.DynamicLog.ppCurrent  = (pangoColor (dynamiclog_current _colors)) . Hooks.DynamicLog.wrap "[" "]" . pangoSanitize
+    , Hooks.DynamicLog.ppVisible  = (pangoColor (dynamiclog_visible _colors)) . Hooks.DynamicLog.wrap "(" ")" . pangoSanitize
     , Hooks.DynamicLog.ppHidden   = const ""
-    , Hooks.DynamicLog.ppUrgent   = pangoColor "red"
+    , Hooks.DynamicLog.ppUrgent   = (pangoColor (dynamiclog_urgent _colors))
     , Hooks.DynamicLog.ppLayout   = (Hooks.DynamicLog.wrap "<span weight='normal'>" "</span>") . pangoSanitize -- const ""
     , Hooks.DynamicLog.ppSep      = " ┆ "
     }
