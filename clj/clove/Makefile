@@ -6,6 +6,7 @@ default: all
 include make/arch.mk
 SRC = src/clove
 INSTALLDIR := $(HOME)/.local
+CONFIGDIR := $(HOME)/.config
 
 TARGETs = dirs
 TARGETs += $(DBIN)/clove
@@ -60,6 +61,9 @@ install: all
 	install share/clove/clove.conf $(INSTALLDIR)/share/clove
 	install share/clove/clove-clojure $(INSTALLDIR)/share/clove
 	install share/clove/clove-clojure.conf $(INSTALLDIR)/share/clove
+
+	install -d $(CONFIGDIR)/autostart
+	install clove-daemon.desktop $(CONFIGDIR)/autostart/clove-daemon.desktop
 
 clean:
 	-rm -Rf $(BUILDDIR)

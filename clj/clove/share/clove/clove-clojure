@@ -135,7 +135,7 @@
             (map #(str ns-or-class-part "/" (.getName %))
                  (.getMethods (Class/forName ns-or-class-part)))))
          (catch Exception e nil))
-       
+
        (try ; perhaps it is a namespace
          (let [their-ns (symbol ns-or-class-part)]
            (when-not (find-ns their-ns)
@@ -203,7 +203,7 @@
             (.flush out))
 
           (.startsWith line "documentation ")
-          (let [line (.substring line 14)] 
+          (let [line (.substring line 14)]
             (.write out (with-out-str (#'clojure.repl/print-doc (meta (resolve (symbol line))))))
             (.flush out)))))))
 

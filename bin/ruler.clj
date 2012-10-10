@@ -13,7 +13,7 @@
 ;;;      ;; And so on.
 ;;;      }
 ;;;   For each target we ...
-;;;    
+;;;
 
 (ns bin.ruler
   (:refer-clojure :exclude [test derive])
