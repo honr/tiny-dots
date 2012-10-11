@@ -19,11 +19,10 @@
   (:refer-clojure :exclude [test derive])
   (:require [rose.clu]
             [rose.file]
-            [clojure.java.io :as jio])
+            [clojure.java.io])
   (:import [java.util.zip DeflaterOutputStream]
            [java.io File FileOutputStream ByteArrayOutputStream]
            [java.security MessageDigest]))
-
 
 
 (defn find-rules-file [^String filename ^String path ^String home]
@@ -51,7 +50,7 @@
   (when-let [rule-file (find-rules-file "rule.clj" *cwd* *home*)]
     (let [rule-ns-stub (read
                         (clojure.lang.LineNumberingPushbackReader.
-                         (jio/reader rule-file)))
+                         (clojure.java.io/reader rule-file)))
           rule-ns (symbol (second rule-ns-stub))]
       (require [rule-ns :reload true])
       {:ns rule-ns
