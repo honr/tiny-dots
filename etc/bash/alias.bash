@@ -1,2 +1,7 @@
-alias cloj="clove -c clojure"
-alias clrl='clove -i clojure'
+function cloj () {
+  clove -c clojure "$@"
+}
+
+function cloji () {
+  clove -i clojure "$@"
+}
