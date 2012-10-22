@@ -9,9 +9,9 @@
   (:use	[rose.file :only [path]]
 	[rose.utils :only [re-parser]]))
 
-(def thesaurus-file 
+(def thesaurus-file
      (case (System/getProperty "os.name")
-       "Mac OS X" (path :home ".local" "share/dictd/moby-thesaurus.index")
+       "Mac OS X" (path *home* ".local" "share/dictd/moby-thesaurus.index")
        "Linux"    (path "/usr" "share/dictd/moby-thesaurus.index")))
 
 (defprotocol cache-protocol
@@ -31,7 +31,7 @@
 	     (ref-set content
 		      (map #(:word (parse-line %))
 			   (line-seq (io/reader thesaurus-file))))
-	     
+
 	     (reset! age
 		     (.lastModified (java.io.File. thesaurus-file))))))
   (contents [this]
@@ -44,7 +44,7 @@
 
 (defrecord word-class [nom]
   rose.complete/compable
-  (complete [this] 
+  (complete [this]
 	    (filter #(.startsWith (.toLowerCase %)
 				  (.toLowerCase (:nom this)))
 		    (.contents thesaurus-cache))))
