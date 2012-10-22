@@ -53,6 +53,7 @@ import qualified XMonad.Layout.LimitWindows as Layout.LimitWindows
 import qualified XMonad.Layout.Minimize as Layout.Minimize
 import qualified XMonad.Layout.NoBorders as Layout.NoBorders
 import qualified XMonad.Layout.PerWorkspace as Layout.PerWorkspace
+import qualified XMonad.Layout.Renamed as Layout.Renamed
 -- import qualified XMonad.Layout.SimpleFloat as Layout.SimpleFloat -- unused
 -- import qualified XMonad.Layout.Tabbed as Layout.Tabbed -- unused
 -- import qualified XMonad.Layout.Spacing as Layout.Spacing -- unused
@@ -276,7 +277,8 @@ _emacsKeys  = \conf ->
                ("M-<F2>", (sendMessage (JumpToLayout "Tall"))),
                ("M-<F3>", (sendMessage (JumpToLayout "Mirror Tall"))),
                ("M-<F4>", (sendMessage (JumpToLayout "ThreeCol"))),
-               ("M-<F5>", (sendMessage (JumpToLayout "GridRatio 1.1")))] ++
+               ("M-<F5>", (sendMessage (JumpToLayout "Grid"))),
+               ("M-<F6>", (sendMessage (JumpToLayout "Circle")))] ++
 
               (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++ ["p", "f", "n", "b"]
                    nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
@@ -438,7 +440,8 @@ _layout = Hooks.ManageDocks.avoidStruts
                    (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2)) |||
                    _tiled3 |||
                    _tiled3mid |||
-                   (Layout.Grid.GridRatio 1.1) |||
+                   (Layout.Renamed.renamed [Layout.Renamed.Replace "Grid"]
+                    (Layout.Grid.GridRatio 1.1)) |||
                    Layout.Circle.Circle |||
                    Layout.Accordion.Accordion |||
                    (Layout.NoBorders.noBorders Full))))))
