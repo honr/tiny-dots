@@ -4,8 +4,8 @@
                  [org.clojure/data.json "0.1.3"]
                  [org.clojure/data.csv "0.1.2"]
                  [org.clojure/java.jdbc "0.1.1"]
-                 ;; [swank-clojure "1.3.0-SNAPSHOT"]
-                 [clj-http "0.5.3"]
+                 ;; [swank-clojure "1.4.2"]
+                 [clj-http "0.5.6"]
                  ;;;; FROM HERE:
                  ;; [org.apache.httpcomponents/httpclient "4.1.2"]
                  ;; [incanter "1.3.0"]
@@ -16,17 +16,18 @@
                  ;; [commons-fileupload "1.2.2"]
                  ;; ;; [commons-fileupload "1.2.1" :classifier "javadoc"]
                  ;; [commons-io "2.0.1"] ;; 1.4
-                 [com.google.guava/guava "13.0"]
+                 [com.google.guava/guava "13.0.1"]
                  ;; [javax.mail/mail "1.4.5"]
                  ;; [org.mortbay.jetty/jetty "6.1.15"]
                  ;; ;; jetty moved to eclipse. look for jetty 8.
                  ;; [postgresql "9.1-901.jdbc4"]
                  [xpp3 "1.1.4c"]
-                 [compojure "1.1.1"]
+                 [org.jsoup/jsoup "1.6.3"]
+                 [compojure "1.1.3"]
                  [hiccup "1.0.1"]
                  ;; ;; [ring "0.3.8"]
-                 [ring/ring-jetty-adapter "1.1.3"]
-                 [ring/ring-servlet "1.1.3"]
+                 [ring/ring-jetty-adapter "1.1.6"]
+                 [ring/ring-servlet "1.1.6"]
                  ;; [clout "1.0.1"]
                  ;;;; UP TO HERE.
                  ;; [jgraph "5.13.0.0"]

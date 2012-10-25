@@ -6,6 +6,10 @@
 # file.
 # NOTE: Assumes paths do not have weird! characters such as \n, $, >
 
+# TODO: Recognize one or more additional directories ($POOL, $SRC, or some
+# such).
+
+
 function usage() {
     local CMDNAME="$(basename "$0")"
     echo "# All commands operate on a book keeping file specified as BOOK"

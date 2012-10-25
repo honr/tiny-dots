@@ -22,88 +22,88 @@
 
    :break-before-boolean-operator {:type Boolean, :comment "Prefer to break long lines before boolean operators. See  BREAKING LONG LINES.", :short-form "-bbo", :inverse :break-after-boolean-operator}
    :break-after-boolean-operator {:type Boolean, :comment "Do not prefer to break long lines before boolean operators. See  BREAKING LONG LINES.", :short-form "-nbbo" :inverse :break-before-boolean-operator}
-   
+
    :blank-lines-after-commas {:type Boolean, :comment "Force newline after comma in declaration. See  DECLARATIONS.", :short-form "-bc", :inverse :no-blank-lines-after-commas}
    :no-blank-lines-after-commas {:type Boolean, :comment "Do not force newlines after commas in declarations. See  DECLARATIONS.", :short-form "-nbc" :inverse :blank-lines-after-commas}
-   
+
    :comment-delimiters-on-blank-lines {:type Boolean, :comment "Put comment delimiters on blank lines. See  COMMENTS.", :short-form "-cdb", :inverse :no-comment-delimiters-on-blank-lines}
    :no-comment-delimiters-on-blank-lines {:type Boolean, :comment "Do not put comment delimiters on blank lines. See  COMMENTS.", :short-form "-ncdb" :inverse :comment-delimiters-on-blank-lines}
-   
+
    :cuddle-do-while {:type Boolean, :comment "Cuddle while of do {} while; and preceding ‘}’. See  COMMENTS.", :short-form "-cdw", :inverse :dont-cuddle-do-while}
    :dont-cuddle-do-while {:type Boolean, :comment "Do not cuddle } and the while of a do {} while;. See  STATEMENTS.", :short-form "-ncdw" :inverse :cuddle-do-while}
-   
+
    :cuddle-else {:type Boolean, :comment "Cuddle else and preceding ‘}’. See  COMMENTS.", :short-form "-ce", :inverse :dont-cuddle-else}
    :dont-cuddle-else {:type Boolean, :comment "Do not cuddle } and else. See  STATEMENTS.", :short-form "-nce" :inverse :cuddle-else}
-   
+
    :space-after-cast {:type Boolean, :comment "Put a space after a cast operator. See  STATEMENTS.", :short-form "-cs", :inverse :no-space-after-casts}
    :no-space-after-casts {:type Boolean, :comment "Do not put a space after cast operators. See  STATEMENTS.", :short-form "-ncs" :inverse :space-after-cast}
-   
+
    :break-function-decl-args {:type Boolean, :comment "Break the line before all arguments in a declaration. See  DECLARATIONS.", :short-form "-bfda", :inverse :dont-break-function-decl-args}
    :dont-break-function-decl-args {:type Boolean, :comment "Don’t put each argument in a function declaration on a separate line. See  DECLARATIONS.", :short-form "-nbfda" :inverse :break-function-decl-args}
-   
+
    :left-justify-declarations {:type Boolean, :comment "If -cd 0 is used then comments after declarations are left justified behind the declaration. See  DECLARATIONS.", :short-form "-dj", :inverse :dont-left-justify-declarations}
    :dont-left-justify-declarations {:type Boolean, :comment "Comments after declarations are treated the same as comments after other statements. See  DECLARATIONS.", :short-form "-ndj" :inverse :left-justify-declarations}
-   
+
    :format-first-column-comments {:type Boolean, :comment "Format comments in the first column. See  COMMENTS.", :short-form "-fc1", :inverse :dont-format-first-column-comments}
    :dont-format-first-column-comments {:type Boolean, :comment "Do not format comments in the first column as normal. See  COMMENTS.", :short-form "-nfc1" :inverse :format-first-column-comments}
-   
+
    :format-all-comments {:type Boolean, :comment "Do not disable all formatting of comments. See  COMMENTS.", :short-form "-fca", :inverse :dont-format-comments}
    :dont-format-comments {:type Boolean, :comment "Do not format any comments. See  COMMENTS.", :short-form "-nfca" :inverse :format-all-comments}
-   
+
    :honour-newlines {:type Boolean, :comment "Prefer to break long lines at the position of newlines in the input. See  BREAKING LONG LINES.", :short-form "-hnl", :inverse :ignore-newlines}
    :ignore-newlines {:type Boolean, :comment "Do not prefer to break long lines at the position of newlines in the input. See  BREAKING LONG LINES.", :short-form "-nhnl" :inverse :honour-newlines}
-   
+
    :space-after-parentheses {:type Boolean, :comment "Put a space after every ’(’ and before every ’)’. See  STATEMENTS.", :short-form "-prs", :inverse :no-space-after-parentheses}
    :no-space-after-parentheses {:type Boolean, :comment "Do not put a space after every ’(’ and before every ’)’. See  STATEMENTS.", :short-form "-nprs" :inverse :space-after-parentheses}
-   
+
    :space-after-for {:type Boolean, :comment "Put a space after each for. See  STATEMENTS.", :short-form "-saf", :inverse :no-space-after-for}
    :no-space-after-for {:type Boolean, :comment "Do not put a space after every for. See  STATEMENTS.", :short-form "-nsaf" :inverse :space-after-for}
-   
+
    :space-after-if {:type Boolean, :comment "Put a space after each if. See  STATEMENTS.", :short-form "-sai", :inverse :no-space-after-if}
    :no-space-after-if {:type Boolean, :comment "Do not put a space after every if. See  STATEMENTS.", :short-form "-nsai" :inverse :space-after-if}
-   
+
    :space-after-procedure-calls {:type Boolean, :comment "Insert a space between the name of the procedure being called and the ‘(’. See  STATEMENTS.", :short-form "-pcs", :inverse :no-space-after-function-call-names}
    :no-space-after-function-call-names {:type Boolean, :comment "Do not put space after the function in function calls. See  STATEMENTS.", :short-form "-npcs" :inverse :space-after-procedure-calls}
-   
+
    :space-after-while {:type Boolean, :comment "Put a space after each while. See  STATEMENTS.", :short-form "-saw", :inverse :no-space-after-while}
    :no-space-after-while {:type Boolean, :comment "Do not put a space after every while. See  STATEMENTS.", :short-form "-nsaw" :inverse :space-after-while}
-   
+
    :swallow-optional-blank-lines {:type Boolean, :comment "Swallow optional blank lines. See  BLANK LINES.", :short-form "-sob", :inverse :leave-optional-blank-lines}
    :leave-optional-blank-lines {:type Boolean, :comment "Do not swallow optional blank lines. See  BLANK LINES.", :short-form "-nsob" :inverse :swallow-optional-blank-lines}
-   
+
    :space-special-semicolon {:type Boolean, :comment "On one-line for and while statements, force a blank before the semicolon. See  STATEMENTS.", :short-form "-ss", :inverse :dont-space-special-semicolon}
    :dont-space-special-semicolon {:type Boolean, :comment "Do not force a space before the semicolon after certain statements.  Disables ‘-ss’. See  STATEMENTS.", :short-form "-nss" :inverse :space-special-semicolon}
-   
+
    :use-tabs {:type Boolean, :comment "Use tabs. This is the default. See  INDENTATION.", :short-form "-ut", :inverse :no-tabs}
    :no-tabs {:type Boolean, :comment "Use spaces instead of tabs. See  INDENTATION.", :short-form "-nut" :inverse :use-tabs}
-   
+
    :procnames-start-lines {:type Boolean, :comment "Put the type of a procedure on the line before its name. See  DECLARATIONS.", :short-form "-psl", :inverse :dont-break-procedure-type}
    :dont-break-procedure-type {:type Boolean, :comment "Put the type of a procedure on the same line as its name. See  DECLARATIONS.", :short-form "-npsl" :inverse :procnames-start-lines}
-   
+
    :braces-after-if-line {:type Boolean, :comment "Put braces on line after if, etc. See  STATEMENTS.", :short-form "-bl", :inverse :braces-on-if-line}
    :braces-on-if-line {:type Boolean, :comment "Put braces on line with if, etc. See  STATEMENTS.", :short-form "-br" :inverse :braces-after-if-line}
-   
+
    :braces-after-func-def-line {:type Boolean, :comment "Put braces on line following function definition line. See  DECLARATIONS.", :short-form "-blf", :inverse :braces-on-func-def-line}
    :braces-on-func-def-line {:type Boolean, :comment "Put braces on function definition line. See  DECLARATIONS.", :short-form "-brf" :inverse :braces-after-func-def-line}
-   
+
    :braces-after-struct-decl-line {:type Boolean, :comment "Put braces on the line after struct declaration lines. See  DECLARATIONS.", :short-form "-bls", :inverse :braces-on-struct-decl-line}
    :braces-on-struct-decl-line {:type Boolean, :comment "Put braces on struct declaration line. See  DECLARATIONS.", :short-form "-brs" :inverse :braces-after-struct-decl-line}
-   
+
    :continue-at-parentheses {:type Boolean, :comment "Line up continued lines at parentheses. See  INDENTATION.", :short-form "-lp", :inverse :dont-line-up-parentheses}
    :dont-line-up-parentheses {:type Boolean, :comment "Do not line up parentheses. See  STATEMENTS.", :short-form "-nlp" :inverse :continue-at-parentheses}
-   
+
    :start-left-side-of-comments {:type Boolean, :comment "Put the ‘*’ character at the left of comments. See  COMMENTS.", :short-form "-sc", :inverse :dont-star-comments}
    :dont-star-comments {:type Boolean, :comment "Do not put the ‘*’ character at the left of comments. See  COMMENTS.", :short-form "-nsc" :inverse :start-left-side-of-comments}
-   
+
    :parameter-indentation {:type Integer, :comment "Indent parameter types in old-style function definitions by n spaces. See  INDENTATION.", :short-form "-ip"}
    :no-parameter-indentation {:type Boolean, :comment "Zero width indentation for parameters. See  INDENTATION.", :short-form "-nip"}
-   
+
    :blank-before-sizeof {:type Boolean, :comment "Put a space between sizeof and its argument. See  STATEMENTS.", :short-form "-bs"}
-   
+
    :break-function-decl-args-end {:type Boolean, :comment "Break the line after the last argument in a declaration. See  DECLARATIONS.", :short-form "-bfde"}
-   
+
    :blank-lines-before-block-comments {:type Boolean, :comment "Force blank lines before block comments. See  BLANK LINES.", :short-form "-bbb"}
-   
+
    :leave-preprocessor-space {:type Boolean, :comment "Leave space between ‘#’ and preprocessor directive. See  INDENTATION.", :short-form "-lps"}
    ;; :T
    ;; {:type String,

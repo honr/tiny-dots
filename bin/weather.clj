@@ -15,7 +15,7 @@
   `(sql/with-connection
      ~{:classname "org.sqlite.JDBC"
        :subprotocol "sqlite"
-       :subname (rose.file/path :home ".local/var/run/weather.sqlite")}
+       :subname (rose.file/path *home* ".local/var/run/weather.sqlite")}
      ~@body))
 
 (defn db-query [q]
