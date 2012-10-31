@@ -418,14 +418,9 @@
                                          (var-get (ns-resolve rules-ns x))
                                          x))
                                      node-rules)]
-        (try
-          (apply (first resolved-node-rules)
-                 node
-                 (next resolved-node-rules))
-          (catch Exception e
-            (spit (str *cwd* "/__build.log")
-                  (with-out-str
-                    (.printStackTrace e *out*))))))
+        (apply (first resolved-node-rules)
+               node
+               (next resolved-node-rules)))
       (let [node-sha1 (str-hex
                        (write-blob (str *dir* store-subdir)
                                    (slurp-bytes *cwd* node)))]
