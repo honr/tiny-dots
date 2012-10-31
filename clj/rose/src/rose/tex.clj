@@ -31,8 +31,9 @@
     (rfile/rm (str tmp-file-base ".aux"))))
 
 (defn preprocess-embed-formula [x opts]
-  (when-not (.exists (java.io.File. cache-dir))
-    (.mkdirs cache-dir))
+  (let [cache-dir-f (java.io.File. cache-dir)]
+   (when-not (.exists cache-dir-f)
+     (.mkdirs cache-dir-f)))
   (if (not
        (and (instance? clojure.lang.IPersistentVector x)
             (or (= :$ (first x))
