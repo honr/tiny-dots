@@ -174,7 +174,8 @@
         "end tell"))
     ;; Under a terminal. For darwin we assume this is under Xquartz.
     (start-process-shell-command
-     "external-xterm" nil "xterm" "-bg '#FFFFFF'"
+     "external-xterm" nil "xterm"
+     (format "-bg '%s'" (face-attribute 'default :background))
      (if (string-prefix-p "/ssh:" default-directory)
          (let* ((abc (split-string default-directory ":"))
                 (a (car abc))
@@ -218,3 +219,4 @@
    "external-nautilus" nil "xdg-open ."))
 
 (global-set-key (kbd "M-<f4>") 'external-directory-browser-here)
+

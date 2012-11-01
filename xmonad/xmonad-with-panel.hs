@@ -136,7 +136,7 @@ shift :: Actions.TopicSpace.Topic -> X ()
 shift t = (newWorkspace t) >> ((windows . StackSet.shift) t)
 
 -- Themes
-_colors = _colors_light
+_colors = _colors_dark
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],

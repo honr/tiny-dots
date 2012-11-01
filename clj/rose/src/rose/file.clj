@@ -57,6 +57,14 @@ When *cwd* is not available, uses System/getProperty \"user.dir\" instead.
   (.mkdirs (fpath f)))
 (defn mv [source dest] (.renameTo (fpath source) (fpath dest)))
 
+(defn cp [source-path dest-path]
+  (let [dest-file (java.io.File. dest-path)]
+    (when (.exists dest-file)
+      (.createNewFile dest-file)))
+  (with-open [source-fd (.getChannel (java.io.FileInputStream. source-path))
+              dest-fd (.getChannel (java.io.FileOutputStream. dest-path))]
+    (.transferFrom dest-fd source-fd 0 (.size source-fd))))
+
 (defn rm [f] (.delete (fpath f)))
 
 (defn head

@@ -18,7 +18,6 @@
 (ns bin.ruler
   (:refer-clojure :exclude [test derive])
   (:require [rose.clu]
-            [rose.file]
             [clojure.java.io])
   (:import [java.util.zip DeflaterOutputStream]
            [java.io File FileOutputStream ByteArrayOutputStream]
