@@ -7,7 +7,8 @@
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 (show-paren-mode t)
 (when (boundp 'scroll-bar-mode)
-  (set-scroll-bar-mode 'right))
+  (set-scroll-bar-mode 'right)
+  (scroll-bar-mode -1))
 (setq scroll-preserve-screen-position t)
 (set-language-environment "UTF-8")
 ;; (setq completion-styles '(partial-completion initials))
@@ -77,8 +78,8 @@
 
   (custom-set-variables
 
-   '(custom-enabled-themes '(whitestone-serious))
-   ;; '(custom-enabled-themes '(dark-forge))
+   ;; '(custom-enabled-themes '(whitestone-serious))
+   '(custom-enabled-themes '(dark-forge))
    '(custom-safe-themes t)
    '(custom-theme-directory "~/.emacs.d/themes")
    '(fill-column 78)
