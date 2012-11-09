@@ -269,7 +269,7 @@ _emacsKeys  = \conf ->
                ("M-S-m", (sendMessage Layout.Minimize.RestoreNextMinimizedWin)),
 
                -- Layouts
-               ("M-r", refresh),
+               ("M-C-s", refresh),
 
                ("M-S-<Space>", (setLayout (XMonad.layoutHook conf))),
                ("M-<Space>", (sendMessage NextLayout)),
@@ -330,10 +330,10 @@ _emacsKeys  = \conf ->
                ("M-S-t", (sendMessage Hooks.ManageDocks.ToggleStruts) >>
                          (refresh)),
 
-               ("M-s", (Prompt.Workspace.workspacePrompt _XPConfig goto)),
-               ("M-S-s", (Prompt.Workspace.workspacePrompt _XPConfig shift)),
-               ("M-a", (Prompt.Window.windowPromptGoto _XPConfig)),
-               ("M-S-a", (Prompt.Window.windowPromptBring _XPConfig)),
+               ("M-a", (Prompt.Workspace.workspacePrompt _XPConfig goto)),
+               ("M-S-a", (Prompt.Workspace.workspacePrompt _XPConfig shift)),
+               ("M-r", (Prompt.Window.windowPromptGoto _XPConfig)),
+               ("M-S-r", (Prompt.Window.windowPromptBring _XPConfig)),
 
                ("M-q", (kill)),
                ("M-S-q", (Actions.WithAll.killAll))] ++
@@ -374,7 +374,7 @@ _emacsKeys  = \conf ->
                                    (Actions.DynamicWorkspaces.removeWorkspace)),
                -- Buggy, messes with focus and creates flicker, needs to be fixed.
 
-               ("M-S-r", (Actions.DynamicWorkspaces.renameWorkspace _XPConfig)),
+               ("M-C-w", (Actions.DynamicWorkspaces.renameWorkspace _XPConfig)),
 
               -- -- Commands
               -- , ("M-y", runCommand _commands)
