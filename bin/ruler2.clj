@@ -158,33 +158,6 @@
   (complete [this]
     (completion-suggestions (.nom this) (get (read-rules) :specified-targets-tree))))
 
-(defn- load-cache-internal [rules-ns rules-dir]
-  (binding [*dir* rules-dir]
-    (let [cache-file (str *dir* store-subdir "/cache.clj")]
-      (dosync
-       (alter global-cache-map
-              assoc
-              rules-ns
-              (ref (if (file-exists? cache-file)
-                     (read-string
-                      (slurp
-                       (str *dir* store-subdir "/cache.clj")))
-                     {:blob-index {} :memo {} :last-known-treeish nil})))))))
-
-(defn- save-cache-internal [rules-ns rules-dir]
-  (binding [*dir* rules-dir]
-    (create-necessary-dirs)
-    (spit (str *dir* store-subdir "/cache.clj")
-          @(get @global-cache-map rules-ns))))
-
-(defn load-cache {:cli {}} []
-  (let [ns-rules (read-rules)]
-    (load-cache-internal (ns-rules :ns) (ns-rules :dir))))
-
-(defn save-cache {:cli {}} []
-  (let [ns-rules (read-rules)]
-    (save-cache-internal (ns-rules :ns) (ns-rules :dir))))
-
 ;;; Git related.
 
 (defn write-object [git-path content-type content]
@@ -338,12 +311,12 @@
         node-blobs (get blob-index node)]
     (and (not-empty node-blobs)
          (= (first node-blobs)
-            (get ((@*cache* :memo) node)
-                 (vec (map (fn [x]
-                             (if (string? x)
-                               (first (get blob-index x))
-                               x))
-                           node-rules)))))))
+            (get-in @*cache* [:memo node (vec
+                                          (map (fn [x]
+                                                 (if (string? x)
+                                                   (first (get blob-index x))
+                                                   x))
+                                               node-rules))])))))
 
 (defn nodes-build-level [rules nodes]
   (loop [levels-map {} node-stack nodes]
@@ -353,23 +326,27 @@
         (cond (levels-map node)  ;; Already assigned a level.  Move on.
               (recur levels-map (rest node-stack))
 
-              (or
-               ;; Does not have any rebuilding option.  Leave as is!
-               (empty? (rules node))
-               ;; Node is fresh.  No need to rebuild.
-               (node-fresh? (rules node) node))
+              (empty? (rules node)) ;; Does not have any rebuilding option.  Leave as is!
               (recur (assoc levels-map node 0) (rest node-stack))
 
               :else
               (let [deps-levels-of-node (map levels-map
                                              (filter string? (rules node)))]
                 (cond (empty? deps-levels-of-node)  ;; No file deps.
-                      (recur (assoc levels-map node 1) (rest node-stack))
+                      (recur (assoc levels-map
+                               node (if (node-fresh? (rules node) node) 0 1))
+                             (rest node-stack))
 
-                      ;; Seen all deps, but node is not fresh and needs a rebuild.
+                      ;; Seen all deps.  If all sub-tree levels are zero, we
+                      ;; have to look at freshness of the node.  Otherwise,
+                      ;; the level of this node is one plus the maximum level
+                      ;; of sub nodes.
                       (every? identity deps-levels-of-node)
                       (recur (assoc levels-map
-                               node (inc (reduce max deps-levels-of-node)))
+                               node (let [l-max (reduce max deps-levels-of-node)]
+                                      (if (pos? l-max)
+                                        (inc l-max)
+                                        (if (node-fresh? (rules node) node) 0 1))))
                              (rest node-stack))
 
                       :else  ;; There are deps that need to be seen.
@@ -438,14 +415,33 @@
                 node-sha1))
         (build-chamber-clean-up room-number node-sha1)))))
 
-(defn notice-treeish {:cli {}} [treeish]
+(defn- load-cache-internal [rules-ns rules-dir]
+  (binding [*dir* rules-dir]
+    (let [cache-file (str *dir* store-subdir "/cache.clj")]
+      (dosync
+       (alter global-cache-map
+              assoc
+              rules-ns
+              (ref (if (file-exists? cache-file)
+                     (read-string
+                      (slurp
+                       (str *dir* store-subdir "/cache.clj")))
+                     {:blob-index {} :memo {} :last-known-treeish nil})))))))
+
+(defn- save-cache-internal [rules-ns rules-dir]
+  (binding [*dir* rules-dir]
+    (create-necessary-dirs)
+    (spit (str *dir* store-subdir "/cache.clj")
+          @(get @global-cache-map rules-ns))))
+
+;;; Commands
+
+(defn load-cache {:cli {}} []
   (let [ns-rules (read-rules)]
-    (load-cache-internal (ns-rules :ns) (ns-rules :dir))
-    (binding [*rules* (ns-rules :rules)
-              *dir* (ns-rules :dir)
-              ;; *rules-tree* (ns-rules :targets-tree)
-              *cache* (get @global-cache-map (ns-rules :ns))]
-      (update-cache-index-git (set (keys *rules*)) (git-treeish-sha1 *dir* treeish)))
+    (load-cache-internal (ns-rules :ns) (ns-rules :dir))))
+
+(defn save-cache {:cli {}} []
+  (let [ns-rules (read-rules)]
     (save-cache-internal (ns-rules :ns) (ns-rules :dir))))
 
 (defn start-at-treeish {:cli {}} [treeish]
@@ -455,6 +451,16 @@
             assoc
             (ns-rules :ns)
             (ref {:blob-index {} :memo {} :last-known-treeish treeish})))))
+
+(defn notice-treeish {:cli {}} [treeish]
+  (let [ns-rules (read-rules)]
+    (load-cache-internal (ns-rules :ns) (ns-rules :dir))
+    (binding [*rules* (ns-rules :rules)
+              *dir* (ns-rules :dir)
+              ;; *rules-tree* (ns-rules :targets-tree)
+              *cache* (get @global-cache-map (ns-rules :ns))]
+      (update-cache-index-git (set (keys *rules*)) (git-treeish-sha1 *dir* treeish)))
+    (save-cache-internal (ns-rules :ns) (ns-rules :dir))))
 
 (defn registred-objects {:cli {:load Boolean :sha1 Boolean}} []
   (let [ns-rules (read-rules)]
@@ -489,9 +495,11 @@ monitoring and actively keeping them up-to-date)."
           (println "Unknown target:" node)
           (if (empty? (get *rules* node))
             (println "No derivation rule for target:" node)
-            (extract-blob-to (str *dir* store-subdir)
-                             (first (get (get @*cache* :blob-index) node))
-                             (str *dir* \/ node))))))
+            (do
+              (extract-blob-to (str *dir* store-subdir)
+                               (first (get (get @*cache* :blob-index) node))
+                               (str *dir* \/ node))
+              (println "Activating" node))))))
     (save-cache-internal (ns-rules :ns) (ns-rules :dir))))
 
 (defn hide-derivables {:cli {}} []

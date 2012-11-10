@@ -273,12 +273,13 @@ _emacsKeys  = \conf ->
 
                ("M-S-<Space>", (setLayout (XMonad.layoutHook conf))),
                ("M-<Space>", (sendMessage NextLayout)),
-               ("M-<F1>", (sendMessage (JumpToLayout "Full"))),
-               ("M-<F2>", (sendMessage (JumpToLayout "Tall"))),
-               ("M-<F3>", (sendMessage (JumpToLayout "Mirror Tall"))),
-               ("M-<F4>", (sendMessage (JumpToLayout "ThreeCol"))),
-               ("M-<F5>", (sendMessage (JumpToLayout "Grid"))),
-               ("M-<F6>", (sendMessage (JumpToLayout "Circle")))] ++
+
+               ("M-2 f", (sendMessage (JumpToLayout "Full"))),
+               ("M-2 1", (sendMessage (JumpToLayout "Tall"))),
+               ("M-2 2", (sendMessage (JumpToLayout "Mirror Tall"))),
+               ("M-2 3", (sendMessage (JumpToLayout "ThreeCol"))),
+               ("M-2 g", (sendMessage (JumpToLayout "Grid"))),
+               ("M-2 c", (sendMessage (JumpToLayout "Circle")))] ++
 
               (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++ ["p", "f", "n", "b"]
                    nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
@@ -374,7 +375,7 @@ _emacsKeys  = \conf ->
                                    (Actions.DynamicWorkspaces.removeWorkspace)),
                -- Buggy, messes with focus and creates flicker, needs to be fixed.
 
-               ("M-C-w", (Actions.DynamicWorkspaces.renameWorkspace _XPConfig)),
+               ("M-C-a", (Actions.DynamicWorkspaces.renameWorkspace _XPConfig)),
 
               -- -- Commands
               -- , ("M-y", runCommand _commands)
