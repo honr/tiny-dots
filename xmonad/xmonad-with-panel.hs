@@ -272,9 +272,9 @@ _emacsKeys  = \conf ->
                ("M-C-s", refresh),
 
                ("M-S-<Space>", (setLayout (XMonad.layoutHook conf))),
-               ("M-<Space>", (sendMessage NextLayout)),
+               ("M-<Space>", (sendMessage NextLayout))] ++
 
-               ("M-2 f", (sendMessage (JumpToLayout "Full"))),
+              [("M-2 f", (sendMessage (JumpToLayout "Full"))),
                ("M-2 1", (sendMessage (JumpToLayout "Tall"))),
                ("M-2 2", (sendMessage (JumpToLayout "Mirror Tall"))),
                ("M-2 3", (sendMessage (JumpToLayout "ThreeCol"))),
@@ -431,21 +431,43 @@ _mouseBindings (XConfig {XMonad.modMask = modMask}) =
 _layout = Hooks.ManageDocks.avoidStruts
           -- $ _onWorkspace "agenda" _full
           (Layout.WindowNavigation.configurableNavigation
-            Layout.WindowNavigation.noNavigateBorders
-            (Layout.WorkspaceDir.workspaceDir "~"
-              (Layout.BoringWindows.boringWindows
-                (Layout.Minimize.minimize
-                  (_tiled2 |||
-                   (Layout.LimitWindows.limitWindows 5 _tiled2) |||
-                   (Mirror _tiled2) |||
-                   (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2)) |||
-                   _tiled3 |||
-                   _tiled3mid |||
-                   (Layout.Renamed.renamed [Layout.Renamed.Replace "Grid"]
-                    (Layout.Grid.GridRatio 1.1)) |||
-                   Layout.Circle.Circle |||
-                   Layout.Accordion.Accordion |||
-                   (Layout.NoBorders.noBorders Full))))))
+           Layout.WindowNavigation.noNavigateBorders
+           (Layout.WorkspaceDir.workspaceDir "~"
+            (Layout.BoringWindows.boringWindows
+             (Layout.Minimize.minimize
+              (_tiled2 |||
+
+               (Layout.Renamed.renamed [Layout.Renamed.Replace "Tall2-Limited"]
+                (Layout.LimitWindows.limitWindows 5 _tiled2)) |||
+
+               (Mirror _tiled2) |||
+
+               (Layout.Renamed.renamed [Layout.Renamed.Replace "Wide2-Limited"]
+                (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2))) |||
+
+               _tiled3 |||
+
+               _tiled3mid |||
+
+               (Layout.Renamed.renamed [Layout.Renamed.Replace "Grid"]
+                (Layout.Grid.GridRatio 1.1)) |||
+
+               Layout.Circle.Circle |||
+
+               Layout.Accordion.Accordion |||
+
+               (Layout.NoBorders.noBorders Full))))))
+
+_layoutTable = (("1", "Tall2", _tiled2),
+                ("S-1", "Tall2-Limited", (Layout.LimitWindows.limitWindows 5 _tiled2)),
+                ("2", "Wide2", (Mirror _tiled2)),
+                ("S-2", "Wide2-Limited", (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2))),
+                ("3", "Tall3", _tiled3),
+                ("S-3", "Tall3-Mid", _tiled3mid),
+                ("g", "Grid", (Layout.Grid.GridRatio 1.1)),
+                ("c", "Circle", Layout.Circle.Circle),
+                ("a", "Accordion", Layout.Accordion.Accordion),
+                ("f", "Full", (Layout.NoBorders.noBorders Full)))
 
 _tiled2 = Tall 1 (3/100) (1/2)
 _tiled3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
