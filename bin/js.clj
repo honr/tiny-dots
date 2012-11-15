@@ -81,19 +81,6 @@
 ;;   - Check the rules we don't automatically satisfy.
 
 (def ^{:dynamic true} *infix-ambience* 24) ;; Normally between 1-18
-(def ^{:dynamic true} *line-prefix* "") ;; Used for indentation.
-(def ^{:dynamic true} *cur-x* 0) ;; Also useful for indentation.
-
-(defmacro indent [indentation & body]
-  (let [line-prefix-appendage indentation]
-    `(binding [*line-prefix* (str *line-prefix* ~line-prefix-appendage)]
-       ~@body)))
-
-(defn line-break
-  ([] (concat ["\n"]
-              [*line-prefix*]))
-  ([n] (concat (repeat n "\n")
-               [*line-prefix*])))
 
 (defn suggest-string-break [^String s ^Long loc]
   (let [going-backward (max (.lastIndexOf s " " loc)
@@ -108,12 +95,13 @@
 
 ;; TODO: We should care about the current position in the line, too.
 (defn string-fill [[^String beg ^String end ^String wrapper]
+                   [cur-x line-prefix]
                    ^String s]
-  (let [line-capacity (- 80 2 (count *line-prefix*))
-        first-line-capacity (max 0 (- line-capacity *cur-x*))]
+  (let [line-capacity (- 80 2 (count line-prefix))
+        first-line-capacity (max 0 (- line-capacity cur-x))]
     (mapcat identity
             (interpose
-             (concat [wrapper] (line-break))
+             (concat [wrapper] [\newline line-prefix])
              (loop [s s, coll [], capacity first-line-capacity]
                (cond
                 (empty? s)
@@ -136,8 +124,8 @@
 
    '--funcall-- {:prec 2 :assoc :left}
 
-   'inc! {:str "++" :prec 3 :assoc nil, :model :unary-right-bare-no-space}
-   'dec! {:str "--" :prec 3 :assoc nil, :model :unary-right-bare-no-space}
+   'inc! {:str "++" :prec 3 :assoc nil, :model :unary-right-no-space}
+   'dec! {:str "--" :prec 3 :assoc nil, :model :unary-right-no-space}
 
    'bit-not {:str "~" :prec 4 :assoc :right, :model :unary-no-space}
    'not {:str "!" :prec 4 :assoc :right, :model :unary-no-space}
@@ -194,7 +182,7 @@
 
    ;; Non-operators:
 
-   'throw {:assoc :right, :model :unary}
+   'throw {:prec 20 :assoc :right, :model :unary}
 
    'break {:model :no-args-or-unary}
    'continue {:model :no-args-or-unary}
@@ -220,21 +208,6 @@
    ;; :EOS ";\n" ;; End of Statement
    })
 
-(def jsv:space [" "])
-(def jsv:comma-space [", "])
-(def jsv:semicolon-space ["; "])
-(def jsv:semicolon [";"])
-(def jsv:dot ["."])
-(def jsv:assign-to [" = "])
-(def jsv:paren-open ["("])
-(def jsv:paren-close [")"])
-(def jsv:square-open ["["])
-(def jsv:square-close ["]"])
-(def jsv:curly-open ["{"])
-(def jsv:curly-close ["}"])
-(def jsv:string-open ["'"])
-(def jsv:string-close ["'"])
-
 (defmulti list->jsv
   (fn [verb & _] (get (get js-operator-map verb) :model)))
 
@@ -245,57 +218,52 @@
 
 (defmethod list->jsv :unary-no-space [verb & body]
   (let [arg (first body)]
-    (concat (form->jsv verb)
-            (form->jsv arg))))
+    (concat (form->jsv verb) (form->jsv arg))))
 
 (defmethod list->jsv :unary [verb & body]
   (let [arg (first body)]
-    (concat (form->jsv verb)
-            jsv:space
-            (form->jsv arg))))
+    (concat (form->jsv verb) [\space] (form->jsv arg))))
 
 (defmethod list->jsv :no-args-or-unary [verb & body]
   (if-let [arg (first body)]
-    (concat (form->jsv verb) jsv:space (form->jsv arg))
+    (concat (form->jsv verb) [\space] (form->jsv arg))
     (form->jsv verb)))
 
-(defmethod list->jsv :unary-right-bare-no-space [verb & body]
+(defmethod list->jsv :unary-right-no-space [verb & body]
   (let [arg (first body)]
     (concat (form->jsv arg) (form->jsv verb))))
 
 (defmethod list->jsv :if [verb & body]
   (let [[if-condition body-true body-false] body]
-    (concat (form->jsv if-condition) [" ?"] jsv:space
-            (form->jsv body-true) [" :"] jsv:space
+    (concat (form->jsv if-condition) [" ?" \space]
+            (form->jsv body-true) [" :" \space]
             (form->jsv body-false))))
 
 (defmethod list->jsv :do [verb & body]
-  (mapcat identity (interpose jsv:comma-space (map form->jsv body))))
+  (mapcat identity (interpose [\,] (map form->jsv body))))
 
 (defmethod list->jsv :dot [verb & body]
-  (mapcat identity (interpose jsv:dot (map form->jsv body))))
+  (mapcat identity (interpose [\.] (map form->jsv body))))
 
 (defn list->jsv:do-imp [forms]
-  (concat jsv:curly-open
-          (indent "  "
-                  (mapcat identity
-                          (for [form forms]
-                            (concat (line-break)
-                                    (form->jsv form)))))
-          (line-break)
-          jsv:curly-close))
+  (concat ["{" [:indent "  "]]
+          (mapcat identity
+                  (for [form forms]
+                    (concat [\newline]
+                            (form->jsv form))))
+          [[:unindent] \newline "}"]))
 
 (defn list->jsv:do-imp-raw [forms]
   (mapcat identity
           (for [form forms]
-            (concat (line-break)
+            (concat [\newline]
                     (form->jsv form)))))
 
 (defmethod list->jsv :do-imp [verb & body]
   (list->jsv:do-imp body))
 
 (defmethod list->jsv :__PROGRAM__ [verb & body]
-  (mapcat form->jsv body))
+  (mapcat identity (interpose [\newline] (map form->jsv body))))
 
 (defmethod list->jsv :for-imp [verb & body]
   ;; (for [x :in coll] ...) ->
@@ -315,62 +283,63 @@
     (concat
      (cond
       (not (or (symbol? a) (symbol? b) (symbol? c)))
-      (concat ["for ("] (form->jsv a) jsv:semicolon-space (form->jsv b) jsv:semicolon-space (form->jsv c) [") "])
+      (concat ["for ("] (form->jsv a) [\; \space] (form->jsv b) [\; \space] (form->jsv c) [") "])
 
       (= b :in)
       (concat ["for ("] (form->jsv a) [" in "] (form->jsv c) [") "])
 
       (= b :index)
       (concat ["for ("]
-              ["var "] (form->jsv a) jsv:assign-to ["0"] jsv:semicolon-space
-              (form->jsv a) [" < "] (form->jsv c) jsv:dot ["length"] jsv:semicolon-space
+              ["var "] (form->jsv a) [\= \space] ["0"] [\; \space]
+              (form->jsv a) [" < "] (form->jsv c) [\.] ["length"] [\; \space]
               ["++"] (form->jsv a) [") "])
 
       :else
       ;; (concat ["for ("]
-      ;;         ["var "] (form->jsv b) jsv:assign-to ["0"] jsv:semicolon-space
-      ;;         (form->jsv b) [" < "] (form->jsv c) jsv:dot ["length"] jsv:semicolon-space
+      ;;         ["var "] (form->jsv b) [\= \space] ["0"] [\; \space]
+      ;;         (form->jsv b) [" < "] (form->jsv c) [\.] ["length"] [\; \space]
       ;;         ["++"] (form->jsv b) [") {"]
-      ;;         (line-break)
-      ;;         ["var "] (form->jsv a) " = " (form->jsv c) jsv:square-open (form->jsv b) jsv:square-close jsv:semicolon)
+      ;;         [\newline *line-prefix*]
+      ;;         ["var "] (form->jsv a) " = " (form->jsv c) ["["] (form->jsv b) ["]"] [\;])
       ;; OR
       (concat ["for ("]
-              ["var "] (form->jsv b) jsv:assign-to ["0"] jsv:comma-space
-              (form->jsv a) " = " (form->jsv c) ["[0]"] jsv:semicolon-space
-              (form->jsv b) [" < "] (form->jsv c) jsv:dot ["length"] jsv:semicolon-space
-              ["++"] (form->jsv b) jsv:comma-space
-              (form->jsv a) " = " (form->jsv c) jsv:square-open (form->jsv b) jsv:square-close  [") "])
+              ["var "] (form->jsv b) [\= \space] ["0"] [\,]
+              (form->jsv a) [\= \space] (form->jsv c) ["[0]"] [\; \space]
+              (form->jsv b) [" < "] (form->jsv c) [\.] ["length"] [\; \space]
+              ["++"] (form->jsv b) [\,]
+              (form->jsv a) [\= \space] (form->jsv c) ["["] (form->jsv b) ["]"]
+              [") "])
       )
      (list->jsv:do-imp for-body))))
 
 (defmethod list->jsv :var [verb & body]
   (concat
-   ["var"]
-   jsv:space
+   ["var "]
    (mapcat identity
-           (interpose jsv:comma-space
+           (interpose [\,]
                       (for [[k v] (partition 2 body)]
-                        (concat (form->jsv k) jsv:assign-to (form->jsv v)))))
-   jsv:semicolon))
+                        (concat (form->jsv k) [\= \space] (form->jsv v) [\;]))))))
 
 (defmethod list->jsv :let [verb & body]
   (mapcat identity
           (for [[k v] (partition 2 (first body))]
-            (concat  ["let "] (form->jsv k) jsv:assign-to (form->jsv v) jsv:semicolon
-                     (line-break)))))
+            (concat
+             ["let "]
+             (form->jsv k) [\= \space] (form->jsv v)
+             [\; \newline]))))
 
 (defmethod list->jsv :setq [verb & body]
   (if (= (count body) 2)
     (let [[k v] body]
-      (concat (form->jsv k) jsv:assign-to (form->jsv v) jsv:semicolon))
+      (concat (form->jsv k) [\= \space] (form->jsv v) [\;]))
     (let [[k f v] body]
-      (concat (form->jsv k) jsv:space (form->jsv f) ["= "] (form->jsv v) jsv:semicolon))))
+      (concat (form->jsv k) [\space] (form->jsv f) ["=" \space] (form->jsv v) [\;]))))
 
 (defmethod list->jsv :when-imp [verb & body]
   (let [[if-cond & if-body] body]
     (concat
      ["if ("]
-     (form->jsv if-cond) jsv:paren-close jsv:space
+     (form->jsv if-cond) [")"] [\space]
      (list->jsv:do-imp if-body))))
 
 (defmethod list->jsv :cond-imp [verb & body]
@@ -379,34 +348,36 @@
             (concat (cond (zero? i) ["if"]
                           (keyword? condition) [" else"]
                           :else [" else if"])
-                    jsv:space jsv:paren-open (form->jsv condition) jsv:paren-close jsv:space
+                    [\space] ["("] (form->jsv condition) [")"] [\space]
                     (list->jsv:do-imp forms)))))
 
 (defmethod list->jsv :condp-imp [verb & body]
   (let [[pivot & clauses] body]
    (concat
     ["switch ("] (form->jsv pivot) [") {"]
-    (indent "  "
-            (mapcat identity
-                    (for [[case & case-body] clauses]
-                      (concat (line-break)
-                              (if (keyword? case)
-                                ["default:"]
-                                (concat ["case "] (form->jsv case) [":"]))
-                              (indent "  "
-                                      (mapcat identity
-                                              (for [form case-body]
-                                                (concat (line-break)
-                                                        (form->jsv form) jsv:semicolon))))))))
-    (line-break)
-    jsv:curly-close)))
+    [[:indent "  "]]
+    (mapcat identity
+            (for [[case & case-body] clauses]
+              (concat [\newline]
+                      (if (keyword? case)
+                        ["default:"]
+                        (concat ["case "] (form->jsv case) [":"]))
+                      [[:indent "  "]]
+                      (mapcat identity
+                              (for [form case-body]
+                                (concat [\newline]
+                                        (form->jsv form) [\;])))
+                      [[:unindent]])))
+    [[:unindent]]
+    [\newline]
+    ["}"])))
 
 (defmethod list->jsv :fn [verb & body]
   (let [[fn-args & fn-body] body]
-    (concat ["function"] jsv:space jsv:paren-open
+    (concat ["function"] [\space] ["("]
             (mapcat identity
-                    (interpose jsv:comma-space (map form->jsv fn-args)))
-            jsv:paren-close jsv:space (list->jsv:do-imp fn-body))))
+                    (interpose [\,] (map form->jsv fn-args)))
+            [")"] [\space] (list->jsv:do-imp fn-body))))
 
 (defmethod list->jsv :ns [verb & body]
   (let [[ns-name &
@@ -414,46 +385,44 @@
            author :author
            deps :require}
           overview-doc]] body]
-    (concat [(format "// Copyright %s. All Rights Reserved." copyright)]
-            (line-break)
+    (concat [(format "// Copyright %s. All Rights Reserved." copyright) \newline]
             (when overview-doc
-              (concat
-               (line-break)
-               ["/**"] (line-break)
-               [" * "] [(str "@fileoverview " overview-doc)] (line-break)
-               [" * "] [(str "@auther " author)] (line-break)
-               [" */"] (line-break)))
+              [\newline
+               "/**" \newline
+               " * " (str "@fileoverview " overview-doc) \newline
+               " * " (str "@auther " author) \newline
+               " */" \newline])
 
-            (line-break)
-            ["goog.provide(" (str "'"
-                                  (apply str (form->jsv ns-name))
-                                  "'") ")" ";"]
-            (line-break)
+            [\newline
+             "goog.provide(" (str "'" (apply str (form->jsv ns-name)) "'") ")" \;
+             \newline]
             (mapcat identity
                     (for [dep deps]
-                      (concat (line-break)
+                      (concat [\newline]
                               ["goog.require("
                                (str "'"
                                     (apply str (form->jsv dep))
                                     "'")
-                               ")" ";"])))
-            (line-break))))
+                               ")" \;])))
+            [\newline])))
 
 (defmethod list->jsv :array-get [verb & body]
   (let [[array-name & indexes] body]
     (concat (form->jsv array-name)
             (mapcat identity
                     (for [index indexes]
-                      (concat jsv:square-open (form->jsv index) jsv:square-close))))))
+                      (concat ["["] (form->jsv index) ["]"]))))))
 
 (defn type->jsv [args]
   (cond
    (list? args)
    (let [[parent & children] args]
      (concat
-      [(type->jsv parent)] [".<"]
+      (type->jsv parent)
+      [\.]
+      ["<"]
       (mapcat identity
-              (interpose jsv:comma-space (map type->jsv children)))
+              (interpose [\,] (map type->jsv children)))
       [">"]))
 
    (vector? args)
@@ -461,10 +430,10 @@
            (interpose ["|"] (map type->jsv args)))
 
    (symbol? args)
-   (js-uglify-name (name args))
+   [(js-uglify-name (name args))]
 
    :else
-   (str args)))
+   [(str args)]))
 
 (defn extract-args [args]
   (loop [args args args-with-meta []]
@@ -485,32 +454,34 @@
         args-with-meta (extract-args fn-args)]
 
     (concat
-     (line-break)
+     [\newline]
      ["/**"]
      (mapcat identity
              (for [arg args-with-meta]
-               (concat (line-break)
-                       [" * @param {"] (type->jsv (get arg :type)) jsv:curly-close jsv:space
-                       (form->jsv (get arg :name)) jsv:space
-                       (indent "    "
-                               ;; TODO: wrap around.
-                               [(get arg :doc)]))))
+               (concat [\newline]
+                       [" * @param {"]
+                       (type->jsv (get arg :type)) ["}"] [\space]
+                       (form->jsv (get arg :name)) [\space]
+                       [[:indent "  "]]
+                       ;; TODO: wrap around.
+                       [(get arg :doc)]
+                       [[:unindent]])))
      (when (= verb 'defn-)
-       (concat (line-break) [" * @private"]))
-     (line-break) [" */"]
-     (line-break)
-     [(format "function %s(" (apply str (form->jsv fn-name)))]
-     (mapcat identity (interpose jsv:comma-space (map form->jsv
-                                             (map :name args-with-meta))))
+       [\newline " * @private"])
+     [\newline " */"
+      \newline
+      (format "function %s(" (apply str (form->jsv fn-name)))]
+     (mapcat identity (interpose [\,] (map form->jsv
+                                           (map :name args-with-meta))))
      [") "]
      (list->jsv:do-imp fn-body))))
 
 (defn list->jsv:infix [verb coll]
-  (let [infix-verb (concat jsv:space (form->jsv verb) jsv:space)
+  (let [infix-verb (concat [\space] (form->jsv verb) [\space])
         operator-precedence (get (get js-operator-map verb) :prec)
         paren-wrap-maybe (fn [pred v]
                            (if pred
-                             (concat jsv:paren-open v jsv:paren-close)
+                             (concat ["("] v [")"])
                              v))]
     (paren-wrap-maybe (< *infix-ambience* operator-precedence)
                       (binding [*infix-ambience* operator-precedence]
@@ -521,59 +492,76 @@
 (defmethod list->jsv :infix [verb & body]
   (list->jsv:infix verb body))
 
-(defmethod list->jsv :infix-or-unary [verb & body]
-  (if (not-empty (rest body)) ;; Has more than one element.
-    (list->jsv:infix verb body)
-
-    ;; Unary:
-    (concat (form->jsv verb)
-            (form->jsv (first body)))))
-
-(defmethod list->jsv :prefix [verb & body]
+(defmethod list->jsv :default [verb & body]
   (concat (form->jsv verb)
-          jsv:paren-open
-          (mapcat identity (interpose jsv:comma-space (map form->jsv body)))
-          jsv:paren-close))
-
-(defmethod list->jsv :default [verb & body] ;; The same as :prefix
-  (concat (form->jsv verb)
-          jsv:paren-open
-          (mapcat identity (interpose jsv:comma-space (map form->jsv body)))
-          jsv:paren-close))
+          ["("]
+          (mapcat identity (interpose [\,] (map form->jsv body)))
+          [")"]))
 
 (defn form->jsv [form]
-  ;; Should return a vector of items that can be combined by `apply'ing `str'.
+  ;; Return a sequence of items that can be combined by `apply'ing `str'.
   (cond
    (list? form)
    (apply list->jsv form)
 
    (map? form)
-   (concat jsv:curly-open
+   (concat ["{"]
            (mapcat identity
-                   (interpose jsv:comma-space
+                   (interpose [\,]
                               (for [[k v] form]
                                 (concat (form->jsv k) [": "] (form->jsv v)))))
-           jsv:curly-close)
+           ["}"])
 
    (vector? form)
-   (concat jsv:square-open
-           (mapcat identity (interpose jsv:comma-space (map form->jsv form)))
-           jsv:square-close)
+   (concat ["["]
+           (mapcat identity (interpose [\,] (map form->jsv form)))
+           ["]"])
 
    (or (symbol? form) (keyword? form))
    [(or (get (js-operator-map form) :str)
         (js-uglify-name (name form)))]
 
    (string? form)
-   (string-fill
-    ["'" "'" " +"]
-    (string/escape form {\' "\"", \\ "\\\\"}))
+   [[:string (string/escape form {\' "\"", \\ "\\\\"})]]
 
    :else
    [(pr-str form)]))
 
 (defn form->js-str [form]
-  (reduce str "" (form->jsv form)))
+  ;; (reduce str "" (map form->jsv form))
+  (let [cur-x (atom 0)
+        indent-stack (atom [])]
+    (with-out-str
+      (doseq [element (form->jsv form)]
+        (cond
+         (char? element)
+         (condp = element
+           \newline (print (apply str \newline @indent-stack))
+
+           \, (print ", ")
+           \; (print ";")
+           \. (print ".")
+           \= (print " =")
+           \space (print " ")
+
+           ;; This shouldn't happen.  Put individual characters as strings.
+           (print element))
+
+         (vector? element)
+         (condp = (first element)
+           :indent (swap! indent-stack conj (second element))
+           :unindent (swap! indent-stack pop)
+           :string (print
+                    ;; Warning: string-fill has `\newline' in it, so we need
+                    ;; to care about resetting cur-x.
+                    (apply str (string-fill
+                                ["'" "'" " +"]
+                                [@cur-x (apply str @indent-stack)]
+                                (second element))))
+           nil)
+
+         :else
+         (print element))))))
 
 (defn to-js {:cli {}} []
   (println
