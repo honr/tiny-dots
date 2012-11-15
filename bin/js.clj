@@ -413,17 +413,27 @@
                        {:name f})))))))
 
 (defmethod list->jsv :defn [verb & body]
-  (let [[fn-name fn-args & fn-body] body
+  (let [[fn-name fn-args & fn-ret-doc-and-body] body
+        [fn-return-type fn-return-doc fn-doc & fn-body]
+        (if (= '• (first fn-ret-doc-and-body))
+          (rest fn-ret-doc-and-body)
+          (into [nil nil] fn-ret-doc-and-body))
         args-with-meta (extract-args fn-args)]
 
     (concat
      [\newline "/**" :indent-doc]
+     (when fn-doc
+       [\newline [:doc fn-doc]])
      (mapcat identity
              (for [arg args-with-meta]
                (concat [\newline "@param {"]
                        (type->jsv (get arg :type)) ["}" \space]
                        (form->jsv (get arg :name))
                        [\space [:doc (get arg :doc)]])))
+     (when fn-return-type
+       (concat [\newline "@return {"]
+               (type->jsv fn-return-type)
+               ["}" \space [:doc fn-return-doc]]))
      (when (= verb 'defn-)
        [\newline "@private"])
      [:unindent \newline " */"]
