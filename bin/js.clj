@@ -80,42 +80,9 @@
 ;;   - Take a spin at turning imperative to value passing.
 ;;   - Check the rules we don't automatically satisfy.
 
+(def +line-width+ 80)
+
 (def ^{:dynamic true} *infix-ambience* 24) ;; Normally between 1-18
-
-(defn suggest-string-break [^String s ^Long loc]
-  (let [going-backward (max (.lastIndexOf s " " loc)
-                            (.lastIndexOf s "	" loc))]
-    (if-not (neg? going-backward)
-      (inc going-backward)
-      (let [going-forward (min (.indexOf s " " loc)
-                               (.indexOf s "	" loc))]
-        (if-not (neg? going-forward)
-          (inc going-forward)
-          (count s))))))
-
-;; TODO: We should care about the current position in the line, too.
-(defn string-fill [[^String beg ^String end ^String wrapper]
-                   [cur-x line-prefix]
-                   ^String s]
-  (let [line-capacity (- 80 2 (count line-prefix))
-        first-line-capacity (max 0 (- line-capacity cur-x))]
-    (mapcat identity
-            (interpose
-             (concat [wrapper] [\newline line-prefix])
-             (loop [s s, coll [], capacity first-line-capacity]
-               (cond
-                (empty? s)
-                coll
-
-                (>= capacity (count s))
-                (conj coll [beg s end])
-
-                :else
-                (let [break-point
-                      (suggest-string-break s (- capacity 2))]
-                  (recur (.substring s break-point)
-                         (conj coll [beg (.substring s 0 break-point) end])
-                         line-capacity))))))))
 
 (def js-operator-map
   {'. {:prec 1 :assoc :left}
@@ -201,12 +168,10 @@
    'set {:model :unary}  ;; ???
 
    'let {:model :let}
-   'def {:model :var}
+   'var {:model :var}
    'aget {:model :array-get}
    'debugger {:model :no-args}
-   '__PROGRAM__ {:model :__PROGRAM__}
-   ;; :EOS ";\n" ;; End of Statement
-   })
+   '__PROGRAM__ {:model :__PROGRAM__}})
 
 (defmulti list->jsv
   (fn [verb & _] (get (get js-operator-map verb) :model)))
@@ -246,12 +211,12 @@
   (mapcat identity (interpose [\.] (map form->jsv body))))
 
 (defn list->jsv:do-imp [forms]
-  (concat ["{" [:indent "  "]]
+  (concat ["{" :indent]
           (mapcat identity
                   (for [form forms]
                     (concat [\newline]
                             (form->jsv form))))
-          [[:unindent] \newline "}"]))
+          [:unindent \newline "}"]))
 
 (defn list->jsv:do-imp-raw [forms]
   (mapcat identity
@@ -355,22 +320,20 @@
   (let [[pivot & clauses] body]
    (concat
     ["switch ("] (form->jsv pivot) [") {"]
-    [[:indent "  "]]
+    [:indent]
     (mapcat identity
             (for [[case & case-body] clauses]
               (concat [\newline]
                       (if (keyword? case)
                         ["default:"]
                         (concat ["case "] (form->jsv case) [":"]))
-                      [[:indent "  "]]
+                      [:indent]
                       (mapcat identity
                               (for [form case-body]
                                 (concat [\newline]
                                         (form->jsv form) [\;])))
-                      [[:unindent]])))
-    [[:unindent]]
-    [\newline]
-    ["}"])))
+                      [:unindent])))
+    [:unindent \newline "}"])))
 
 (defmethod list->jsv :fn [verb & body]
   (let [[fn-args & fn-body] body]
@@ -454,22 +417,18 @@
         args-with-meta (extract-args fn-args)]
 
     (concat
-     [\newline]
-     ["/**"]
+     [\newline "/**" :indent-doc]
      (mapcat identity
              (for [arg args-with-meta]
-               (concat [\newline]
-                       [" * @param {"]
-                       (type->jsv (get arg :type)) ["}"] [\space]
-                       (form->jsv (get arg :name)) [\space]
-                       [[:indent "  "]]
-                       ;; TODO: wrap around.
-                       [(get arg :doc)]
-                       [[:unindent]])))
+               (concat [\newline "@param {"]
+                       (type->jsv (get arg :type)) ["}" \space]
+                       (form->jsv (get arg :name))
+                       [\space [:doc (get arg :doc)]])))
      (when (= verb 'defn-)
-       [\newline " * @private"])
-     [\newline " */"
-      \newline
+       [\newline "@private"])
+     [:unindent \newline " */"]
+
+     [\newline
       (format "function %s(" (apply str (form->jsv fn-name)))]
      (mapcat identity (interpose [\,] (map form->jsv
                                            (map :name args-with-meta))))
@@ -527,41 +486,108 @@
    :else
    [(pr-str form)]))
 
+(defn suggest-string-break [^String s ^Long loc]
+  "Suggest a break point in s around loc, after space and tab characters."
+  (let [going-backward (max (.lastIndexOf s " " loc)
+                            (.lastIndexOf s "	" loc))]
+    (if-not (neg? going-backward)
+      (inc going-backward)
+      (let [going-forward (apply min
+                                 (filter #(not (neg? %))
+                                         (map #(.indexOf s % loc)
+                                              [" " "	"])))]
+        (if-not (neg? going-forward)
+          (inc going-forward)
+          (count s))))))
+
+;; TODO: (fix bug) If it does not fit in the first line, we might still have a
+;; chance of ignoring the first line and fitting on subsequent lines.
+(defn string-fill [[^String beg ^String end ^String wrapper ^Boolean trim-pieces?]
+                   [cur-x line-prefix]
+                   ^String s]
+  (let [general-line-capacity (- +line-width+
+                                 (count line-prefix) (count beg) (count end) 1)
+        first-line-capacity (max 0 (- general-line-capacity (- cur-x (count line-prefix))))
+        cont-line-capacity (max 0 (- general-line-capacity 4))  ;; Subsequent lines.
+        cont-prefix "    ",  ;; Sub-indentation of subsequent lines.
+        cont-indent (count cont-prefix),
+        cont-beg (str cont-prefix beg)]
+
+    (loop [s s, coll [], capacity first-line-capacity, sub-prefix beg]
+      (if (>= capacity (count s)) ;; Also true for empty `s'.
+        (let [last-element (str sub-prefix s end)]
+          {:coll (interpose (str wrapper \newline line-prefix)
+                            (conj coll last-element))
+           :length-last (count last-element)})
+
+        (let [break-point (suggest-string-break s (- capacity (count wrapper)))]
+          (recur (.substring s break-point)
+                 (conj coll (str sub-prefix
+                                 (let [piece (.substring s 0 break-point)]
+                                   (if trim-pieces?
+                                     (.trim piece)
+                                     piece))
+                                 end))
+                 cont-line-capacity
+                 cont-beg))))))
+
+(def string-fill-map
+  {:string ["'" "'" " +" false]
+   :doc ["" "" "" true]})
+
 (defn form->js-str [form]
-  ;; (reduce str "" (map form->jsv form))
+  ;; TODO: Add a preprocess step on (form->jsv form).
   (let [cur-x (atom 0)
-        indent-stack (atom [])]
+        indent-stack (atom [])
+        emit (fn
+               ([^String s]
+                  (swap! cur-x + (count s))
+                  (print s))
+               ([^String s1 ^String s2 & more-strings]
+                  (let [s (apply str s1 s2 more-strings)]
+                    (swap! cur-x + (count s))
+                    (print s))))]
     (with-out-str
       (doseq [element (form->jsv form)]
         (cond
          (char? element)
          (condp = element
-           \newline (print (apply str \newline @indent-stack))
+           \newline (do
+                      (reset! cur-x (count (apply str @indent-stack)))
+                      (print (apply str \newline @indent-stack)))
 
-           \, (print ", ")
-           \; (print ";")
-           \. (print ".")
-           \= (print " =")
-           \space (print " ")
+           \, (emit ", ")
+           \; (emit ";")
+           \. (emit ".")
+           \= (emit " =")
+           \space (emit " ")
 
            ;; This shouldn't happen.  Put individual characters as strings.
-           (print element))
+           (emit (str element)))
 
-         (vector? element)
-         (condp = (first element)
-           :indent (swap! indent-stack conj (second element))
+         (keyword? element)
+         (condp = element
+           :indent (swap! indent-stack conj "  ")
+           :indent-doc (swap! indent-stack conj " * ")
            :unindent (swap! indent-stack pop)
-           :string (print
-                    ;; Warning: string-fill has `\newline' in it, so we need
-                    ;; to care about resetting cur-x.
-                    (apply str (string-fill
-                                ["'" "'" " +"]
-                                [@cur-x (apply str @indent-stack)]
-                                (second element))))
            nil)
 
+         (vector? element)
+         (cond
+          (get string-fill-map (first element))
+          (let [{coll :coll length-last :length-last}
+                (string-fill
+                 (get string-fill-map (first element))
+                 [@cur-x (apply str @indent-stack)]
+                 (second element))]
+            (print (apply str coll))
+            (reset! cur-x (+ (count (apply str @indent-stack))
+                             length-last)))
+          :else
+          nil)
+
          :else
-         (print element))))))
+         (emit element))))))
 
 (defn to-js {:cli {}} []
   (println

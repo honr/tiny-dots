@@ -116,6 +116,12 @@
 (global-set-key (kbd "M-g <") "≤")
 (global-set-key (kbd "M-g >") "≥")
 
+(global-set-key (kbd "M-g \\") "║")
+(global-set-key (kbd "M-g /") (lambda () (interactive) (insert "¦")))
+(global-set-key (kbd "M-g .") "•")
+(global-set-key (kbd "M-g `") (lambda () (interactive) (insert "º")))
+(global-set-key (kbd "M-g ,") "◊")
+
 (require 'browse-kill-ring)
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
   "If last action was not a yank, run `browse-kill-ring' instead."
@@ -225,4 +231,3 @@
    "external-nautilus" nil "xdg-open ."))
 
 (global-set-key (kbd "M-<f4>") 'external-directory-browser-here)
-

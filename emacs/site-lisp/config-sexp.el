@@ -17,5 +17,7 @@
             (paredit-mode +1)
             (subword-mode t)))
 (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+;; TODO: Roll a new mode for sj, based clj with addition of js stuff.
+(add-to-list 'auto-mode-alist '("\\.sj$" . clojure-mode))
 
 (setq nxml-sexp-element-flag t)
