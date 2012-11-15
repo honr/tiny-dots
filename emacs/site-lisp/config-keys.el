@@ -109,6 +109,12 @@
                 (lambda () (interactive) (insert "“”") (forward-char -1)))
 (global-set-key (kbd "M-g '")
                 (lambda () (interactive) (insert "‘’") (forward-char -1)))
+(global-set-key (kbd "M-g <up>") "↑")
+(global-set-key (kbd "M-g <right>") "→")
+(global-set-key (kbd "M-g <down>") "↓")
+(global-set-key (kbd "M-g <left>") "←")
+(global-set-key (kbd "M-g <") "≤")
+(global-set-key (kbd "M-g >") "≥")
 
 (require 'browse-kill-ring)
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))

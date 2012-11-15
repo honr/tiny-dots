@@ -16,7 +16,8 @@
       (print "<")
       (print tag-name)
       (doseq [[k v] attributes]
-        (print (format " %s=\"%s\"" (name k) (escape (str v)))))
+        (when k
+          (print (format " %s=\"%s\"" (name k) (escape (str v))))))
       (if (seq contents)
         ;; Not an empty tag.
         (do
