@@ -47,14 +47,14 @@
     (clojure.xml/emit tree))) ;; test this one.
 
 (defn files-v<-s [input-str-file output-vector-file]
-  (spit 
+  (spit
    output-vector-file
    (with-out-str
-     (clojure.pprint/pprint 
+     (clojure.pprint/pprint
       (v<-s (slurp input-str-file))))))
 
 (defn files-s<-v [input-vector-file output-str-file]
-  (spit 
+  (spit
    output-str-file
    (str "<?xml version=\"1.0\"?>"
 	(s<-v (read-string (slurp input-vector-file))))))
@@ -84,8 +84,8 @@
 ;;    (filter #(match-map (dissoc f :list) %) x)))
 
 (defmethod sel-process clojure.lang.IPersistentMap [f x]
-  (:content 
-   (first 
+  (:content
+   (first
     (filter #(match-map f %) x))))
 
 (defmethod sel-process clojure.lang.Keyword [f x]
@@ -134,8 +134,8 @@
   (reduce (fn [a b] (sel-process b a)) x forms))
 
 (comment
-  
-  (def sample-xml-strings 
+
+  (def sample-xml-strings
        ["<a>b</a>"
 	"<a></a>"
 	"<a href=\"s\">b</a>"
@@ -143,24 +143,24 @@
   (m<-s (first sample-xml-strings))
   (m<-s lazy-xml/startparse-sax (first sample-xml-strings))
   (m<-s lazy-xml/startparse-tagsoup (first sample-xml-strings))
-  
+
   (lazy-xml/parse-trim (java.io.StringReader. "<a>b</a>"))
 
-  
+
   (map m<-s sample-xml-strings)
   ({:tag :a, :attrs {}, :content ("b")}
    {:tag :a, :attrs {}, :content ()}
    {:tag :a, :attrs {:href "s"}, :content ("b")}
    {:tag :a, :attrs {}, :content ()})
-  
+
   (sel [{:tag :html, :attrs {},
-	 :content (list {:tag :body, :attrs {}, 
-			 :content (list {:tag :a, :attrs {:shape "rect"}, 
+	 :content (list {:tag :body, :attrs {},
+			 :content (list {:tag :a, :attrs {:shape "rect"},
 					 :content (list "b" "c")}
-					{:tag :a, :attrs {:shape "rect"}, 
+					{:tag :a, :attrs {:shape "rect"},
 					 :content (list "d" "e")})})}]
        :html :body [:a])
-  
+
   (map #(v<-s lazy-xml/startparse-sax %) sample-xml-strings)
   (map v<-s sample-xml-strings)
   ([:a "b"] [:a] [:a {:href "s"} "b"] [:a])
@@ -182,4 +182,3 @@
 ;;   (if *use-tagsoup*
 ;;     (clojure.contrib.lazy-xml/parse-trim (java.io.StringReader. s) startparse-tagsoup 1)
 ;;     (clojure.contrib.lazy-xml/parse-trim (java.io.StringReader. s))))
-

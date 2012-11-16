@@ -10,6 +10,7 @@ $HOME/.inputrc>$HOME/Pool/etc/inputrc
 $HOME/.local
 $HOME/.local/bin
 $HOME/.local/bin/grepless>$HOME/Pool/bin/grepless
+$HOME/.local/bin/html_to_vector.clj>$HOME/Pool/bin/html_to_vector.clj
 $HOME/.local/bin/lein2>$HOME/Pool/bin/lein2
 $HOME/.local/bin/lein>$HOME/Pool/bin/lein
 $HOME/.local/bin/pool.deploy>$HOME/Pool/bin/pool.deploy
