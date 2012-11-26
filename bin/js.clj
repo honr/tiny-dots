@@ -211,12 +211,12 @@
   (mapcat identity (interpose [\.] (map form->jsv body))))
 
 (defn list->jsv:do-imp [forms]
-  (concat ["{" :indent]
+  (concat [\{]
           (mapcat identity
                   (for [form forms]
                     (concat [\newline]
                             (form->jsv form))))
-          [:unindent \newline "}"]))
+          [\}]))
 
 (defn list->jsv:do-imp-raw [forms]
   (mapcat identity
@@ -318,22 +318,24 @@
 
 (defmethod list->jsv :condp-imp [verb & body]
   (let [[pivot & clauses] body]
-   (concat
-    ["switch ("] (form->jsv pivot) [") {"]
-    [:indent]
-    (mapcat identity
-            (for [[case & case-body] clauses]
-              (concat [\newline]
-                      (if (keyword? case)
-                        ["default:"]
-                        (concat ["case "] (form->jsv case) [":"]))
-                      [:indent]
-                      (mapcat identity
-                              (for [form case-body]
-                                (concat [\newline]
-                                        (form->jsv form) [\;])))
-                      [:unindent])))
-    [:unindent \newline "}"])))
+    (concat
+     ["switch ("] (form->jsv pivot) [") " \{]
+     (mapcat identity
+             (for [[case & case-body] clauses]
+               (concat [\newline]
+                       (if (keyword? case) ;; Treating all keywords as the
+                         ;; default case, because a keyword
+                         ;; is not logical false, and it
+                         ;; *acts* as the default case.
+                         ["default:"]
+                         (concat ["case "] (form->jsv case) [":"]))
+                       [:indent]
+                       (mapcat identity
+                               (for [form case-body]
+                                 (concat [\newline]
+                                         (form->jsv form) [\;])))
+                       [:unindent])))
+     [\}])))
 
 (defmethod list->jsv :fn [verb & body]
   (let [[fn-args & fn-body] body]
@@ -549,14 +551,14 @@
   ;; TODO: Add a preprocess step on (form->jsv form).
   (let [cur-x (atom 0)
         indent-stack (atom [])
-        emit (fn
-               ([^String s]
-                  (swap! cur-x + (count s))
-                  (print s))
-               ([^String s1 ^String s2 & more-strings]
-                  (let [s (apply str s1 s2 more-strings)]
-                    (swap! cur-x + (count s))
-                    (print s))))]
+        put (fn
+              ([^String s]
+                 (swap! cur-x + (count s))
+                 (print s))
+              ([^String s1 ^String s2 & more-strings]
+                 (let [s (apply str s1 s2 more-strings)]
+                   (swap! cur-x + (count s))
+                   (print s))))]
     (with-out-str
       (doseq [element (form->jsv form)]
         (cond
@@ -566,14 +568,22 @@
                       (reset! cur-x (count (apply str @indent-stack)))
                       (print (apply str \newline @indent-stack)))
 
-           \, (emit ", ")
-           \; (emit ";")
-           \. (emit ".")
-           \= (emit " =")
-           \space (emit " ")
+           \, (put ", ")
+           \; (put ";")
+           \. (put ".")
+           \= (put " =")
+           \{ (do (put "{")
+                  (swap! indent-stack conj "  ") ;; indent
+                  )
+           \} (do
+                (swap! indent-stack pop) ;; unindent
+                (reset! cur-x (count (apply str @indent-stack))) ;; newline
+                (print (apply str \newline @indent-stack))       ;; newline
+                (put "}"))
+           \space (put " ")
 
            ;; This shouldn't happen.  Put individual characters as strings.
-           (emit (str element)))
+           (put (str element)))
 
          (keyword? element)
          (condp = element
@@ -597,7 +607,7 @@
           nil)
 
          :else
-         (emit element))))))
+         (put element))))))
 
 (defn to-js {:cli {}} []
   (println
