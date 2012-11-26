@@ -355,7 +355,7 @@
               [\newline
                "/**" \newline
                " * " (str "@fileoverview " overview-doc) \newline
-               " * " (str "@auther " author) \newline
+               " * " (str "@author " author) \newline
                " */" \newline])
 
             [\newline
