@@ -405,11 +405,11 @@
     (if (empty? args)
       args-with-meta
       (let [[f & r] args]
-        (if (= f '•)
-          (let [[arg arg-type arg-doc & remaining-r] r]
+        (if (and (first r) (= (first r) '--))
+          (let [[arg-type arg-doc & remaining-r] (rest r)]
             (recur remaining-r
                    (conj args-with-meta
-                         {:name arg :type arg-type :doc arg-doc})))
+                         {:name f :type arg-type :doc arg-doc})))
           (recur r
                  (conj args-with-meta
                        {:name f})))))))
@@ -417,7 +417,7 @@
 (defmethod list->jsv :defn [verb & body]
   (let [[fn-name fn-args & fn-ret-doc-and-body] body
         [fn-return-type fn-return-doc fn-doc & fn-body]
-        (if (= '• (first fn-ret-doc-and-body))
+        (if (= '-- (first fn-ret-doc-and-body))
           (rest fn-ret-doc-and-body)
           (into [nil nil] fn-ret-doc-and-body))
         args-with-meta (extract-args fn-args)]
