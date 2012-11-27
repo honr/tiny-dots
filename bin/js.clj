@@ -441,7 +441,7 @@
      [:unindent \newline " */"]
 
      [\newline
-      (format "function %s(" (apply str (form->jsv fn-name)))]
+      (format "var %s = function(" (apply str (form->jsv fn-name)))]
      (mapcat identity (interpose [\,] (map form->jsv
                                            (map :name args-with-meta))))
      [") "]
