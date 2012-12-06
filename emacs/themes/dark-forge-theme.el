@@ -51,6 +51,7 @@
  '(mode-line-buffer-id           ((t (:foreground "#FF8800" :weight bold))))
  '(mode-line-mousable            ((t (:foreground "#444444" :background "#000000"))))
  '(mode-line-mousable-minor-mode ((t (:foreground "#888888" :background "#FFFFFF"))))
+ ;; For older versions:
  '(modeline                      ((t (:foreground "#999999" :background "#282828" :box (:line-width 1 :color "#404040")))))
  '(modeline-inactive             ((t (:foreground "#444444" :background "#111111" :box (:line-width 1 :color "#202020")))))
  '(modeline-buffer-id            ((t (:foreground "#FF8800" :weight bold))))
