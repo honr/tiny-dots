@@ -88,7 +88,7 @@
    '(glasses-uncapitalize-p t)
    '(glasses-uncapitalize-regexp "[a-zA-Z_]")
    '(indent-tabs-mode nil)
-   '(indicate-buffer-boundaries 'left)
+   ;; '(indicate-buffer-boundaries 'left)
    '(iswitchb-default-method 'maybe-frame)
    '(mouse-avoidance-mode 'banish)
    '(mouse-wheel-progressive-speed nil)
