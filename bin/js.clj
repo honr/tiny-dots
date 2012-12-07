@@ -495,6 +495,12 @@
    (string? form)
    [[:string (string/escape form {\' "\"", \\ "\\\\"})]]
 
+   (instance? java.util.regex.Pattern form)
+   [(str "/" form "/")]
+
+   (nil? form)
+   ["null"]
+
    :else
    [(pr-str form)]))
 
