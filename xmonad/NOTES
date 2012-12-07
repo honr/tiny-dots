@@ -1,0 +1,7 @@
+* Installation on Debian/Ubuntu:
+  aptitue install xmonad xmonad-contrib
+  # cabal install dbus? gnome-panel-devel? ...
+* Installation on Mac 10.8:
+  1. Install the haskell platform.
+  2. cabal install xmonad xmonad-contrib --flags="-use_xft"
+  3. cabal install xmobar --extra-lib-dirs=/opt/X11/lib --extra-include-dirs=/opt/X11/include

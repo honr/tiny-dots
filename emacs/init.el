@@ -74,6 +74,8 @@
   (setq gdb-many-windows t)
   (setq gdb-show-main t)
 
+  (add-hook 'prog-mode-hook (lambda () (subword-mode t)))
+
   (require 'newcomment)
 
   (custom-set-variables
@@ -82,6 +84,7 @@
    '(custom-enabled-themes '(dark-forge))
    '(custom-safe-themes t)
    '(custom-theme-directory "~/.emacs.d/themes")
+   '(ediff-window-setup-function 'ediff-setup-windows-plain)
    '(fill-column 78)
    '(glasses-original-separator "")
    '(glasses-separator "-")
