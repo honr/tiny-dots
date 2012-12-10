@@ -511,6 +511,7 @@
     (if-not (neg? going-backward)
       (inc going-backward)
       (let [going-forward (apply min
+                                 -1
                                  (filter #(not (neg? %))
                                          (map #(.indexOf s % loc)
                                               [" " "	"])))]
