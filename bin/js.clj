@@ -87,7 +87,7 @@
 (def js-operator-map
   {'. {:prec 1 :assoc :left}
    'dot {:prec 1 :assoc :left :model :dot}
-   'new! {:str "new" :prec 1 :assoc :right, :model :unary}
+   'new {:str "new" :prec 1 :assoc :right, :model :unary}
 
    '--funcall-- {:prec 2 :assoc :left}
 

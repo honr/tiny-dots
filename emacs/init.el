@@ -102,6 +102,9 @@
    '(tab-width 2)
    '(vc-follow-symlinks t))
 
+  ;; (remove-hook 'find-file-hooks 'vc-find-file-hook)
+  ;; (setq vc-handled-backends nil)
+
   (load-library-if-exists "config-custom-variables")
 
   (load-library-if-exists "config-gnus")
