@@ -196,7 +196,7 @@ pangoSanitize = foldr sanitize ""
 
 
 -- Themes
-_colors = _colors_light
+_colors = _colors_dark
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
@@ -340,7 +340,7 @@ _emacsKeys  = \conf ->
                -- ("M-h n", manTerminal),
                ("M-C-S-e", (spawn "gedit")),
                ("M-C-e", runEditor),
-               ("M-e", runEditorHere),
+               ("M-C-S-e", runEditorHere),
                ("M-C-c", runChrome),
                ("M-C-y", runFirefox),
                ("M-C-u", runCloveClojure),
@@ -358,15 +358,15 @@ _emacsKeys  = \conf ->
                -- Layouts
                ("M-C-s", refresh),
 
-               ("M-S-<Space>", (setLayout (XMonad.layoutHook conf))),
-               ("M-<Space>", (sendMessage NextLayout))] ++
+               ("M-e d", (setLayout (XMonad.layoutHook conf))),
+               ("M-e n", (sendMessage NextLayout))] ++
 
-              [("M-2 f", (sendMessage (JumpToLayout "Full"))),
-               ("M-2 1", (sendMessage (JumpToLayout "Tall"))),
-               ("M-2 2", (sendMessage (JumpToLayout "Mirror Tall"))),
-               ("M-2 3", (sendMessage (JumpToLayout "ThreeCol"))),
-               ("M-2 g", (sendMessage (JumpToLayout "Grid"))),
-               ("M-2 c", (sendMessage (JumpToLayout "Circle")))] ++
+              [("M-e f", (sendMessage (JumpToLayout "Full"))),
+               ("M-e 1", (sendMessage (JumpToLayout "Tall"))),
+               ("M-e 2", (sendMessage (JumpToLayout "Mirror Tall"))),
+               ("M-e 3", (sendMessage (JumpToLayout "ThreeCol"))),
+               ("M-e g", (sendMessage (JumpToLayout "Grid"))),
+               ("M-e c", (sendMessage (JumpToLayout "Circle")))] ++
 
               (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++ ["p", "f", "n", "b"]
                    nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
@@ -383,13 +383,14 @@ _emacsKeys  = \conf ->
                        | (a, b) <- zip key_dirs (cycle floatsnap_dirs)] ++
                   [("M-M1-S-" ++ a, (withFocused (Actions.FloatSnap.snapShrink b Nothing)))
                        | (a, b) <- zip key_dirs (cycle floatsnap_dirs)]) ++
-              [
-               -- ("M-<Tab>", (Layout.BoringWindows.focusDown)),
-               -- ("M-S-<Tab>", (Layout.BoringWindows.focusUp)),
-               ("M-<Tab>", (Actions.CycleWindows.cycleRecentWindows [xK_Super_L] xK_Tab xK_grave) >>
-                           (Actions.UpdatePointer.updatePointer (Actions.UpdatePointer.Relative 1 1))),
 
-               ("M-<Return>", (Actions.DwmPromote.dwmpromote)),
+              -- ("M-<Tab>", (Layout.BoringWindows.focusDown)),
+              -- ("M-S-<Tab>", (Layout.BoringWindows.focusUp)),
+              [(k, (Actions.CycleWindows.cycleRecentWindows [xK_Super_L] xK_Tab xK_grave) >>
+                   (Actions.UpdatePointer.updatePointer (Actions.UpdatePointer.Relative 1 1)))
+                   | k <- ["M-S-e", "M-<Tab>"]] ++
+
+              [("M-<Return>", (Actions.DwmPromote.dwmpromote)),
                ("M-S-<Return>", (Layout.BoringWindows.focusMaster)),
 
                ("M-C-1", (screenWorkspace 0) >>= (flip whenJust (windows . StackSet.view))),
