@@ -96,14 +96,18 @@
    '(mouse-avoidance-mode 'banish)
    '(mouse-wheel-progressive-speed nil)
    '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
+   '(org-replace-disputed-keys t)
    '(read-buffer-completion-ignore-case t)
    '(read-file-name-completion-ignore-case t)
    '(show-trailing-whitespace t)
    '(tab-width 2)
    '(vc-follow-symlinks t))
 
-  ;; (remove-hook 'find-file-hooks 'vc-find-file-hook)
-  ;; (setq vc-handled-backends nil)
+  (defun go-easy-on-remote ()
+    (interactive)
+    (remove-hook 'find-file-hooks 'vc-find-file-hook)
+    (setq vc-handled-backends nil)
+    (setq auto-save-interval 0))
 
   (load-library-if-exists "config-custom-variables")
 
@@ -118,3 +122,40 @@
   (load-library-if-exists "config-algol")
   (load-library-if-exists "config-site")
   (load-library-if-exists "config-site-extra"))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes (quote (dark-forge)))
+ '(custom-safe-themes t)
+ '(custom-theme-directory "~/.emacs.d/themes")
+ '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+ '(fill-column 78)
+ '(glasses-original-separator "")
+ '(glasses-separator "-")
+ '(glasses-uncapitalize-p t)
+ '(glasses-uncapitalize-regexp "[a-zA-Z_]")
+ '(gud-gdb-command-name "gdb --annotate=1")
+ '(indent-tabs-mode nil)
+ '(iswitchb-default-method (quote maybe-frame))
+ '(large-file-warning-threshold nil)
+ '(mouse-avoidance-mode (quote banish) nil (avoid))
+ '(mouse-wheel-progressive-speed nil)
+ '(mouse-wheel-scroll-amount (quote (3 ((shift) . 1) ((control)))))
+ '(org-agenda-files '("~/Documents/agenda.org"))
+ '(org-export-html-style
+   (format "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">"
+           (expand-file-name "~/org.css")))
+ '(org-replace-disputed-keys t)
+ '(read-buffer-completion-ignore-case t)
+ '(read-file-name-completion-ignore-case t)
+ '(show-trailing-whitespace t)
+ '(tab-width 2)
+ '(vc-follow-symlinks t))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
