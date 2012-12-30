@@ -5,6 +5,7 @@
                  [org.clojure/data.csv "0.1.2"]
                  [org.clojure/java.jdbc "0.1.1"]
                  ;; [swank-clojure "1.4.2"]
+                 [org.mozilla/rhino "1.7R4"]
                  [clj-http "0.5.6"]
                  ;;;; FROM HERE:
                  ;; [org.apache.httpcomponents/httpclient "4.1.2"]

@@ -10,7 +10,11 @@
             [clojure.pprint])
   (:import [java.io File]
            [org.joda.time
-            DateTime Months Weeks MutableDateTime]))
+            DateTime Months Weeks MutableDateTime]
+           ;; also-imported:
+           ;;   org.mozilla.javascript.CompilerEnvirons
+           ;;   org.mozilla.javascript.Parser
+           ))
 
 (defn split-name [^String p]
   (loop [p p coll []]
@@ -85,6 +89,10 @@
 (def ^{:dynamic true} *infix-ambience* 24) ;; Normally between 1-18
 
 (def js-operator-map
+  ;; prec: Precedence level,
+  ;; assoc: Association mode (left, right, nil)
+  ;; str: Replace the operator or function name with this other string.
+  ;; model: Specifies what to do with the operator or function.
   {'. {:prec 1 :assoc :left}
    'dot {:prec 1 :assoc :left :model :dot}
    'new {:str "new" :prec 1 :assoc :right, :model :unary}
@@ -155,17 +163,17 @@
    'continue {:model :no-args-or-unary}
    'return {:model :no-args-or-unary}
    'if {:model :if}
-   'when {:model :when-imp}  ;; Imperative
-   'cond {:model :cond-imp}  ;; Imperative
-   'condp {:model :condp-imp}  ;; Imperative
-   'for {:model :for-imp}        ;; Imperative
+   'when {:model :when-imp} ;; Imperative
+   'cond {:model :cond-imp} ;; Imperative
+   'condp {:model :condp-imp} ;; Imperative
+   'for {:model :for-imp} ;; Imperative
    'do! {:model :do-imp}
    'fn {:model :fn} ;; Not defn. This is lambda.
    'ns {:model :ns}
    'defn {:model :defn}
    'defn- {:model :defn}
-   'get {:model :unary}  ;; ???
-   'set {:model :unary}  ;; ???
+   'get {:model :unary} ;; ???
+   'set {:model :unary} ;; ???
 
    'let {:model :let}
    'var {:model :var}
@@ -310,10 +318,10 @@
 (defmethod list->jsv :cond-imp [verb & body]
   (mapcat identity
           (for [[i [condition & forms]] (map vector (iterate inc 0) body)]
-            (concat (cond (zero? i) ["if"]
+            (concat (cond (zero? i) (concat ["if" \space "("] (form->jsv condition) [")"])
                           (keyword? condition) [" else"]
-                          :else [" else if"])
-                    [\space] ["("] (form->jsv condition) [")"] [\space]
+                          :else (concat [" else if" \space "("] (form->jsv condition) [")"]))
+                    [\space]
                     (list->jsv:do-imp forms)))))
 
 (defmethod list->jsv :condp-imp [verb & body]
@@ -619,6 +627,18 @@
 (defn to-js {:cli {}} []
   (println
    (form->js-str (read-string (str "(__PROGRAM__ " (slurp *in*) ")")))))
+
+(defn js-parse [filename]
+  (.parse
+   (org.mozilla.javascript.Parser. (org.mozilla.javascript.CompilerEnvirons.))
+   (slurp filename)
+   filename
+   1))
+
+(defn parse-js {:cli {}} [^String filename]
+  (println
+   (.toSource
+    (js-parse filename))))
 
 (defn form-to-js:test
   {:cli {:color Boolean :c :color
