@@ -6,6 +6,12 @@
                  [org.clojure/java.jdbc "0.1.1"]
                  ;; [swank-clojure "1.4.2"]
                  [org.mozilla/rhino "1.7R4"]
+
+                 ;; For ClojsureScript:
+                 ;; [com.google.javascript/closure-compiler "r2180"]
+                 ;; [org.clojure/google-closure-library "0.0-2029"]
+                 [org.clojure/clojurescript "0.0-1450"]
+
                  [clj-http "0.5.6"]
                  ;;;; FROM HERE:
                  ;; [org.apache.httpcomponents/httpclient "4.1.2"]

@@ -104,7 +104,8 @@
 
    'bit-not {:str "~" :prec 4 :assoc :right, :model :unary-no-space}
    'not {:str "!" :prec 4 :assoc :right, :model :unary-no-space}
-   'pos {:str "+" :prec 4 :assoc :right, :model :unary-no-space} ;; Is this used?
+   ;; Is this used?
+   'pos {:str "+" :prec 4 :assoc :right, :model :unary-no-space}
    'neg {:str "-" :prec 4 :assoc :right, :model :unary-no-space}
 
    'typeof {:prec 4 :assoc :right, :model :unary}
@@ -120,7 +121,8 @@
 
    'bit-shift-left {:str "<<" :prec 7 :assoc :left, :model :infix}
    'bit-shift-right {:str ">>" :prec 7 :assoc :left, :model :infix}
-   'bit-shift-right-z {:str ">>>" :prec 7 :assoc :left, :model :infix} ;; Zero-fill right shift
+   ;; Zero-fill right shift
+   'bit-shift-right-z {:str ">>>" :prec 7 :assoc :left, :model :infix}
 
    '>? {:str ">" :prec 8 :assoc :left, :model :infix}
    '>=? {:str ">=" :prec 8 :assoc :left, :model :infix}
@@ -246,7 +248,9 @@
   ;; for (var xIndex = 0; xIndex < coll.length; ++xIndex) ...
   ;;   var x = coll[xIndex]; ...
   ;; OR
-  ;; for (var xIndex = 0, x = coll[0]; xIndex < coll.length; ++i, x=coll[xIndex]) ...
+  ;; for (var xIndex = 0, x = coll[0];
+  ;;      xIndex < coll.length;
+  ;;      ++i, x=coll[xIndex]) ...
 
   ;; (for [i :index coll] ...) ->
   ;; for (var i = 0; i < coll.length; ++i) ...
@@ -256,7 +260,10 @@
     (concat
      (cond
       (not (or (symbol? a) (symbol? b) (symbol? c)))
-      (concat ["for ("] (form->jsv a) [\; \space] (form->jsv b) [\; \space] (form->jsv c) [") "])
+      (concat ["for ("]
+              (form->jsv a) [\; \space]
+              (form->jsv b) [\; \space]
+              (form->jsv c) [") "])
 
       (= b :in)
       (concat ["for ("] (form->jsv a) [" in "] (form->jsv c) [") "])
@@ -273,7 +280,8 @@
       ;;         (form->jsv b) [" < "] (form->jsv c) [\.] ["length"] [\; \space]
       ;;         ["++"] (form->jsv b) [") {"]
       ;;         [\newline *line-prefix*]
-      ;;         ["var "] (form->jsv a) " = " (form->jsv c) ["["] (form->jsv b) ["]"] [\;])
+      ;;         ["var "] (form->jsv a) " = "
+      ;;         (form->jsv c) ["["] (form->jsv b) ["]"] [\;])
       ;; OR
       (concat ["for ("]
               ["var "] (form->jsv b) [\= \space] ["0"] [\,]
@@ -291,7 +299,8 @@
    (mapcat identity
            (interpose [\,]
                       (for [[k v] (partition 2 body)]
-                        (concat (form->jsv k) [\= \space] (form->jsv v) [\;]))))))
+                        (concat (form->jsv k) [\= \space]
+                                (form->jsv v) [\;]))))))
 
 (defmethod list->jsv :let [verb & body]
   (mapcat identity
@@ -306,7 +315,8 @@
     (let [[k v] body]
       (concat (form->jsv k) [\= \space] (form->jsv v) [\;]))
     (let [[k f v] body]
-      (concat (form->jsv k) [\space] (form->jsv f) ["=" \space] (form->jsv v) [\;]))))
+      (concat (form->jsv k) [\space] (form->jsv f) ["=" \space]
+              (form->jsv v) [\;]))))
 
 (defmethod list->jsv :when-imp [verb & body]
   (let [[if-cond & if-body] body]
@@ -318,9 +328,15 @@
 (defmethod list->jsv :cond-imp [verb & body]
   (mapcat identity
           (for [[i [condition & forms]] (map vector (iterate inc 0) body)]
-            (concat (cond (zero? i) (concat ["if" \space "("] (form->jsv condition) [")"])
-                          (keyword? condition) [" else"]
-                          :else (concat [" else if" \space "("] (form->jsv condition) [")"]))
+            (concat (cond (zero? i)
+                          (concat ["if" \space "("] (form->jsv condition) [")"])
+
+                          (keyword? condition)
+                          [" else"]
+
+                          :else
+                          (concat [" else if" \space "("]
+                                  (form->jsv condition) [")"]))
                     [\space]
                     (list->jsv:do-imp forms)))))
 
@@ -331,10 +347,10 @@
      (mapcat identity
              (for [[case & case-body] clauses]
                (concat [\newline]
-                       (if (keyword? case) ;; Treating all keywords as the
-                         ;; default case, because a keyword
-                         ;; is not logical false, and it
-                         ;; *acts* as the default case.
+                       (if (keyword? case)
+                         ;; Treating all keywords as the default case, because
+                         ;; a keyword is not logical false, and it *acts* as
+                         ;; the default case.
                          ["default:"]
                          (concat ["case "] (form->jsv case) [":"]))
                        [:indent]
@@ -358,26 +374,27 @@
            author :author
            deps :require}
           overview-doc]] body]
-    (concat [(format "// Copyright %s. All Rights Reserved." copyright) \newline]
-            (when overview-doc
-              [\newline
-               "/**" \newline
-               " * " (str "@fileoverview " overview-doc) \newline
-               " * " (str "@author " author) \newline
-               " */" \newline])
+    (concat
+     [(format "// Copyright %s. All Rights Reserved." copyright) \newline]
+     (when overview-doc
+       [\newline
+        "/**" \newline
+        " * " (str "@fileoverview " overview-doc) \newline
+        " * " (str "@author " author) \newline
+        " */" \newline])
 
-            [\newline
-             "goog.provide(" (str "'" (apply str (form->jsv ns-name)) "'") ")" \;
-             \newline]
-            (mapcat identity
-                    (for [dep deps]
-                      (concat [\newline]
-                              ["goog.require("
-                               (str "'"
-                                    (apply str (form->jsv dep))
-                                    "'")
-                               ")" \;])))
-            [\newline])))
+     [\newline
+      "goog.provide(" (str "'" (apply str (form->jsv ns-name)) "'") ")" \;
+      \newline]
+     (mapcat identity
+             (for [dep deps]
+               (concat [\newline]
+                       ["goog.require("
+                        (str "'"
+                             (apply str (form->jsv dep))
+                             "'")
+                        ")" \;])))
+     [\newline])))
 
 (defmethod list->jsv :array-get [verb & body]
   (let [[array-name & indexes] body]
@@ -529,19 +546,24 @@
 
 ;; TODO: (fix bug) If it does not fit in the first line, we might still have a
 ;; chance of ignoring the first line and fitting on subsequent lines.
-(defn string-fill [[^String beg ^String end ^String wrapper ^Boolean trim-pieces?]
+(defn string-fill [[^String beg ^String end ^String wrapper
+                    ^Boolean trim-pieces?]
                    [cur-x line-prefix]
                    ^String s]
   (let [general-line-capacity (- +line-width+
                                  (count line-prefix) (count beg) (count end) 1)
-        first-line-capacity (max 0 (- general-line-capacity (- cur-x (count line-prefix))))
-        cont-line-capacity (max 0 (- general-line-capacity 4))  ;; Subsequent lines.
-        cont-prefix "    ",  ;; Sub-indentation of subsequent lines.
+        first-line-capacity (max 0
+                                 (- general-line-capacity
+                                    (- cur-x (count line-prefix))))
+        ;; Subsequent lines.
+        cont-line-capacity (max 0
+                                (- general-line-capacity 4))
+        cont-prefix "    ",             ; Sub-indentation of subsequent lines.
         cont-indent (count cont-prefix),
         cont-beg (str cont-prefix beg)]
 
     (loop [s s, coll [], capacity first-line-capacity, sub-prefix beg]
-      (if (>= capacity (count s)) ;; Also true for empty `s'.
+      (if (>= capacity (count s))       ; Also true for empty `s'.
         (let [last-element (str sub-prefix s end)]
           {:coll (interpose (str wrapper \newline line-prefix)
                             (conj coll last-element))

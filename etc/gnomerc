@@ -3,8 +3,8 @@
 export SYSOSTYPE="linux"
 export SYSARCH="linux-$(uname -m)"
 
-export PATH="$HOME/.local/bin/$SYSARCH:$HOME/.local/bin:$PATH"
-export MANPATH="$HOME/.local/share/man:$MANPATH"
+export PATH="$HOME/.local/bin/$SYSARCH:$HOME/.local/bin:$HOME/.opt/bin:$PATH"
+export MANPATH="$HOME/.local/share/man:$HOME/.opt/share/man:$MANPATH"
 export PYTHONSTARTUP="$HOME/.local/etc/pythonrc"
 export ALTERNATE_EDITOR=""
 export VISUAL="emacsclient"
