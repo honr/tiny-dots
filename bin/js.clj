@@ -273,6 +273,20 @@
               ["var "] (form->jsv a) [\= \space] ["0"] [\; \space]
               (form->jsv a) [" < "] (form->jsv c) [\.] ["length"] [\; \space]
               ["++"] (form->jsv a) [") "])
+      (vector? b)
+      (let [[b-ind b-ind-max] b]
+        (concat
+         ["for ("]
+         ["var "]
+         (form->jsv b-ind) [\= \space] ["0"] [\,]
+         (form->jsv b-ind-max) [\= \space] (form->jsv c) [\.] ["length"] [\,]
+         (form->jsv a) [\= \space] (form->jsv c) ["[0]"]
+         [\; \space]
+         (form->jsv b-ind) [" < "] (form->jsv b-ind-max)
+         [\; \space]
+         ["++"] (form->jsv b-ind) [\,]
+         (form->jsv a) [\= \space] (form->jsv c) ["["] (form->jsv b-ind) ["]"]
+         [") "]))
 
       :else
       ;; (concat ["for ("]

@@ -363,7 +363,9 @@ _emacsKeys  = \conf ->
 
               [("M-e f", (sendMessage (JumpToLayout "Full"))),
                ("M-e 1", (sendMessage (JumpToLayout "Tall"))),
+               ("M-e S-1", (sendMessage (JumpToLayout "Tall2-Limited"))),
                ("M-e 2", (sendMessage (JumpToLayout "Mirror Tall"))),
+               ("M-e S-2", (sendMessage (JumpToLayout "Wide2-Limited"))),
                ("M-e 3", (sendMessage (JumpToLayout "ThreeCol"))),
                ("M-e g", (sendMessage (JumpToLayout "Grid"))),
                ("M-e c", (sendMessage (JumpToLayout "Circle")))] ++
@@ -489,13 +491,15 @@ _manageHook = manageHook defaultConfig
             <+> composeAll
             [Hooks.ManageHelpers.isFullscreen --> Hooks.ManageHelpers.doFullFloat,
              appName =? "Dialog" --> Hooks.ManageHelpers.doCenterFloat,
-             className =? "Emacs" --> unfloat,
-             className =? "Emacs24" --> unfloat,
+             ((className =? "Emacs24") <||> (className =? "Emacs")) --> unfloat,
              className =? "Thunderbird" --> unfloat,
-             className =? "Firefox" --> unfloat,
-             className =? "Chromium" --> unfloat,
+             (((className =? "Firefox") <||> (className =? "Nightly")) <&&> 
+              (roleName =? "browser")) --> unfloat,
+             ((className =? "Chromium") <||>
+              (className =? "Chromium-browser")) --> unfloat,
             -- checkDock --> doIgnore,
-             className =? "Inkscape" --> unfloat]
+             ((className =? "Inkscape") <&&>
+              (fmap ("- Inkscape" `List.isSuffixOf`) title)) --> unfloat]
             -- <+> composeOne [
             --       transience,
             --       className =? "Firefox" -?> doF (StackSet.shift "browse")]
@@ -504,6 +508,7 @@ _manageHook = manageHook defaultConfig
 	    -- <+> doFloat -- Float by default.
             <+> Hooks.ManageDocks.manageDocks
     where unfloat = ask >>= (doF . StackSet.sink)
+          roleName = stringProperty "WM_WINDOW_ROLE"
 
 
 -- Topics and Premade Workspaces
