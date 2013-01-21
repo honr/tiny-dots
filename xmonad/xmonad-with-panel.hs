@@ -493,10 +493,10 @@ _manageHook = manageHook defaultConfig
              appName =? "Dialog" --> Hooks.ManageHelpers.doCenterFloat,
              ((className =? "Emacs24") <||> (className =? "Emacs")) --> unfloat,
              className =? "Thunderbird" --> unfloat,
-             (((className =? "Firefox") <||> (className =? "Nightly")) <&&> 
+             (((className =? "Firefox") <||> (className =? "Nightly")) <&&>
               (roleName =? "browser")) --> unfloat,
-             ((className =? "Chromium") <||>
-              (className =? "Chromium-browser")) --> unfloat,
+             (((className =? "Chromium") <||> (className =? "Chromium-browser")) <&&>
+              (roleName =? "browser")) --> unfloat,
             -- checkDock --> doIgnore,
              ((className =? "Inkscape") <&&>
               (fmap ("- Inkscape" `List.isSuffixOf`) title)) --> unfloat]
