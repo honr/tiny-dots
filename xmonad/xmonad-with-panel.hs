@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 
 -- XMonad:
 import XMonad hiding ( (|||) )
@@ -68,6 +69,7 @@ import qualified XMonad.Prompt.Shell as Prompt.Shell
 -- import qualified XMonad.Prompt.Ssh as Prompt.Ssh -- unused
 import qualified XMonad.Prompt.Window as Prompt.Window
 import qualified XMonad.Prompt.Workspace as Prompt.Workspace
+import qualified XMonad.Util.ExtensibleState as Util.ExtensibleState
 import qualified XMonad.Util.EZConfig as Util.EZConfig
 -- import qualified XMonad.Util.Loggers as Util.Loggers -- unused
 import qualified XMonad.Util.Run as Util.Run
@@ -196,7 +198,7 @@ pangoSanitize = foldr sanitize ""
 
 
 -- Themes
-_colors = _colors_dark
+_colors = _colors_light
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
@@ -204,6 +206,11 @@ data Colors = Colors { normal_border :: String,
                        dynamiclog_current :: String,
                        dynamiclog_visible :: String,
                        dynamiclog_urgent :: String }
+              deriving (Typeable, Read, Show)
+
+instance ExtensionClass Colors where
+  initialValue = _colors
+  extensionType = PersistentExtension
 
 _colors_light = Colors { normal_border = "#AAAAAA",
                          focused_border = "#0066CC",
@@ -259,17 +266,28 @@ _XPConfig = (Prompt.defaultXPConfig
 terminalCmd = "xterm"
 runTerminal :: X()
 runTerminal = (spawn terminalCmd)
-runColourTerminal = (Actions.RandomBackground.randomBg
-                      (Actions.RandomBackground.HSV x y))
-                     where
-                        [x, y] = term_background _colors
+-- runColourTerminal = (Actions.RandomBackground.randomBg
+--                       (Actions.RandomBackground.HSV x y))
+--                      where
+--                         [x, y] = term_background _colors
+
+-- runInColourTerminal cmd = do
+--     c <- (Actions.RandomBackground.randomBg'
+--            (Actions.RandomBackground.HSV x y))
+--     (spawn (terminalCmd ++ " -bg " ++ c ++ " -e " ++ cmd))
+--     where
+--         [x, y] = term_background _colors
+
+runColourTerminal = do
+  [x, y] <- Util.ExtensibleState.gets term_background
+  (Actions.RandomBackground.randomBg
+   (Actions.RandomBackground.HSV x y))
 
 runInColourTerminal cmd = do
+    [x, y] <- Util.ExtensibleState.gets term_background
     c <- (Actions.RandomBackground.randomBg'
            (Actions.RandomBackground.HSV x y))
     (spawn (terminalCmd ++ " -bg " ++ c ++ " -e " ++ cmd))
-    where
-        [x, y] = term_background _colors
 
 runColourScreenTerminal = (runInColourTerminal "screen -xR")
 
@@ -466,6 +484,13 @@ _emacsKeys  = \conf ->
                -- Buggy, messes with focus and creates flicker, needs to be fixed.
 
                ("M-C-a", (Actions.DynamicWorkspaces.renameWorkspace _XPConfig)),
+
+               ("M-i 1", (Util.ExtensibleState.put _colors_dark) >>
+                         (spawn "xrdb -merge .local/etc/Xresources-dark") >>
+                         (spawn "emacsclient -e \"(set-theme :dark)\"")),
+               ("M-i 2", (Util.ExtensibleState.put _colors_light) >>
+                         (spawn "xrdb -merge .local/etc/Xresources-light") >>
+                         (spawn "emacsclient -e \"(set-theme :light)\"")),
 
               -- -- Commands
               -- , ("M-y", runCommand _commands)
