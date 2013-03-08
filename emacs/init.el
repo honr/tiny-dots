@@ -77,11 +77,12 @@
   (add-hook 'prog-mode-hook (lambda () (subword-mode t)))
 
   (require 'newcomment)
+  (require 'org)
 
   (custom-set-variables
 
-   ;; '(custom-enabled-themes '(whitestone-serious))
-   '(custom-enabled-themes '(dark-forge))
+   '(custom-enabled-themes '(whitestone-serious))
+   ;; '(custom-enabled-themes '(dark-forge))
    '(custom-safe-themes t)
    '(custom-theme-directory "~/.emacs.d/themes")
    '(ediff-window-setup-function 'ediff-setup-windows-plain)

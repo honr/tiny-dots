@@ -25,6 +25,7 @@
             [clojure.walk :as walk]
             [clojure.string]
             [clojure.pprint])
+  (:use [rose.git-util])
   (:import [java.util.zip DeflaterOutputStream InflaterInputStream]
            [java.io File FileOutputStream FileInputStream ByteArrayOutputStream]
            [java.security MessageDigest]))
@@ -35,7 +36,6 @@
 (defonce global-cache-map (ref {}))
 
 ;; Internal dynamic.
-(def ^{:dynamic true} *dir* nil)
 
 (def ^{:dynamic true} *rules* {})
 
@@ -44,26 +44,9 @@
 (def ^{:dynamic true} *cache*)  ;; A ref.
 
 ;;; Utilities
-(defn insert-slash-at-2 [^String s]
-  (str (.substring s 0 2) \/ (.substring s 2)))
 
 (defn filter-prefix [prefix coll]
   (filter #(.startsWith % prefix) coll))
-
-(defn file-exists? [^String x]
-  (.exists (File. x)))
-
-(defn file-parent [^String x]
-  (.getParent (File. x)))
-
-(defn make-sure-directory-exists [p]
-  (let [d (File. p)] (when-not (.exists d) (.mkdirs d))))
-
-(defn make-sure-parent-directory-exists [p]
-  (let [d (.getParentFile (File. p))] (when-not (.exists d) (.mkdirs d))))
-
-(defn str-hex [bytes]
-  (apply str (map #(format "%02x" %) bytes)))
 
 (defn create-necessary-dirs []
   "Assumes *dir* is set properly."
@@ -160,150 +143,15 @@
 
 ;;; Git related.
 
-(defn write-object [git-path content-type content]
-  "content-type is :blob, :tree, :commit, ?
-   content is a byte array which can be obtained by
-   (.getBytes some-string \"UTF-8\") if input is a string."
-  (let [store (.toByteArray
-               (doto (ByteArrayOutputStream.)
-                 (.write (.getBytes (format "%s %d\0"
-                                            (name content-type)
-                                            (count content))
-                                    "UTF-8"))
-                 (.write content)))
-        digest (.digest
-                (MessageDigest/getInstance "SHA-1")
-                store)
-        blob-path (str git-path "/objects/"
-                       (str-hex [(first digest)])
-                       \/
-                       (str-hex (next digest)))]
-    (make-sure-parent-directory-exists blob-path)
-    (with-open [output (DeflaterOutputStream.
-                         (FileOutputStream.
-                          blob-path))]
-      (.write output store))
-    digest))
 
-(defn write-blob [git-path content-bytes]
-  (write-object git-path :blob content-bytes))
-
-(defn extract-blob-to [git-path object-sha1 dest-path]
-  (let [blob-path (str git-path "/objects/" (insert-slash-at-2 object-sha1))]
-    (with-open [out-stream (FileOutputStream. dest-path)
-                in-stream (InflaterInputStream. (FileInputStream. blob-path))]
-      (while (not (zero? (.read in-stream))))
-      (let [buffer (make-array Byte/TYPE 1024)]
-        (loop []
-          (let [size (.read in-stream buffer)]
-            (when (pos? size)
-              (do (.write out-stream buffer 0 size)
-                  (recur)))))))))
-
-(defn write-tree [git-path coll]
-  "Example:
- (write-tree git-path
-   [{:filename \"hello\" :mode \"100644\" :content \"Hello\n\"}])"
-  (let [content-ba (ByteArrayOutputStream.)]
-    (doseq [x coll]
-      (let [digest (write-object git-path
-                                 :blob
-                                 (.getBytes (get x :content) "UTF-8"))]
-        (.write content-ba (.getBytes
-                            (format "%s %s\0"
-                                    (:mode x)
-                                    (:filename x))
-                            "UTF-8"))
-        (.write content-ba digest)))
-    (write-object git-path :tree (.toByteArray content-ba))))
 
 ;;; Rest of it.
 
 ;; Note: Currently all nodes represent files.  There is no virtual target.
 
-(def git-diff-index-line-pattern-ignore-cp-mv
-  #"^:([0-9]{6}) ([0-9]{6}) ([0-9a-f]{40}) ([0-9a-f]{40}) (.*)$")
 
-(defn git-diff-tree [top-dir treeish new-treeish]
-  ;; If new-treeish is nil, will compare to working index (using
-  ;; git-diff-index).
-  (binding [*cwd* top-dir]
-    (for [[info filepath]
-          (partition 2
-                     (.split
-                      (:out
-                       (if new-treeish
-                         (rose.clu/sh "git"
-                                      "diff-tree" treeish new-treeish :r :z "-l0")
-                         (rose.clu/sh "git"
-                                      "diff-index" treeish :z "-l0")))
-                      ;; -l0 for preventing copy/move detection.
-                      ;; -z for 0 terminated records.
-                      "\0"))]
-      (when-let [[_ mode-src mode-dst sha1-src sha1-dst status]
-                 (re-matches git-diff-index-line-pattern-ignore-cp-mv info)]
-        {:mode-src (Integer/parseInt mode-src 8)
-         :mode-dst (Integer/parseInt mode-dst 8)
-         :sha1-src sha1-src
-         :sha1-dst sha1-dst
-         :dirty? (= "0000000000000000000000000000000000000000" sha1-dst)
-         :status status
-         :path filepath}))))
-
-(defn git-treeish-sha1 [top-dir tree-ish]
-  (binding [*cwd* top-dir]
-    (.trim (:out (rose.clu/sh "git" "log" tree-ish "-1" "--format=format:%H")))))
 
 ;;; Working with changes.
-
-(defn slurp-bytes [^String dir ^String filename]
-  (java.nio.file.Files/readAllBytes
-   (java.nio.file.Paths/get dir (into-array [filename]))))
-
-(defn notice-file-changes [changes new-treeish-sha1]
-  ;; Modifies *cache*.
-  (doseq [x changes]
-    (if  (x :dirty?)
-      (println (format "Ignoring file `%s'.  If you need it `git add' it."
-                       (x :path)))
-      ;; TODO. Should we assume the object always exists in git objects
-      ;; store, and stop using write-blob ourselves?
-      (let [x-sha1-path (insert-slash-at-2 (x :sha1-dst))
-            blob-in-git (str *dir* "/.git/objects/" x-sha1-path)]
-        (if (file-exists? blob-in-git)
-          (let [dest-path (str *dir* store-subdir "/objects/" x-sha1-path)]
-            (make-sure-parent-directory-exists dest-path)
-            (rose.file/cp blob-in-git dest-path))
-          (println (str-hex (write-blob (str *dir* store-subdir)
-                                        (slurp-bytes *dir* (x :path))))
-                   "="
-                   (x :sha1-dst)
-                   "??")))))
-  (dosync
-   (doseq [x (filter #(not (:dirty? %)) changes)]
-     (alter *cache*
-            update-in [:blob-index (x :path)] conj (x :sha1-dst)))
-   (when new-treeish-sha1
-     (alter *cache* assoc :last-known-treeish new-treeish-sha1))))
-
-;; TODO make sure :last-known-treeish = nil does not break.
-(defn update-cache-index-git [files-we-care-about new-treeish-sha1]
-  ;; Modifies *cache*.  Only when new-treeish-sha1 is specified modifies
-  ;; :last-known-treeish in *cache*.
-  ;; files-we-care-about <- (set (keys rules))
-  (when-let [changes (filter (fn [change]
-                               (files-we-care-about (change :path)))
-                             (git-diff-tree *dir*
-                                            (get @*cache* :last-known-treeish)
-                                            new-treeish-sha1))]
-    (if (empty? changes)
-      (println "No changes detected.")
-      (do
-        (println "Changed files:")
-        (doseq [change changes]
-          (println (format "[%s] \"%s\"" (change :status) (change :path))))
-        (println)))
-    (notice-file-changes changes new-treeish-sha1)))
 
 (defn node-fresh? [node-rules node]
   ;; Does not modify *cache*.
@@ -398,7 +246,7 @@
         (apply (first resolved-node-rules)
                node
                (next resolved-node-rules)))
-      (let [node-sha1 (str-hex
+      (let [node-sha1 (rose.git-util/str-hex
                        (write-blob (str *dir* store-subdir)
                                    (slurp-bytes *cwd* node)))]
         (dosync
@@ -416,7 +264,7 @@
         (build-chamber-clean-up room-number node-sha1)))))
 
 (defn- load-cache-internal [rules-ns rules-dir]
-  (binding [*dir* rules-dir]
+  (binding [rose.git-util/*dir* rules-dir]
     (let [cache-file (str *dir* store-subdir "/cache.clj")]
       (dosync
        (alter global-cache-map
@@ -429,7 +277,7 @@
                      {:blob-index {} :memo {} :last-known-treeish nil})))))))
 
 (defn- save-cache-internal [rules-ns rules-dir]
-  (binding [*dir* rules-dir]
+  (binding [rose.git-util/*dir* rules-dir]
     (create-necessary-dirs)
     (spit (str *dir* store-subdir "/cache.clj")
           @(get @global-cache-map rules-ns))))
@@ -456,10 +304,13 @@
   (let [ns-rules (read-rules)]
     (load-cache-internal (ns-rules :ns) (ns-rules :dir))
     (binding [*rules* (ns-rules :rules)
-              *dir* (ns-rules :dir)
+              rose.git-util/*dir* (ns-rules :dir)
               ;; *rules-tree* (ns-rules :targets-tree)
               *cache* (get @global-cache-map (ns-rules :ns))]
-      (update-cache-index-git (set (keys *rules*)) (git-treeish-sha1 *dir* treeish)))
+      (update-cache-index-git store-subdir
+                              (set (keys *rules*))
+                              (git-treeish-sha1 *dir* treeish)
+                              *cache*))
     (save-cache-internal (ns-rules :ns) (ns-rules :dir))))
 
 (defn registred-objects {:cli {:load Boolean :sha1 Boolean}} []
@@ -467,7 +318,7 @@
     (when [rose.clu/*opts*]
       (load-cache-internal (ns-rules :ns) (ns-rules :dir)))
     (binding [*rules* (ns-rules :rules)
-              *dir* (ns-rules :dir)
+              rose.git-util/*dir* (ns-rules :dir)
               *cache* (get @global-cache-map (ns-rules :ns))]
       (if (rose.clu/*opts* :sha1)
         (doseq [[k v] (get @*cache* :blob-index)]
@@ -481,10 +332,13 @@ monitoring and actively keeping them up-to-date)."
   (let [ns-rules (read-rules)]
     (load-cache-internal (ns-rules :ns) (ns-rules :dir))
     (binding [*rules* (ns-rules :rules)
-              *dir* (ns-rules :dir)
+              rose.git-util/*dir* (ns-rules :dir)
               ;; *rules-tree* (ns-rules :targets-tree)
               *cache* (get @global-cache-map (ns-rules :ns))]
-      (update-cache-index-git (set (keys *rules*)) nil)
+      (update-cache-index-git store-subdir
+                              (set (keys *rules*))
+                              nil
+                              *cache*)
       (create-necessary-dirs)
       (doseq [batch (nodes-build-order targets)]
         (doseq [node batch]
@@ -505,7 +359,7 @@ monitoring and actively keeping them up-to-date)."
 (defn hide-derivables {:cli {}} []
   (let [ns-rules (read-rules)]
     (binding [*rules* (ns-rules :rules)
-              *dir* (ns-rules :dir)]
+              rose.git-util/*dir* (ns-rules :dir)]
       (doseq [node (keys *rules*)]
         (when (not-empty (get *rules* node))
           (rose.file/rm (str *dir* \/ node)))))))

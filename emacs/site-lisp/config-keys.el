@@ -4,7 +4,10 @@
 (global-set-key (kbd "C-x f") prefix-arg)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x f f") 'find-file-at-point)
+(global-set-key (kbd "C-x f 4 f") 'ffap-other-window)
+(global-set-key (kbd "C-x f 5 f") 'ffap-other-frame)
 (global-set-key (kbd "C-x f o") 'ff-find-other-file)
+(global-set-key (kbd "C-x f r") 'ff-find-related-file)
 (global-set-key (kbd "C-x f w") 'buffer-file-name-as-kill)
 
 (defun buffer-file-name-as-kill ()
