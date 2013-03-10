@@ -15,7 +15,8 @@
                  [clj-http "0.5.6"]
                  ;;;; FROM HERE:
                  ;; [org.apache.httpcomponents/httpclient "4.1.2"]
-                 ;; [incanter "1.3.0"]
+                 ;; [incanter/incanter-core "1.4.1"]
+                 ;; [incanter/incanter-charts "1.4.1"]
                  ;; ;; [congomongo "0.1.3-SNAPSHOT"]
                  ;; [clj-stacktrace "0.2.4"]
                  ;; [commons-codec "1.5"]

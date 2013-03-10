@@ -724,3 +724,13 @@
     (println "----------------------------------------\n")))
 
 (clu/run-command-maybe-ns *ns* "js.clj")
+
+
+
+
+;;; ** Improvements
+;;;
+;;; Instead of injecting some \;'s in the vector, we can keep a (paren-do foo
+;;; bar baz).  Let's assume `for' is "for ", `if' is "if ", `while' is "while
+;;; ", etc.  Then we can consider these as functions with side effect.
+
