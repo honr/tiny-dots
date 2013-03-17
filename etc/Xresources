@@ -15,6 +15,7 @@ XTerm.VT100.faceName: UbuntuMono
 XTerm.VT100.faceSize: 13
 XTerm*ttyModes: weras ^-
 XTerm.VT100.translations: #override \
+    Super ~Shift <Key>c: copy-selection(CLIPBOARD) \n\
     Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
     Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0) \n\
     Ctrl Shift <Key>n: spawn-new-terminal()

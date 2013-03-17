@@ -1,6 +1,7 @@
 (ns rose.file
   (:import [java.io File]
-	   [java.net URI URLEncoder]))
+           [java.nio.file Files]
+           [java.net URI URLEncoder]))
 
 ;; some of the functions are imported from lib.sfd.file-utils:
 ;; git://github.com/francoisdevlin/devlinsf-clojure-utils.git
@@ -38,7 +39,7 @@ When *cwd* is not available, uses System/getProperty \"user.dir\" instead.
      (filter #(re-find pattern %) (ls f))))
 
 (defn ls-abs [fs & args]
-  (mapcat 
+  (mapcat
    (fn [f] (map #(conj f %) (apply ls f args)))
    fs))
 
@@ -96,12 +97,12 @@ When *cwd* is not available, uses System/getProperty \"user.dir\" instead.
 (defn browse [s] (.browse (java.awt.Desktop/getDesktop) (URI. s)))
 
 (defn download-file [f url]
- (.transferFrom 
-  (.getChannel 
-   (java.io.FileOutputStream. 
+ (.transferFrom
+  (.getChannel
+   (java.io.FileOutputStream.
     f))
-  (java.nio.channels.Channels/newChannel 
+  (java.nio.channels.Channels/newChannel
    (.openStream
-    (java.net.URL. 
+    (java.net.URL.
      url)))
   0 0x1000000))

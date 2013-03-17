@@ -21,7 +21,7 @@
                               ";; [Re]generating html files probably done.")))
 
   (println (clu/sh "chmod" "-R" "u=rwX,go=rX" [*cwd* ".out/gen"]))
-  
+
   (rose.file/make-sure-directory-exists [*cwd* ".out/stage" nom])
   (println (clu/sh "rsync"
                    :progress "-avc" ;; use checksums

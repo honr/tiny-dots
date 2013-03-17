@@ -1,79 +1,67 @@
 ;;; fruitsalad-dark-theme.el --- custom theme for faces
 
-;; Copyright (C) 2010-2012 Free Software Foundation, Inc.
-
-;; This file is part of GNU Emacs.
-
-;; GNU Emacs is free software: you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; GNU Emacs is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
-
-;;; Code:
-
 (deftheme fruitsalad-dark
   "A color on black theme, resembling fruitsalad in a dark bowl.")
 
 (custom-theme-set-faces
  'fruitsalad-dark
- '(default ((t (:background "#222222" :foreground "#EEEEEE"))))
- '(cursor ((t (:background "#88FF44"))))
+ '(default                       ((t (:foreground "#EEEEEE" :background "#222222"))))
+ '(cursor                        ((t (                      :background "#88FF44"))))
 
- '(font-lock-builtin-face ((t (:foreground "#F8C"))))
- '(font-lock-comment-face ((t (:italic t :foreground "#777"))))
- '(font-lock-constant-face ((t (:foreground "#0CC"))))
- '(font-lock-doc-face ((t (:foreground "#7AA" :background "#333"))))
- '(font-lock-function-name-face ((t (:foreground "#FFFFFF"))))
- '(font-lock-keyword-face ((t (:foreground "#8CF"))))
- '(font-lock-preprocessor-face ((t (:foreground "#8CF"))))
- '(font-lock-string-face ((t (:foreground "#0AA" :background "#183333"))))
- '(font-lock-type-face ((t (:foreground "#9D4"))))
- '(font-lock-variable-name-face ((t (:foreground "#FFCC88"))))
- '(font-lock-warning-face ((t (:bold t :foreground "Pink"))))
-       
- '(dired-directory ((t (:foreground "#4AF"))))
- '(dired-symlink ((t (:foreground "#F8F"))))
- '(dired-flagged ((t (:foreground "#FF0" :background "#700" :bold t))))
+ '(font-lock-builtin-face        ((t (:foreground "#FF88CC"))))
+ '(font-lock-comment-face        ((t (:foreground "#777777" :italic t))))
+ '(font-lock-constant-face       ((t (:foreground "#00CCCC"))))
+ '(font-lock-doc-face            ((t (:foreground "#77AAAA" :background "#333333"))))
+ '(font-lock-function-name-face  ((t (:foreground "#FFFFFF" :weight bold))))
+ '(font-lock-keyword-face        ((t (:foreground "#88CCFF"))))
+ '(font-lock-preprocessor-face   ((t (:foreground "#88CCFF"))))
+ '(font-lock-string-face         ((t (:foreground "#00AAAA" :background "#183333"))))
+ '(font-lock-type-face           ((t (:foreground "#99DD44"))))
+ '(font-lock-variable-name-face  ((t (:foreground "#FFCC88" :weight bold))))
+ '(font-lock-warning-face        ((t (:foreground "#FFC0CB" :weight bold))))
 
- '(fringe ((t (:background "#222222" :foreground "#BBBBBB"))))
- ;; (fringe ((t (:inherit default))))
- '(header-line ((t (:background "#dddddd" :foreground "#888"))))
- '(highlight ((t (:background "#dddddd" :foreground "light blue"))))
- '(holiday-face ((t (:background "#000" :foreground "#777"))))
- '(isearch ((t (:background "#ffbb00" :foreground "#ffffff"))))
- '(isearch-lazy-highlight-face ((t (:background "#ff99bb" :foreground "#ffffff"))))
- ;; (isearch-secondary ((t (:foreground "green"))))
- '(italic ((t (:bold t))))
- '(menu ((t (:background "#000" :foreground "#888"))))
- '(scroll-bar ((t (:background "#222" :foreground "#888"))))
- '(minibuffer-prompt ((t (:foreground "#9F9"))))
- '(modeline ((t (:background "#444" :foreground "#999" :box (:line-width 1 :color "#555")))))
- '(mode-line-inactive ((t (:inherit modeline :background "#2a2a2a" :foreground "#666"))))
- '(modeline-buffer-id ((t (:inherit modeline :foreground "#FF0" :weight bold))))
- '(modeline-mousable ((t (:background "#000" :foreground "#444"))))
- '(modeline-mousable-minor-mode ((t (:background "#ffffff" :foreground "#888"))))
- '(region ((t (:background "#000000"))))
- '(secondary-selection ((t (:background "#aaccff" :foreground "#0088ff"))))
- '(show-paren-match-face ((t (:background "#005500" :foreground "#FFFFFF"))))
- '(show-paren-mismatch-face ((t (:background "Red" :foreground "White"))))
- '(tool-bar ((t (:background "#111" :foreground "#777"))))
- '(tooltip ((t (:background "#333" :foreground "#777"))))
- '(variable-pitch ((t (nil))))
- '(widget-button-face ((t (:bold t :foreground "#888"))))
- '(widget-field-face ((t (:bold t :foreground "#999")))))
+ '(dired-directory               ((t (:foreground "#44AAFF"))))
+ '(dired-flagged                 ((t (:foreground "#FFFF00" :background "#770000" :weight bold))))
+ '(dired-ignored                 ((t (:foreground "#777777"))))
+ '(dired-marked                  ((t (:foreground "#008800" :weight bold))))
+ '(dired-perm-write              ((t (:foreground "#FF3333" :weight bold))))
+ '(dired-symlink                 ((t (:foreground "#FF88FF"))))
+
+ '(ediff-even-diff-A             ((t (                      :background "#181818"))))
+ '(ediff-even-diff-B             ((t (                      :background "#181818"))))
+ '(ediff-odd-diff-A              ((t (                      :background "#101010"))))
+ '(ediff-odd-diff-B              ((t (                      :background "#101010"))))
+
+ '(ediff-current-diff-A          ((t (                      :background "#100000"))))
+ '(ediff-current-diff-B          ((t (                      :background "#001000"))))
+ '(ediff-fine-diff-A             ((t (                      :background "#300000"))))
+ '(ediff-fine-diff-B             ((t (                      :background "#003000"))))
+
+ '(fringe                        ((t (:foreground "#BBBBBB" :background "#222222"))))
+ '(header-line                   ((t (:foreground "#888888" :background "#DDDDDD"))))
+ '(highlight                     ((t (:foreground "#ADD8E6" :background "#DDDDDD"))))
+ '(holiday-face                  ((t (:foreground "#777777" :background "#000000"))))
+ '(isearch                       ((t (:foreground "#FFFFFF" :background "#FFBB00"))))
+ '(isearch-lazy-highlight-face   ((t (:foreground "#FFFFFF" :background "#FF99BB"))))
+
+ '(menu                          ((t (:foreground "#888888" :background "#000000"))))
+ '(minibuffer-prompt             ((t (:foreground "#99FF99"))))
+ '(mode-line                     ((t (:foreground "#999999" :background "#444444" :box (:line-width 1 :color "#555555")))))
+ '(mode-line-inactive            ((t (:foreground "#666666" :background "#2A2A2A" :box (:line-width 1 :color "#555555")))))
+ '(mode-line-buffer-id           ((t (:foreground "#FFFF00" :background "#444444" :box (:line-width 1 :color "#555555") :weight bold))))
+ '(mode-line-mousable            ((t (:foreground "#444444" :background "#000000"))))
+ '(mode-line-mousable-minor-mode ((t (:foreground "#888888" :background "#FFFFFF"))))
+
+ '(paren-face                    ((t (:foreground "#666666"))))
+ '(region                        ((t (                      :background "#000000"))))
+ '(scroll-bar                    ((t (:foreground "#888888" :background "#222222"))))
+ '(secondary-selection           ((t (:foreground "#0088FF" :background "#AACCFF"))))
+ '(show-paren-match-face         ((t (:foreground "#FFFFFF" :background "#005500"))))
+ '(show-paren-mismatch-face      ((t (:foreground "#FFFFFF" :background "#FF0000"))))
+ '(tool-bar                      ((t (:foreground "#777777" :background "#111111"))))
+ '(tooltip                       ((t (:foreground "#777777" :background "#333333"))))
+
+ '(widget-button-face            ((t (:foreground "#888888" :weight bold))))
+ '(widget-field-face             ((t (:foreground "#999999" :weight bold)))))
 
 (provide-theme 'fruitsalad-dark)
-
-;; Local Variables:
-;; no-byte-compile: t
-;; End:
-
-;;; fruitsalad-dark-theme.el ends here
