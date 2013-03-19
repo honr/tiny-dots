@@ -10,6 +10,7 @@ import qualified XMonad.StackSet as StackSet
 
 -- Haskell:
 import qualified Control.Monad as Monad
+import qualified Data.Char as Char
 -- import qualified Data.Either.Utils
 import qualified Data.List as List
 import qualified Data.Map as Map
@@ -72,6 +73,7 @@ import qualified XMonad.Prompt.Workspace as Prompt.Workspace
 import qualified XMonad.Util.ExtensibleState as Util.ExtensibleState
 import qualified XMonad.Util.EZConfig as Util.EZConfig
 -- import qualified XMonad.Util.Loggers as Util.Loggers -- unused
+import qualified XMonad.Util.NamedWindows as Util.NamedWindows
 import qualified XMonad.Util.Run as Util.Run
 import qualified XMonad.Util.Stack as Util.Stack
 import qualified XMonad.Util.WindowProperties as Util.WindowProperties
@@ -259,8 +261,13 @@ _XPConfig = (Prompt.defaultXPConfig
                                        ((mod1Mask, xK_BackSpace), Prompt.killWord Prompt.Prev),
                                        ((controlMask, xK_p), Prompt.moveHistory StackSet.focusUp'),
                                        ((controlMask, xK_n), Prompt.moveHistory StackSet.focusDown')]),
-               Prompt.searchPredicate = List.isInfixOf})
+               Prompt.searchPredicate = isMultiFixOf})
 
+isMultiFixOf :: String -> String -> Bool
+isMultiFixOf needles haystack =
+  (and
+   (map (flip List.isInfixOf haystack)
+    (List.words needles)))
 
 -- Applications
 terminalCmd = "xterm"
@@ -343,6 +350,63 @@ runEditor = (spawn editorCmd)
 
 runEditorHere :: X ()
 runEditorHere = (spawn (editorCmd ++ " " ++ "."))
+
+-- TODO: Tell xmonad about prefered directory of current workspace from the
+--       command line.
+
+-- TODO: We need to be able to specify options.  We also need to modify some
+--       settings while prompt is showing.  Interesting options:
+--       - OnlyCurrentWorkspace. (Or OnlyVisibleWorkspace) + Also sort by recency.
+--       - IncludeIconified, ExcludeIconified.
+--       - Allow multiple (but this should really depend on the action we are taking).
+data WindowPrompt = Goto | Focus | FocusNonIconified | Bring | Close | Iconify | Mark
+instance Prompt.XPrompt WindowPrompt where
+  showXPrompt Goto = "Go to window: "
+  showXPrompt Focus = "Focus to window: "
+  showXPrompt FocusNonIconified = "Focus to non-iconified window: "
+  showXPrompt Bring = "Bring window(s): "
+  showXPrompt Close = "Close window(s): "
+  showXPrompt Iconify = "Iconify window(s): "
+  showXPrompt Mark = "Mark window(s): "
+  commandToComplete _ c = c
+  nextCompletion _ = Prompt.getNextCompletion
+
+windowPrompt :: WindowPrompt -> Prompt.XPConfig -> X ()
+windowPrompt t c = do
+  action <- case t of
+    Goto -> fmap gotoAction $ windowMap pred
+    Focus -> fmap gotoAction $ windowMap pred
+    FocusNonIconified -> fmap gotoAction $ windowMap pred
+  wm <- windowMap pred
+  Prompt.mkXPrompt t c (compList wm) action
+    where
+      winAction a m = flip whenJust (windows . a) . flip Map.lookup m
+      gotoAction = winAction StackSet.focusWindow
+      compList m s = (return .
+                      filter (Prompt.searchPredicate c s) .
+                      map fst .
+                      Map.toList) m
+      pred x = case t of
+        Goto -> True
+        Focus -> True  -- TODO: Should look at window state (Is in current WS).
+        FocusNonIconified -> True -- TODO: Should look at state.
+
+-- | A map from window names to Windows.
+windowMap :: (Window -> Bool) -> X (Map.Map String Window)
+windowMap pred = do
+  ws <- gets windowset
+  Map.fromList `fmap` concat `fmap` mapM keyValuePairs (StackSet.workspaces ws)
+    where keyValuePairs ws = mapM (keyValuePair ws) $ StackSet.integrate' (StackSet.stack ws)
+          keyValuePair ws w = flip (,) w `fmap` decorateName ws w
+
+-- | Returns the window name as will be listed in dmenu.
+--   Lowercased, for your convenience (since dmenu is case-sensitive).
+--   Tagged with the workspace ID, to guarantee uniqueness, and to let the user
+--   know where he's going.
+decorateName :: WindowSpace -> Window -> X String
+decorateName ws w = do
+  name <- fmap (map Char.toLower . show) $ Util.NamedWindows.getName w
+  return ("#" ++ StackSet.tag ws ++ " " ++ name)
 
 -- Keys
 _keys :: XConfig Layout -> Map.Map (KeyMask, KeySym) (X())
@@ -441,8 +505,12 @@ _emacsKeys  = \conf ->
 
                ("M-a", (Prompt.Workspace.workspacePrompt _XPConfig goto)),
                ("M-S-a", (Prompt.Workspace.workspacePrompt _XPConfig shift)),
-               ("M-r", (Prompt.Window.windowPromptGoto _XPConfig)),
-               ("M-S-r", (Prompt.Window.windowPromptBring _XPConfig)),
+               ("M-r", (windowPrompt FocusNonIconified _XPConfig)),
+               ("M-S-r", (windowPrompt Goto _XPConfig)),
+               ("M-M1-r", (windowPrompt Focus _XPConfig)),
+
+               -- ("M-M1-r", (Prompt.Window.windowPromptGoto _XPConfig)),
+               ("M-M1-S-r", (Prompt.Window.windowPromptBring _XPConfig)),
 
                ("M-q", (kill)),
                ("M-S-q", (Actions.WithAll.killAll))] ++

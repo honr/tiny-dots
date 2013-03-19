@@ -74,7 +74,8 @@
   (setq gdb-many-windows t)
   (setq gdb-show-main t)
 
-  (add-hook 'prog-mode-hook (lambda () (subword-mode t)))
+  (require 'subword)
+  (global-subword-mode t)
 
   (require 'newcomment)
   (require 'org)
