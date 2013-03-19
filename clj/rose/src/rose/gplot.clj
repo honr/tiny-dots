@@ -242,7 +242,11 @@
                    (fn [i] (format "%d:%d" (+ 1 (* 2 i)) (+ 2 (* 2 i))))))
   ([xs y-ls opts] ;; (plot xs [[y1s l1] [y2s l2] ... [yns ln]] opts)
      (plot-generic opts
-                   (cons xs (map first y-ls))
+                   (if xs
+                     (cons xs (map first y-ls))
+                     (let [ys (map first y-ls)]
+                       (cons (range 1 (inc (count (first ys))))
+                             ys)))
                    (map second y-ls)
                    (fn [i] (format "1:%d" (+ 2 i))))))
 
@@ -259,5 +263,5 @@
          (range 1 64)
          (map #(Math/sin (* 0.03 %)) (range 1 64))
          (map #(Math/sin (* 0.06 %)) (range 1 64)))
-  
+
   )
