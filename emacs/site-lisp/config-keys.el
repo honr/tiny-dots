@@ -19,7 +19,8 @@
 (global-set-key [f5] 'compile)
 ;; (global-set-key [M-f2] 'browse-url)
 ;; (global-set-key [M-S-F2] 'browse-url-at-point)
-(global-set-key [f7] 'dict)
+(global-set-key (kbd "<f7>") prefix-arg)
+(global-set-key (kbd "<f7> d") 'dict)
 (global-set-key (kbd "C-x C-d") 'find-dired)
 (global-set-key (kbd "C-x d") 'rgrep)
 

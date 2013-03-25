@@ -1,6 +1,6 @@
 (defproject jar-store "0.0.0-SNAPSHOT"
   :description "virtual package for obtaining all dependencies"
-  :dependencies [[org.clojure/clojure "1.4.0"]
+  :dependencies [[org.clojure/clojure "1.5.0"]
                  [org.clojure/data.json "0.1.3"]
                  [org.clojure/data.csv "0.1.2"]
                  [org.clojure/java.jdbc "0.1.1"]
@@ -30,7 +30,7 @@
                  ;; ;; jetty moved to eclipse. look for jetty 8.
                  ;; [postgresql "9.1-901.jdbc4"]
                  [xpp3 "1.1.4c"]
-                 [org.jsoup/jsoup "1.6.3"]
+                 [org.jsoup/jsoup "1.7.2"]
                  [compojure "1.1.3"]
                  [hiccup "1.0.1"]
                  ;; ;; [ring "0.3.8"]
@@ -46,6 +46,8 @@
                  ;; [org.apache.maven/maven-ant-tasks "2.1.3"]
                  ;; [org.apache.ant/ant "1.8.2"]
                  ;; [robert/hooke "1.1.3"]
+
+                 [javax.websocket/javax.websocket-api "1.0-b13"]
                  ]
 
   :library-path "lib")

@@ -6,6 +6,8 @@
   (subword-mode t))
 ;; (add-hook 'c-mode-common-hook 'config-c-mode-hook)
 
+(require 'go-mode)
+
 (require 'haskell-indentation)
 (require 'haskell-decl-scan)
 (require 'haskell-doc)

@@ -1,5 +1,6 @@
 (ns user
-  (:require [clojure.repl]))
+  (:require [clojure.repl]
+            [clojure.string :as string]))
 
 (defn prcoll [coll]
   (doseq [x coll]
