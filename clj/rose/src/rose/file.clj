@@ -1,6 +1,6 @@
 (ns rose.file
   (:import [java.io File]
-           [java.nio.file Files]
+           ;; [java.nio.file Files]  ;; Disabled because Java 1.6.
            [java.net URI URLEncoder]))
 
 ;; some of the functions are imported from lib.sfd.file-utils:

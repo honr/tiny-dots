@@ -105,9 +105,12 @@
    '(org-replace-disputed-keys t)
    '(read-buffer-completion-ignore-case t)
    '(read-file-name-completion-ignore-case t)
-   '(show-trailing-whitespace t)
    '(tab-width 2)
    '(vc-follow-symlinks t))
+
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (setq show-trailing-whitespace t)))
 
   (defun go-easy-on-remote ()
     (interactive)

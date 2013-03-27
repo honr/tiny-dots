@@ -55,7 +55,7 @@ import qualified XMonad.Actions.FlexibleResize as Actions.FlexibleResize
 -- import qualified XMonad.Actions.FloatKeys as Actions.FloatKeys -- unused
 import qualified XMonad.Actions.FloatSnap as Actions.FloatSnap
 import qualified XMonad.Actions.GroupNavigation as Actions.GroupNavigation
-import qualified XMonad.Actions.Navigation2D as Actions.Navigation2D
+-- import qualified XMonad.Actions.Navigation2D as Actions.Navigation2D
 import qualified XMonad.Actions.RandomBackground as Actions.RandomBackground
 import qualified XMonad.Actions.TopicSpace as Actions.TopicSpace
 import qualified XMonad.Actions.UpdatePointer as Actions.UpdatePointer
