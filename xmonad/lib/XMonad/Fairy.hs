@@ -2,22 +2,25 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 
 module XMonad.Fairy
-       (change_dir
+       (TopicItem (..)
+       , change_dir
+       , check_topics
        , dynamiclog_current
        , dynamiclog_urgent
        , dynamiclog_visible
-       , run_colour_term
-       , TopicItem (..)
-       , topics_table
-       , term_cmd
-       , normal_border
-       , focused_border
-       , layouts_config
        , emacs_keys
        , fairy_config
-       , check_topics)
-       where
-
+       , focused_border
+       , layouts_config
+       , manage_hook
+       , normal_border
+       , prompt_config
+       , run_colour_term
+       , term_cmd
+       , topics_config
+       , topics_list
+       , topics_table
+       ) where
 
 -- XMonad:
 import XMonad hiding ( (|||) )
@@ -52,6 +55,7 @@ import qualified XMonad.Actions.FlexibleResize as Actions.FlexibleResize
 -- import qualified XMonad.Actions.FloatKeys as Actions.FloatKeys -- unused
 import qualified XMonad.Actions.FloatSnap as Actions.FloatSnap
 import qualified XMonad.Actions.GroupNavigation as Actions.GroupNavigation
+import qualified XMonad.Actions.Navigation2D as Actions.Navigation2D
 import qualified XMonad.Actions.RandomBackground as Actions.RandomBackground
 import qualified XMonad.Actions.TopicSpace as Actions.TopicSpace
 import qualified XMonad.Actions.UpdatePointer as Actions.UpdatePointer
@@ -65,6 +69,7 @@ import qualified XMonad.Hooks.Place as Hooks.Place
 import qualified XMonad.Layout.Accordion as Layout.Accordion
 import qualified XMonad.Layout.BoringWindows as Layout.BoringWindows
 import qualified XMonad.Layout.Circle as Layout.Circle
+import qualified XMonad.Layout.Gaps as Layout.Gaps
 -- import qualified XMonad.Layout.GridVariants as Layout.GridVariants
 import qualified XMonad.Layout.Grid as Layout.Grid
 import qualified XMonad.Layout.LimitWindows as Layout.LimitWindows
@@ -191,6 +196,7 @@ is_multifix_of needles haystack =
 
 -- Applications
 term_cmd = "xterm"
+-- term_cmd = "uxterm -class XTerm"
 run_term :: X ()
 run_term = (spawn term_cmd)
 -- run_colour_term = (Actions.RandomBackground.randomBg
@@ -296,30 +302,30 @@ layouts_config =
     (Layout.Minimize.minimize
      -- Layout.PerWorkspace.onWorkspace "agenda" layout_tiled2 $
      -- Layout.PerWorkspace.onWorkspace "rtb/main" layout_grid $
-     (layout_tiled2 |||
-      (Layout.Renamed.renamed [Layout.Renamed.Replace "Tall2-Limited"]
-       (Layout.LimitWindows.limitWindows 5 layout_tiled2)) |||
+     (Layout.Gaps.gaps [(Layout.Gaps.L, 0)]
+      (layout_tiled2 |||
+       (Layout.Renamed.renamed [Layout.Renamed.Replace "Tall2-Limited"]
+        (Layout.LimitWindows.limitWindows 5 layout_tiled2)) |||
 
-      (Mirror layout_tiled2) |||
+       (Mirror layout_tiled2) |||
 
-      (Layout.Renamed.renamed [Layout.Renamed.Replace "Wide2-Limited"]
-       (Layout.LimitWindows.limitWindows 5 (Mirror layout_tiled2))) |||
-      layout_tiled3 |||
-      layout_tiled3mid |||
-      layout_grid |||
-      layout_right_paned |||
-      Layout.Circle.Circle |||
-      Layout.Accordion.Accordion |||
-      (Layout.NoBorders.noBorders Full)))))
+       (Layout.Renamed.renamed [Layout.Renamed.Replace "Wide2-Limited"]
+        (Layout.LimitWindows.limitWindows 5 (Mirror layout_tiled2))) |||
+       layout_tiled3 |||
+       layout_tiled3mid |||
+       layout_grid |||
+       layout_right_paned |||
+       Layout.Circle.Circle |||
+       Layout.Accordion.Accordion |||
+       (Layout.NoBorders.noBorders Full))))))
 
 layout_tiled2 = Tall 1 (3/100) (1/2)
 layout_tiled3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
 layout_tiled3mid = Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2)
 layout_grid = (Layout.Renamed.renamed [Layout.Renamed.Replace "Grid"]
                 (Layout.Grid.GridRatio 1.1))
-layout_right_paned = (Layout.Renamed.renamed [Layout.Renamed.Replace "Right Paned"]
+layout_right_paned = (Layout.Renamed.renamed [Layout.Renamed.Replace "Isolated Left"]
                  (layout_grid ***||** layout_tiled3))
-
 
 -- _layoutTable = (("1", "Tall2", _tiled2),
 --                 ("S-1", "Tall2-Limited", (Layout.LimitWindows.limitWindows 5 _tiled2)),
@@ -417,7 +423,7 @@ emacs_keys  =
     ("M-C-S-u", run_python_interactive),
     ("M-C-o", run_ghci),
     ("M-S-1", run_cmd_line),
-    ("M-S-s",   (change_dir prompt_config)),
+    ("M-S-s", (change_dir prompt_config)),
     ("M-C-t", run_file_manager)] ++
 
   (map (\(TopicItem n k _ _) -> ("M-d " ++ k, (workspace_goto n))) topics_table) ++
@@ -439,7 +445,13 @@ emacs_keys  =
    ("M-e S-2", (sendMessage (JumpToLayout "Wide2-Limited"))),
    ("M-e 3", (sendMessage (JumpToLayout "ThreeCol"))),
    ("M-e g", (sendMessage (JumpToLayout "Grid"))),
-   ("M-e c", (sendMessage (JumpToLayout "Circle")))] ++
+   ("M-e c", (sendMessage (JumpToLayout "Circle"))),
+   ("M-e l", (sendMessage (JumpToLayout "Isolated Left"))),
+
+   ("M-e r", (sendMessage (Layout.Gaps.ToggleGaps))),
+   ("M-e M-r M-e", (sendMessage (Layout.Gaps.DecGap 200 Layout.Gaps.L))),
+   ("M-e M-r M-t", (sendMessage (Layout.Gaps.IncGap 200 Layout.Gaps.L)))
+  ] ++
 
   (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++ ["p", "f", "n", "b"]
        nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
@@ -557,6 +569,40 @@ emacs_keys  =
    -- xmonad
    ("M-C-S-q", (restart_xmonad))]
 
+-- NEW (for xmonad-0.11):
+-- -- Switch between layers
+--   , ((modm,                 xK_space), switchLayers)
+
+--   -- Directional navigation of windows
+--   , ((modm,                 xK_Right), windowGo R False)
+--   , ((modm,                 xK_Left ), windowGo L False)
+--   , ((modm,                 xK_Up   ), windowGo U False)
+--   , ((modm,                 xK_Down ), windowGo D False)
+
+--   -- Swap adjacent windows
+--   , ((modm .|. controlMask, xK_Right), windowSwap R False)
+--   , ((modm .|. controlMask, xK_Left ), windowSwap L False)
+--   , ((modm .|. controlMask, xK_Up   ), windowSwap U False)
+--   , ((modm .|. controlMask, xK_Down ), windowSwap D False)
+
+--   -- Directional navigation of screens
+--   , ((modm,                 xK_r    ), screenGo R False)
+--   , ((modm,                 xK_l    ), screenGo L False)
+--   , ((modm,                 xK_u    ), screenGo U False)
+--   , ((modm,                 xK_d    ), screenGo D False)
+
+--   -- Swap workspaces on adjacent screens
+--   , ((modm .|. controlMask, xK_r    ), screenSwap R False)
+--   , ((modm .|. controlMask, xK_l    ), screenSwap L False)
+--   , ((modm .|. controlMask, xK_u    ), screenSwap U False)
+--   , ((modm .|. controlMask, xK_d    ), screenSwap D False)
+
+--   -- Send window to adjacent screen
+--   , ((modm .|. mod1Mask,    xK_r    ), windowToScreen R False)
+--   , ((modm .|. mod1Mask,    xK_l    ), windowToScreen L False)
+--   , ((modm .|. mod1Mask,    xK_u    ), windowToScreen U False)
+--   , ((modm .|. mod1Mask,    xK_d    ), windowToScreen D False)
+
 -- Mouse bindings
 mouse_bindings :: XConfig Layout -> Map.Map (ButtonMask, Button) (Window -> X ())
 mouse_bindings (XConfig {XMonad.modMask = modMask}) =
@@ -568,28 +614,32 @@ mouse_bindings (XConfig {XMonad.modMask = modMask}) =
                     (Actions.FlexibleResize.mouseResizeWindow w)))]))
 
 -- Application specific window handling
-manage_hook = manageHook defaultConfig
-            <+> composeAll
-            [Hooks.ManageHelpers.isFullscreen --> Hooks.ManageHelpers.doFullFloat,
-             appName =? "Dialog" --> Hooks.ManageHelpers.doCenterFloat,
-             ((className =? "Emacs24") <||> (className =? "Emacs")) --> unfloat,
-             className =? "Thunderbird" --> unfloat,
-             (((className =? "Firefox") <||> (className =? "Nightly")) <&&>
-              (roleName =? "browser")) --> unfloat,
-             (((className =? "Chromium") <||> (className =? "Chromium-browser")) <&&>
-              (roleName =? "browser")) --> unfloat,
-            -- checkDock --> doIgnore,
-             ((className =? "Inkscape") <&&>
-              (fmap ("- Inkscape" `List.isSuffixOf`) title)) --> unfloat]
-            -- <+> composeOne [
-            --       transience,
-            --       className =? "Firefox" -?> doF (StackSet.shift "browse")]
-            -- <+> Hooks.Place.placeHook Hooks.Place.simpleSmart
-	    <+> Hooks.ManageHelpers.doCenterFloat -- Float by default, at center.
-	    -- <+> doFloat -- Float by default.
-            <+> Hooks.ManageDocks.manageDocks
-    where unfloat = ask >>= (doF . StackSet.sink)
-          roleName = stringProperty "WM_WINDOW_ROLE"
+manage_hook =
+  (manageHook defaultConfig
+   <+> composeAll
+   [Hooks.ManageHelpers.isFullscreen --> Hooks.ManageHelpers.doFullFloat,
+    appName =? "Dialog" --> Hooks.ManageHelpers.doCenterFloat,
+    ((className =? "Emacs24") <||> (className =? "Emacs")) --> unfloat,
+    (className =? "XTermEmacs") --> unfloat,
+    (className =? "Thunderbird") --> unfloat,
+    (((className =? "Firefox") <||> (className =? "Nightly")) <&&>
+     (roleName =? "browser")) --> unfloat,
+    (((className =? "Chromium") <||> (className =? "Chromium-browser")) <&&>
+     (roleName =? "browser")) --> unfloat,
+    -- checkDock --> doIgnore,
+
+    (((className =? "Inkscape") <||>
+      (className =? "Inkscape-bin")) <&&>
+     (fmap ("- Inkscape" `List.isSuffixOf`) title)) --> unfloat]
+   -- <+> composeOne [
+   --       transience,
+   --       className =? "Firefox" -?> doF (StackSet.shift "browse")]
+   -- <+> Hooks.Place.placeHook Hooks.Place.simpleSmart
+   <+> Hooks.ManageHelpers.doCenterFloat -- Float by default, at center.
+   -- <+> doFloat -- Float by default.
+   <+> Hooks.ManageDocks.manageDocks)
+  where unfloat = ask >>= (doF . StackSet.sink)
+        roleName = stringProperty "WM_WINDOW_ROLE"
 
 
 fairy_config = (defaultConfig

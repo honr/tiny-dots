@@ -44,5 +44,5 @@ color_theme_dark = Colors { normal_border = "#000000",
 --          Nothing ->  [0x18, 0x00]
 --          _ -> return [0xEE, 0xFF]
 
-font_regular = "xft:Ubuntu Mono:pixelsize=16"
+font_regular = "xft:UbuntuMono:pixelsize=16"
 font_scalable = "xft:Ubuntu:pixelsize=14"
