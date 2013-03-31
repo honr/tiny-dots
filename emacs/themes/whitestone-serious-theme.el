@@ -24,10 +24,8 @@
 
 (custom-theme-set-faces
  'whitestone-serious
-
  '(default                       ((t (:foreground "#222222" :background "#ffffff"))))
  '(cursor                        ((t (:background "#66cc33"))))
-
  '(font-lock-builtin-face        ((t (:foreground "#A20"))))
  '(font-lock-comment-face        ((t (:foreground "#999999" :italic t))))
  '(font-lock-constant-face       ((t (:foreground "#A20"))))
@@ -40,17 +38,14 @@
  '(font-lock-variable-name-face  ((t (:foreground "#222222" :bold t))))
  '(font-lock-warning-face        ((t (:foreground "#D03" :bold t))))
 
- ;; dired
  '(dired-directory               ((t (:foreground "#06F"))))
  '(dired-symlink                 ((t (:foreground "#808"))))
  '(dired-ignored                 ((t (:foreground "#888"))))
  '(dired-marked                  ((t (:foreground "#080" :bold t))))
  '(dired-flagged                 ((t (:foreground "#FFFFFF" :background "#990000":bold t))))
  '(dired-perm-write              ((t (:foreground "#A20" :bold t))))
-
  '(scroll-bar                    ((t (:background "#DDDDDD"))))
  '(fringe                        ((t (:foreground "#BBBBBB" :background "#FFFFFF"))))
- ;; (fringe                      ((t (:inherit default))))
  '(header-line                   ((t (:foreground "#888" :background "#dddddd"))))
  '(highlight                     ((t (:foreground "light blue" :background "#dddddd"))))
  ;; (highline-face               ((t (:background "SeaGreen")))) ;;
@@ -60,19 +55,12 @@
  ;; (isearch-secondary           ((t (:foreground "green"))))
  '(menu                          ((t (:foreground "#FFFFFF" :background "#BBBBBB"))))
  '(minibuffer-prompt             ((t (:foreground "#555"))))
-
  '(mode-line                     ((t (:foreground "#666" :background "#DDDDDD" :box (:line-width 1 :color "#BBBBBB")))))
- '(mode-line-inactive            ((t (:foreground "#999" :background "#EEEEEE" :inherit modeline))))
- '(mode-line-buffer-id           ((t (:foreground "#440" :inherit modeline :weight bold))))
+ '(mode-line-inactive            ((t (:foreground "#999" :background "#EEEEEE" :box (:line-width 1 :color "#BBBBBB")))))
+ '(mode-line-buffer-id           ((t (:foreground "#440"                       :box (:line-width 1 :color "#BBBBBB") :weight bold))))
  '(mode-line-mousable            ((t (:foreground "#555" :background "#000"))))
  '(mode-line-mousable-minor-mode ((t (:foreground "#888" :background "#ffffff"))))
- ;; For older versions:
- '(modeline                      ((t (:foreground "#666" :background "#DDDDDD" :box (:line-width 1 :color "#BBBBBB")))))
- '(modeline-inactive             ((t (:foreground "#999" :background "#EEEEEE" :inherit modeline))))
- '(modeline-buffer-id            ((t (:foreground "#440" :inherit modeline :weight bold))))
- '(modeline-mousable             ((t (:foreground "#555" :background "#000"))))
- '(modeline-mousable-minor-mode  ((t (:foreground "#888" :background "#ffffff"))))
-
+ '(paren-face                    ((t (:foreground "#666666"))))
  '(region                        ((t (:background "#FFDD66"))))
  '(secondary-selection           ((t (:foreground "#0088FF" :background "#AACCFF"))))
  '(show-paren-match-face         ((t (:foreground "#00BB00" :background "#BBFFBB"))))
@@ -80,8 +68,6 @@
  '(paren-face                    ((t (:foreground "#AAAAAA"))))
  '(tool-bar                      ((t (:foreground "#777" :background "#111"))))
  '(tooltip                       ((t (:foreground "#777" :background "#333"))))
- ;; (underline                   ((t (:bold t))))
- '(variable-pitch                ((t (nil))))
  '(widget-button-face            ((t (:foreground "#888" :bold t))))
  '(widget-field-face             ((t (:foreground "#999" :bold t)))))
 

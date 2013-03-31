@@ -356,15 +356,12 @@ layout_right_paned = (Layout.Renamed.renamed [Layout.Renamed.Replace "Isolated L
 --       - OnlyCurrentWorkspace. (Or OnlyVisibleWorkspace) + Also sort by recency.
 --       - IncludeIconified, ExcludeIconified.
 --       - Allow multiple (but this should really depend on the action we are taking).
-data WindowPrompt = Goto | Focus | FocusNonIconified | Bring | Close | Iconify | Mark
+data WindowPrompt = Goto | Focus | FocusNonIconified | Bring
 instance Prompt.XPrompt WindowPrompt where
-  showXPrompt Goto = "Go to window: "
-  showXPrompt Focus = "Focus to window: "
+  showXPrompt Goto = "Go to window: "  -- In any workspace
+  showXPrompt Focus = "Focus to window: "  -- In the same workspace
   showXPrompt FocusNonIconified = "Focus to non-iconified window: "
   showXPrompt Bring = "Bring window(s): "
-  showXPrompt Close = "Close window(s): "
-  showXPrompt Iconify = "Iconify window(s): "
-  showXPrompt Mark = "Mark window(s): "
   commandToComplete _ c = c
   nextCompletion _ = Prompt.getNextCompletion
 
@@ -374,6 +371,7 @@ window_prompt t c = do
     Goto -> fmap gotoAction $ window_map pred
     Focus -> fmap gotoAction $ window_map pred
     FocusNonIconified -> fmap gotoAction $ window_map pred
+    Bring -> fmap gotoAction $ window_map pred
   wm <- window_map pred
   Prompt.mkXPrompt t c (compList wm) action
     where
@@ -387,6 +385,7 @@ window_prompt t c = do
         Goto -> True
         Focus -> True  -- TODO: Should look at window state (Is in current WS).
         FocusNonIconified -> True -- TODO: Should look at state.
+        Bring -> True
 
 -- | A map from window names to Windows.
 window_map :: (Window -> Bool) -> X (Map.Map String Window)
