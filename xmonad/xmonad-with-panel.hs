@@ -15,7 +15,8 @@ key_bindings :: XConfig Layout -> Map.Map (KeyMask, KeySym) (X())
 key_bindings = \conf ->
   (Util.EZConfig.mkKeymap conf
    (emacs_keys ++
-    [("M-e d", (setLayout (XMonad.layoutHook conf)))]))
+    [("M-e d", (setLayout (XMonad.layoutHook conf))),
+     ("M-C-S-c", (spawn "chrome-tmp"))]))
 
 main :: IO ()
 main = do

@@ -68,7 +68,7 @@
  '(tool-bar                      ((t (:foreground "#777" :background "#111"))))
  '(tooltip                       ((t (:foreground "#777" :background "#333"))))
  '(widget-button-face            ((t (:foreground "#888" :bold t))))
- '(widget-field-face             ((t (:foreground "#999" :bold t))))))
+ '(widget-field-face             ((t (:foreground "#999" :bold t)))))
 
 (provide-theme 'whitestone-serious-text)
 
