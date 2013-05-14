@@ -32,8 +32,8 @@ bind "^y" paste .
 
 termcapinfo xterm* 'Co#256:ti@:te@:kmous=\E[M'
 defbce "on"
-term screen-256color-bce
-# term xterm-256color
+# term screen-256color-bce
+term xterm-256color
 
 # backtick 1 0 1 pwd
 # %?%{.Rw}[:%u]%{-}%?

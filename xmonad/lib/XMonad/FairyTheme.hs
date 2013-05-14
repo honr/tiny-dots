@@ -26,18 +26,18 @@ instance XMonad.ExtensionClass Colors where
   extensionType = XMonad.PersistentExtension
 
 color_theme_light = Colors { normal_border = "#AAAAAA",
-                         focused_border = "#0066CC",
-                         term_background = [0xEE, 0xFF],
-                         dynamiclog_current = "#008800",
-                         dynamiclog_visible = "#444400",
-                         dynamiclog_urgent = "#880000" }
+                             focused_border = "#66BBFF",
+                             term_background = [0xEE, 0xFF],
+                             dynamiclog_current = "#008800",
+                             dynamiclog_visible = "#444400",
+                             dynamiclog_urgent = "#880000" }
 
 color_theme_dark = Colors { normal_border = "#000000",
-                        focused_border = "#0088FF",
-                        term_background = [0x18, 0x00],  -- [0x18, 0x00] [0xEE, 0xFF] [0x44, 0x00]
-                        dynamiclog_current = "green",
-                        dynamiclog_visible = "yellow",
-                        dynamiclog_urgent = "red" }
+                            focused_border = "#0088FF",
+                            term_background = [0x18, 0x00],
+                            dynamiclog_current = "green",
+                            dynamiclog_visible = "yellow",
+                            dynamiclog_urgent = "red" }
 
 -- _randomBackgroundColors = do
 --     case System.Environment.getEnv "THEMETYPE" of

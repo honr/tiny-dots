@@ -31,7 +31,6 @@
 (cond ((eq system-type 'darwin)    (load-library-if-exists "config-darwin"))
       ((eq system-type 'gnu/linux) (load-library-if-exists "config-linux")))
 
-
 (when (or (daemonp) (eq system-type 'darwin))
   ;; Add a "layer" of protection around ‘C-x C-c’.
   (global-unset-key (kbd "C-x C-c"))
@@ -81,8 +80,8 @@
   (require 'org)
 
   (custom-set-variables
-
-   '(custom-enabled-themes '(whitestone-serious))
+   ;; '(custom-enabled-themes '(whitestone-serious))
+   '(custom-enabled-themes '(fruitsalad-dark))
    ;; '(custom-enabled-themes '(dark-forge))
    '(custom-safe-themes t)
    '(custom-theme-directory "~/.emacs.d/themes")
@@ -100,7 +99,7 @@
    '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
    '(org-agenda-files '("~/Documents/agenda.org"))
    '(org-export-html-style
-     (format "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">"
+     (format "<link rel=\"stylesheet\" href=\"%s\">"
              (expand-file-name "~/org.css")))
    '(org-replace-disputed-keys t)
    '(read-buffer-completion-ignore-case t)
@@ -129,5 +128,7 @@
   (load-library-if-exists "config-lisp")
   (load-library-if-exists "config-tex")
   (load-library-if-exists "config-algol")
+  ;; Site-specific configurations.
   (load-library-if-exists "config-site")
-  (load-library-if-exists "config-site-extra"))
+  ;; Host-specific configurations.
+  (load-library-if-exists "config-host"))
