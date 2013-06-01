@@ -50,7 +50,7 @@
       :else (str x)))
   ([tag args]
      (condp = tag
-       'call  ;; Js call f(x, y, z).
+       'call ;; Js call f(x, y, z).
        (let [[fn-name & fn-args] (map eval-fn-node args)]
          (str fn-name \( (clojure.string/join "," fn-args) \)))
 
@@ -64,7 +64,7 @@
         (for [stylesheet args]
           [:link {:rel "stylesheet" :href stylesheet}]))
 
-       'a  ;; Does not ng-evaluate.
+       'a ;; Does not ng-evaluate.
        (let [[base-url & [parameters]] args
              href (str
                    base-url
@@ -83,12 +83,25 @@
        (str-tree
         [:meta {:charset "UTF8" :http-equiv "content-type" :content "text/html"}])
 
-       'get  ;; Angular {{x}}.
+       'get ;; Angular {{x}}.
        (str "{{" (apply str (map eval-fn-node args)) "}}")
+
+       'not
+       (apply str "!" (map eval-fn-node args))
+
+       'str
+       (apply str (map eval-fn-node args))
+
+       'iter
+       (let [[v coll] args]
+         (str (eval-fn-node v) " in " (eval-fn-node coll)))
 
        'pipe
        (clojure.string/join " | "
                             (map eval-fn-node args))
+
+       'pipe-call
+       (clojure.string/join ":" (map eval-fn-node args))
 
        ;; Default
        "")))
