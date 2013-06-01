@@ -42,8 +42,8 @@
   (if (or (empty? l) (not (coll? coll)))
     (str coll)
     (let [[l1 & l-rest] l]
-      (string/join l1 
-		   (seq (for [subcoll coll] 
+      (string/join l1
+		   (seq (for [subcoll coll]
 			  (colls-string-join l-rest subcoll)))))))
 
 (defn- shell-escape-simple [s]
@@ -51,7 +51,7 @@
 
 (def ^{:private true} ascii-color-map
   {:black 30 :k 30
-   :red 31 :r 31 
+   :red 31 :r 31
    :green 32 :g 32
    :yellow 33 :y 33
    :blue 34 :b 34
@@ -168,30 +168,30 @@ Otherwise you can decide what to do to malformed or partial input."
                                         (ns-publics their-ns)))]
        {:fns (into (if default-fn {nil default-fn} {})
                    (map (fn [[k v]] (vector (str k) v)) their-ns-cmds))
-        
+
         :grammar
         (into (if default-fn
                 (merge {nil (:arglists (meta default-fn))}
                        (cli-key (meta default-fn)))
-                
+
                 {})
               (map (fn [[k v]]
                      [(str k) (into {nil (:arglists (meta v))}
                                     (cli-key (meta v)))])
                    their-ns-cmds))}))
-  
+
   ([their-ns cli-key]
      (let [their-ns-cmds (filter #(cli-key (meta (second %))) (ns-publics their-ns))]
        {:fns (into {}
                    (map (fn [[k v]] (vector (str k) v))
                         their-ns-cmds))
-        
+
         :grammar (into {}
                        (map (fn [[k v]]
                               [(str k) (into {nil (:arglists (meta v))}
                                              (cli-key (meta v)))])
                             their-ns-cmds))}))
-  
+
   ([their-ns]
      (ns-cli their-ns :cli :cli-default)))
 
@@ -247,7 +247,7 @@ example:
 	      (let [opt-type (if (vector? opt-spec)
 			       (cond (empty? opt-spec)
 				     Boolean
-				     
+
 				     :else
 				     (first opt-spec))
 			       opt-spec)
@@ -268,7 +268,7 @@ example:
 
 		  (map? opt-type)
 		  (recur (update-fn {}) next-args (conj subcmd opt-key))
-		  
+
 		  ;; it is not Boolean or map, therefore it needs an arguemnt.
 		  :else
 		  (let [[opt-value residue-args]
@@ -279,14 +279,14 @@ example:
 		      (= beg "+")
 		      (.println *err* (str "Error: option `" opt-name "' started with `+'. "
 					   "Only Boolean options are allowed to do so."))
-		      
+
 		      (empty? opt-value)
 		      (.println *err* (str "Error: No value supplied for option `" opt-name "'"))
 
 		      (not-empty opt-name-residue)
 		      (.println *err* (str "Error: Residue bundled options found for `" opt-name "'"
 					   " which requires a value."))
-		      
+
 		      (class? opt-type)
 		      (recur (update-fn (make-instance opt-type opt-value)) residue-args subcmd)
 
@@ -296,7 +296,7 @@ example:
 			(recur (update-fn opt-value) residue-args subcmd)
 			(.println *err* (str "Error: Value for option `" opt-name "'"
 					     " cannot be `" opt-value "'.")))
-		      
+
 		      :else
 		      (.println *err* (str "Error: Option type for `" opt-name "'"
 					   " is " opt-type ", which is not allowed."))))))
@@ -332,7 +332,7 @@ example:
 								 cnt)))))
 						 (get-in grammar (conj subcmd nil))))))
        ;; based on :args guess what types the next item can have
-       
+
        }
 
       (let [[first-arg next-args] [(first args) (next args)]]
@@ -359,7 +359,7 @@ example:
 	      (let [opt-type (if (vector? opt-spec)
 			       (cond (empty? opt-spec)
 				     Boolean
-				     
+
 				     :else
 				     (first opt-spec))
 			       opt-spec)
@@ -379,7 +379,7 @@ example:
 
 		  (map? opt-type)
 		  (recur (update-fn {}) next-args (conj subcmd opt-key))
-		  
+
 		  ;; it is not Boolean or map, therefore it needs an arguemnt.
 		  :else
 		  (let [[opt-value residue-args]
@@ -390,14 +390,14 @@ example:
 		      (= beg "+")
 		      {:error (str "Error: option `" opt-name "' started with `+'. "
 				   "Only Boolean options are allowed to do so.")}
-		      
+
 		      (empty? opt-value)
 		      {:error (str "Error: No value supplied for option `" opt-name "'")}
 
 		      (not-empty opt-name-residue)
 		      {:error (str "Error: Residue bundled options found for `" opt-name "'"
 				   " which requires a value.")}
-		      
+
 		      (class? opt-type)
 		      (recur (update-fn (make-instance opt-type opt-value)) residue-args subcmd)
 
@@ -407,7 +407,7 @@ example:
 			(recur (update-fn opt-value) residue-args subcmd)
 			{:error (str "Error: Value for option `" opt-name "'"
 				     " cannot be `" opt-value "'.")})
-		      
+
 		      :else
 		      {:error (str "Error: Option type for `" opt-name "'"
 				   " is " opt-type ", which is not allowed.")}))))
@@ -434,7 +434,7 @@ example:
   (let [{prev :prev cur :cur} (line-parse line point)]
     (if (empty? prev)
       (.println *err* "No args? We have freaked out!")
-      
+
       (let [their-ns (symbol (str "bin." (path->ns (first prev))))]
         (require their-ns)
 
@@ -454,7 +454,7 @@ example:
                       (mapcat #(cond
                                  (class? %)
                                  (.complete (make-instance % cur))
-                                       
+
                                  (symbol? %)
                                  (.complete (make-instance
                                              (ns-resolve their-ns %) cur)))
@@ -492,7 +492,7 @@ example:
                            (filter-prefix cur (:keys sub))
                            (mapcat #(cond (class? %)
                                           (.complete (make-instance % cur))
-                                          
+
                                           (symbol? %)
                                           (.complete (make-instance
                                                       (ns-resolve their-ns %)
@@ -577,13 +577,13 @@ and keywords are turned into longopts (:this --> --this)."
     (completor-respond
      (filter-prefix cur (map #(:name (meta %))
 			     (ns-interactive-fns current-ns))))
-    
+
     ;; command specified
     (let [current-command (ns-resolve
 			   current-ns (symbol (nth prev 1)))
 	  prev-args (drop 2 prev)
 	  an-arglist (first
-		      (filter #(> (count %) (count prev-args)) 
+		      (filter #(> (count %) (count prev-args))
 			      (:arglists (meta current-command))))
 	  current-arg-tag (:tag
 			   (meta (get an-arglist (count prev-args))))]
@@ -593,18 +593,21 @@ and keywords are turned into longopts (:this --> --this)."
 	 (if current-arg-tag
 	   (.complete (make-instance current-arg-tag cur))
 	   ;; new is apparently broken a bit
-	   
+
 	   ;; (rose.complete/complete
 	   ;;  (eval `(new ~(ns-resolve current-ns current-arg-tag) ~cur)))
-	   
+
 	   ["foo"] ;; TODO: use some default completion
 	   ))))))
 
 (defn run-command-maybe-ns
   ([their-ns their-ns-path]
      ;; TODO: find a better condition to check if we are running a script
-     (when (.endsWith (str "/" (get *env* "_"))
-                      (str "/" their-ns-path))
+     (when (or
+            (.endsWith (str "/" (get *env* "_"))
+                       (str "/" their-ns-path))
+            (.endsWith (str "/" (get *env* "_"))
+                       "/make"))
        (let [cli (ns-cli their-ns)
              parsed-opts (parse-args (merge {:help Boolean :h :help
                                              :version Boolean :v :version}
@@ -623,20 +626,20 @@ and keywords are turned into longopts (:this --> --this)."
                                           (get-in cli (if cmd [:grammar cmd] [:grammar])))]
                      (if k
                        (println (format " %-15s %s: %s%s" "" (key-to-opt k)
-                                        (cond 
+                                        (cond
                                           (keyword? v)
                                           (str "alias for " (key-to-opt v))
-                                          
+
                                           (or (= Boolean v) (= [] v))
                                           "on/off option"
-                                          
+
                                           :else
                                           v)
-                                        (if-let [opt-doc (:doc (meta v))] 
+                                        (if-let [opt-doc (:doc (meta v))]
                                           (ascii-color :y (str " " opt-doc))
                                           "")))
                        (println (format " %-15s args: %s" "" (ascii-color :r (into (list) v))))))))
-               
+
                :else
                (let [cli-fns (get cli :fns)
                      cmds (filter cli-fns (filter identity (keys parsed-opts)))]
