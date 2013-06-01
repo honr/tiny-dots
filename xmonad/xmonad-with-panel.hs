@@ -11,12 +11,18 @@ import XMonad.Fairy
 import XMonad.FairyGnome
 import XMonad.FairyTheme
 
+
+import qualified XMonad.Util.XSelection as Util.XSelection
+
 key_bindings :: XConfig Layout -> Map.Map (KeyMask, KeySym) (X())
 key_bindings = \conf ->
   (Util.EZConfig.mkKeymap conf
    (emacs_keys ++
     [("M-e d", (setLayout (XMonad.layoutHook conf))),
-     ("M-C-S-c", (spawn "chrome-tmp"))]))
+     ("M-C-S-c", (spawn "chrome-tmp")),
+     ("M-y w", Util.XSelection.transformSafePromptSelection 
+               (\s -> ("'http://en.wikipedia.org/wiki/Special:Search?search=" ++ s ++ "'"))
+               "firefox")]))
 
 main :: IO ()
 main = do

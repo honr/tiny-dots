@@ -95,6 +95,7 @@
    ;; '(indicate-buffer-boundaries 'left)
    '(iswitchb-default-method 'maybe-frame)
    ;; '(mouse-avoidance-mode 'banish)
+   '(js-indent-level 2)
    '(mouse-wheel-progressive-speed nil)
    '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
    '(org-agenda-files '("~/Documents/agenda.org"))

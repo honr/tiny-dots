@@ -37,7 +37,6 @@ $HOME/.local/share/applications/clove-daemon.desktop>$HOME/Pool/clj/clove/clove-
 $HOME/.local/share/java
 $HOME/.local/share/java/classes
 $HOME/.local/share/java/classes/bin>$HOME/.local/bin
-$HOME/.local/share/java/classes/web>$HOME/Pool/web
 $HOME/.local/share/java/project.clj>$HOME/Pool/clj/project.clj
 $HOME/.local/share/man
 $HOME/.local/share/man/man1
