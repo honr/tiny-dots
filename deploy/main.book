@@ -5,6 +5,7 @@ $HOME/.emacs.d/insert>$HOME/Pool/emacs/insert
 $HOME/.emacs.d/site-lisp
 $HOME/.emacs.d/site-lisp/pool>$HOME/Pool/emacs/site-lisp
 $HOME/.emacs.d/themes>$HOME/Pool/emacs/themes
+$HOME/.fonts.conf>$HOME/Pool/etc/fonts.conf
 $HOME/.gnomerc>$HOME/Pool/etc/gnomerc
 $HOME/.inputrc>$HOME/Pool/etc/inputrc
 $HOME/.local
