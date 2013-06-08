@@ -1,6 +1,7 @@
 (ns rose.ss-css
   (:require [clojure.string]))
 
+;; TODO: evaluate all symbols!
 ;; TODO: allow inserting comments and section headers.
 
 (defn rulize [body]
@@ -28,8 +29,19 @@
               ;; We do nothing for the rest of them yet!
               )))))
 
+(defn rgb-to-hsl [r g b]  ;; r, g, b: [0, 1]
+  ;; TODO.
+  )
+
+(defn hsl-to-rgb [h s l]  ;; h, s, l: [0, 1]
+  ;; TODO.
+  )
+
 (def known-colors-hue-sat
-  {"red" [0.1 0.2]})
+  {"red" [0.0 1.0]
+   "green" [0.4 1.0]
+   "blue" [0.7 1.0]
+   "gray" [0.0 0.0]})
 
 (defn lossy-float-str [x]
   (let [s (format "%.2f" x)]
@@ -48,48 +60,55 @@
             (Math/round (* 100 sat))
             (Math/round (* 100 lum)))))
 
-(defn process-attr-value [defs v]
-  (let [process #(process-attr-value defs v)]
-    (cond
-     (vector? v)
-     (clojure.string/join
-      " "
-      (for [item v]
-        (process-attr-value defs item)))
+(defn evaluate [defs sym]
+  (cond
+   (list? sym)
+   (let [[f & body] sym]
+     (condp = f
+       ;; Obsolete
+       'get (get defs (first body))
 
-     (list? v)
-     (let [[f & body] v]
-       (condp = f
-           'get (get defs (first body))
+       ;; TODO: use single quotes instead of double quotes.
+       'str (pr-str
+             (apply str (for [x body]
+                          (evaluate defs x))))
 
-           ;; TODO: use single quotes instead of double quotes.
-           'str (pr-str
-                 (apply str (for [x body]
-                              (process-attr-value defs x))))
+       "NOT IMPLEMENTED YET"))
 
-           "NOT IMPLEMENTED YET"))
+   (symbol? sym)
+   (let [v (name sym)]
+     (or
+      (when-let [[_ percent]
+                 (re-matches #"%([-.0-9]+)" v)]
+        (str percent "%"))
 
-     (symbol? v)
-     (let [v (name v)]
-       (or
-        (when-let [[_ percent]
-                   (re-matches #"%([-.0-9]+)" v)]
-          (str percent "%"))
+      (when-let [[_ unit quantity]
+                 (re-matches #"([a-z]+)\*([-+.0-9]+)" v)]
+        (str quantity unit))
 
-        (when-let [[_ unit quantity]
-                   (re-matches #"([a-z]+)\*([-+.0-9]+)" v)]
-          (str quantity unit))
+      (when-let [[_ hue-sat lum _ alpha]
+                 (re-matches #"([a-z]+)(\.?[0-9]+)(:([.0-9]+))?" v)]
+        (color-str (or (get defs (symbol hue-sat))
+                       (get known-colors-hue-sat hue-sat))
+                   (Double/valueOf lum)
+                   (when alpha (Double/valueOf alpha))))
 
-        (when-let [[_ hue-sat lum _ alpha]
-                   (re-matches #"([a-z]+)(\.?[0-9]+)(:([.0-9]+))?" v)]
-          (color-str (or (get defs (symbol hue-sat))
-                         (get known-colors-hue-sat hue-sat))
-                     (Double/valueOf lum)
-                     (when alpha (Double/valueOf alpha))))
-        v))
+      (when-let [sym-value (get defs sym)]
+        (pr-str sym-value))
 
-     :else
-     (str v))))
+      v))
+
+   :else
+   (str sym)))
+
+(defn evaluate-attr-value [defs attr-value]
+  (cond
+   (vector? attr-value)
+   (clojure.string/join " "
+                        (for [v attr-value]
+                          (evaluate defs v)))
+   :else
+   (evaluate defs attr-value)))
 
 (def needs-vendors #{:border-radius})
 
@@ -99,7 +118,7 @@
                    (for [[key raw-v] attributes]
                      {:key key
                       :attr-set
-                      (let [v (process-attr-value defs raw-v)
+                      (let [v (evaluate-attr-value defs raw-v)
                             k (name key)]
                         (if (needs-vendors key)
                           [[(str "-moz-" k) v]
