@@ -80,6 +80,7 @@
   (require 'org)
 
   (custom-set-variables
+   '(compilation-skip-threshold 2)
    ;; '(custom-enabled-themes '(whitestone-serious))
    '(custom-enabled-themes '(fruitsalad-dark))
    ;; '(custom-enabled-themes '(dark-forge))
@@ -99,11 +100,14 @@
    '(js-indent-level 2)
    '(mouse-wheel-progressive-speed nil)
    '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
+   '(next-screen-context-lines 8)
    '(org-agenda-files '("~/Documents/agenda.org"))
    '(org-export-html-style
      (format "<link rel=\"stylesheet\" href=\"%s\">"
              (expand-file-name "~/org.css")))
    '(org-replace-disputed-keys t)
+   '(org-todo-keywords ("TODO" "CANCELLED" "PROGRESSING" "DONE"))
+   '(python-guess-indent nil)
    '(read-buffer-completion-ignore-case t)
    '(read-file-name-completion-ignore-case t)
    '(standard-indent 2)
