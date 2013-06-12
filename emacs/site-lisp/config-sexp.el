@@ -26,3 +26,4 @@
 
 (require 'lib-sexp)
 
+(provide 'config-sexp)

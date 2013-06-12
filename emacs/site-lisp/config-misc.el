@@ -24,3 +24,5 @@
                        ;; (disable-theme 'fruitsalad-dark)
                        (disable-theme 'dark-forge)
                        (enable-theme 'whitestone-serious)))))
+
+(provide 'config-misc)

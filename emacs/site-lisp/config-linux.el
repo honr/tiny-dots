@@ -2,3 +2,5 @@
 (defvar xdg-open-program "xdg-open")
 
 (add-to-list 'default-frame-alist '(scroll-bar-width . 11))
+
+(provide 'config-linux)

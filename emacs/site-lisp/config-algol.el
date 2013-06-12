@@ -18,3 +18,5 @@
                           turn-on-haskell-doc-mode
                           turn-on-haskell-decl-scan))
 (add-to-list 'auto-mode-alist '("\\.hs\\'" . haskell-mode))
+
+(provide 'config-algol)

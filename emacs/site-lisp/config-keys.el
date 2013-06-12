@@ -235,3 +235,5 @@
    "external-nautilus" nil "xdg-open ."))
 
 (global-set-key (kbd "M-<f4>") 'external-directory-browser-here)
+
+(provide 'config-keys)
