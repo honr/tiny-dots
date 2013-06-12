@@ -106,7 +106,7 @@
      (format "<link rel=\"stylesheet\" href=\"%s\">"
              (expand-file-name "~/org.css")))
    '(org-replace-disputed-keys t)
-   '(org-todo-keywords ("TODO" "CANCELLED" "PROGRESSING" "DONE"))
+   '(org-todo-keywords '("TODO" "CANCELLED" "PROGRESSING" "DONE"))
    '(python-guess-indent nil)
    '(read-buffer-completion-ignore-case t)
    '(read-file-name-completion-ignore-case t)
