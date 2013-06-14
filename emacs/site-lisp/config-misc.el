@@ -25,4 +25,13 @@
                        (disable-theme 'dark-forge)
                        (enable-theme 'whitestone-serious)))))
 
+(require 'calendar)
+(defun calendar-cursor-as-kill ()
+  (interactive)
+  (kill-new (calendar-date-string (calendar-cursor-to-date t))))
+(add-hook
+ 'calendar-mode-hook
+ (lambda ()
+   (local-set-key (kbd "w") 'calendar-cursor-as-kill)))
+
 (provide 'config-misc)
