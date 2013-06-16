@@ -1,5 +1,5 @@
 (ns rose.ss-css
-  (:require [clojure.string]))
+  (:require [clojure.string :as string]))
 
 ;; TODO: evaluate all symbols!
 ;; TODO: allow inserting comments and section headers.
@@ -283,7 +283,7 @@
 (defn evaluate-attr-value [defs attr-value]
   (cond
    (vector? attr-value)
-   (clojure.string/join " "
+   (string/join " "
                         (for [v attr-value]
                           (evaluate defs v)))
    :else
@@ -316,7 +316,7 @@
                            {:selectors selectors
                             :attributes (process-attrs defs attributes)}))]
       (println)
-      (println (clojure.string/join
+      (println (string/join
                 ",\n"
                 (for [selector (row :selectors)]
                   ;; Prepend the namespace to the first piece of the selector
@@ -332,3 +332,70 @@
       (doseq [[k v] (row :attributes)]
         (println (format "  %s: %s;" k v)))
       (println "}"))))
+
+
+;; A very dumb parser quickly put together for experimenting.
+(def whitespace-re #"[\s\n\r]")
+(def special-re  #"[(){}\[\]\",';/:]")
+(defn tokenize [s]
+  (loop [s (str s) ;; TODO: use a charbuffer instead of a string.
+         i 0
+         state :low
+         l []]
+    (cond
+     (empty? s) l
+
+     (>= i (count s)) (conj l s)  ;; flush the rest into s.
+
+     :else
+     (let [c (str (.charAt s i))]
+       (cond
+        (re-matches whitespace-re c)
+        (if (= :high state)
+          (recur
+           (.substring s (inc i)) 0 :low (conj l (.substring s 0 i)))
+          (recur
+           (.substring s 1) 0 :low l))
+
+        (re-matches special-re c)
+        (if (= :high state)
+          (recur
+           (.substring s (inc i)) 0 :low (conj l (.substring s 0 i) c))
+          (recur
+           (.substring s 1) 0 :low (conj l c)))
+
+        :else
+        (recur s (inc i) :high l))))))
+
+(defn css-read-phase2 [coll]
+  ;; coll is the tokenized string.
+  (loop [coll coll
+         stack ()
+         hand [:file]]
+    (if (empty? coll)
+      (if (empty? stack)
+        hand
+        nil)
+
+      (let [[x & coll] coll]
+        (cond
+         (= x "(")
+         (recur coll (cons hand stack) [:list])
+
+         (= x "[")
+         (recur coll (cons hand stack) [:vector])
+
+         (= x "{")
+         (recur coll (cons hand stack) [:mapping])
+
+         (or (= x "]") (= x "}") (= x ")"))
+         (let [[top & stack] stack]
+           (recur coll stack (conj top hand)))
+
+         :else
+         (recur coll stack (conj hand x)))))))
+
+;; Read messy "tree" and produce a better tree.
+;; format:
+;; header1 , header2 , ... { key : values ; ... }
+(defn css-read-phase3 [tree])
