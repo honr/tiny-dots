@@ -321,10 +321,12 @@
                 (for [selector (row :selectors)]
                   ;; Prepend the namespace to the first piece of the selector
                   ;; if that first piece is a class or id selector.
-                  (if (re-find #"^[.#]" selector)
-                    (str (.substring selector 0 1)
-                         (get defs :ns) "-"
-                         (.substring selector 1))
+                  (if-let [css-ns (get defs :ns)]
+                    (if (re-find #"^[.#]" selector)
+                      (str (.substring selector 0 1)
+                           css-ns "-"
+                           (.substring selector 1))
+                      selector)
                     selector)))
                "{")
       (doseq [[k v] (row :attributes)]
