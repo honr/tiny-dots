@@ -289,8 +289,8 @@ topics_table = [
   TopicItem "browse"    "y" "~" run_chrome,
   TopicItem "irc" "i" "~" run_chat,
   TopicItem "mail" "m" "~" run_mail,
-  TopicItem "agenda" "a" "~/Documents" ((spawn (editor_cmd ++ " ~/Documents/agenda.org")) >>
-                                        (run_calendar))]
+  TopicItem "agenda" "a" "~" ((spawn (editor_cmd ++ " ~/agenda.org")) >>
+                              (run_calendar))]
 
 -- Work in progress ...
 -- TODO: specify perworkspace layout in _topicsTable
