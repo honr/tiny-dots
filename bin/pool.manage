@@ -47,7 +47,7 @@ function cmd-mkdir () {
     local SOURCE="$1"
 
     local THEDIR="${SOURCE/$HOME/\$HOME}"
-    sort -u <(cat "$BOOK" ; echo "${THEDIR}>") > "$BOOK.new"
+    sort -u <(cat "$BOOK" ; echo "${THEDIR}") > "$BOOK.new"
     mv "$BOOK.new" "$BOOK"
 }
 
