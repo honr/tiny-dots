@@ -23,10 +23,6 @@
       (mapcar 'expand-file-name  ; The trailing slash is *IMPORTANT*.
               (list "~/.emacs.d/info/")))
 
-(defun load-library-if-exists (lib-name)
-  (when (locate-file lib-name load-path (get-load-suffixes))
-    (load-library lib-name)))
-
 ;; OS-dependent configurations:
 (cond ((eq system-type 'darwin)    (require 'config-darwin nil t))
       ((eq system-type 'gnu/linux) (require 'config-linux nil t)))

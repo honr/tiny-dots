@@ -136,8 +136,11 @@
 (ad-activate 'yank-pop)
 
 (when (not (boundp 'xdg-open-program))
-  (error "xdg-open-program not defined"))
-;; xdg-open-program must be defined.
+  ;; Set a not-so-last resort.
+  (setq xdg-open-program (expand-file-name "~/.local/bin/visit"))
+  (when (not (file-exists-p xdg-open-program))
+    (error "xdg-open-program does not exist.  Please set one.")))
+
 (defun xdg-open-filelist (filelist &optional rest)
   (apply 'call-process
          (or rest
