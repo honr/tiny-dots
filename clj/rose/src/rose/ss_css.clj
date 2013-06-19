@@ -3,6 +3,10 @@
 
 ;; TODO: evaluate all symbols!
 ;; TODO: allow inserting comments and section headers.
+;; TODO: allow multiple key-values, decidable by value as well as by key.
+;; TODO: merge style.clj, style/foo.clj, style/bar.clj into one.  use `foo'
+;;       and `bar' as namespaces.  style.clj should contain generic and/or
+;;       classless rules.
 
 (defn rulize [body]
   (loop [body body cur [] rules [] defs []]
@@ -252,6 +256,11 @@
              (apply str (for [x body]
                           (evaluate defs x))))
 
+       'call (let [[head & args] body]
+               (str (evaluate defs head)
+                    \( (clojure.string/join "," (map #(evaluate defs %)
+                                                     args)) \)))
+
        "NOT IMPLEMENTED YET"))
 
    (symbol? sym)
@@ -266,7 +275,7 @@
         (str quantity unit))
 
       (when-let [[_ hue-sat lum _ alpha]
-                 (re-matches #"([a-z]+)(\.?[0-9]+)(:([.0-9]+))?" v)]
+                 (re-matches #"([a-zA-Z-]+)(\.?[0-9]+)(:([.0-9]+))?" v)]
         (color-str (or (get defs (symbol hue-sat))
                        (get known-colors-hue-sat hue-sat))
                    (Double/valueOf lum)
@@ -289,7 +298,7 @@
    :else
    (evaluate defs attr-value)))
 
-(def needs-vendors #{:border-radius})
+(def needs-vendors #{:border-radius :column-width :column-gap})
 
 (defn process-attrs [defs attributes]
   (mapcat :attr-set
@@ -302,6 +311,7 @@
                         (if (needs-vendors key)
                           [[(str "-moz-" k) v]
                            [(str "-webkit-" k) v]
+                           [(str "-o-" k) v]
                            [(str k) v]]
                           [[(name k) v]]))}))))
 
@@ -309,9 +319,10 @@
   (let [body (rulize tree)
         defs (make-context (body :defs))]
 
-    (println (format "/* namespace: %s */" (or (defs :ns) "unknown!")))
+    (when (defs :ns)
+      (println (format "/* namespace: %s */" (defs :ns))))
 
-    (doseq [row (sort-by :selectors
+    (doseq [row (sort-by #(first (get % :selectors))
                          (for [[selectors attributes] (body :rules)]
                            {:selectors selectors
                             :attributes (process-attrs defs attributes)}))]

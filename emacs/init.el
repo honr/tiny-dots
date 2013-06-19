@@ -28,8 +28,8 @@
     (load-library lib-name)))
 
 ;; OS-dependent configurations:
-(cond ((eq system-type 'darwin)    (load-library-if-exists "config-darwin"))
-      ((eq system-type 'gnu/linux) (load-library-if-exists "config-linux")))
+(cond ((eq system-type 'darwin)    (require 'config-darwin nil t))
+      ((eq system-type 'gnu/linux) (require 'config-linux nil t)))
 
 (when (or (daemonp) (eq system-type 'darwin))
   ;; Add a "layer" of protection around ‘C-x C-c’.

@@ -43,7 +43,7 @@
  '(minibuffer-prompt             ((t (:foreground "#99FF99"))))
  '(mode-line                     ((t (:foreground "#999999" :background "#444444" :box (:line-width 1 :color "#555555")))))
  '(mode-line-inactive            ((t (:foreground "#666666" :background "#2A2A2A" :box (:line-width 1 :color "#555555")))))
- '(mode-line-buffer-id           ((t (:foreground "#FFFF00"                       :box (:line-width 1 :color "#555555") :weight bold))))
+ '(mode-line-buffer-id           ((t (:foreground "#FFFF00"                       :weight bold))))
  '(mode-line-mousable            ((t (:foreground "#444444" :background "#000000"))))
  '(mode-line-mousable-minor-mode ((t (:foreground "#888888" :background "#FFFFFF"))))
  '(paren-face                    ((t (:foreground "#666666"))))
