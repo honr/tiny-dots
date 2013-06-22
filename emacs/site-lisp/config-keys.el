@@ -170,7 +170,9 @@
        (concat
         "tell application \"Terminal\"\n"
         "activate\n"
-        (if (string-prefix-p "/ssh:" default-directory)
+        (if (or (string-prefix-p "/ssh:" default-directory)
+                (string-prefix-p "/rsync:" default-directory)
+                (string-prefix-p "/scp:" default-directory))
             (let* ((abc (split-string default-directory ":"))
                    (a (car abc))
                    (b (cadr abc))
@@ -195,7 +197,9 @@
     (start-process-shell-command
      "external-xterm" nil "xterm"
      (format "-bg '%s'" (face-attribute 'default :background))
-     (if (string-prefix-p "/ssh:" default-directory)
+     (if (or (string-prefix-p "/ssh:" default-directory)
+             (string-prefix-p "/rsync:" default-directory)
+             (string-prefix-p "/scp:" default-directory))
          (let* ((abc (split-string default-directory ":"))
                 (a (car abc))
                 (b (cadr abc))

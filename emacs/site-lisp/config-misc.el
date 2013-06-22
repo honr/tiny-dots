@@ -34,4 +34,39 @@
  (lambda ()
    (local-set-key (kbd "w") 'calendar-cursor-as-kill)))
 
+(defun compilation-exit-bury-on-success (status code msg)
+  (when (and (eq status 'exit) (zerop code))
+    (bury-buffer "*compilation*")
+    (replace-buffer-in-windows "*compilation*"))
+  (cons msg code))
+(setq compilation-exit-message-function 'compilation-exit-bury-on-success)
+
+
+;; TODO: find a better way to let tramp restart a connection.
+(require 'tramp)
+(defun tramp-try-to-start-possibly-stall-remote (remote-path
+                                                 buffer-name-of-tramp)
+  (let ((buffer-of-tramp (get-buffer buffer-name-of-tramp)))
+    (when (bufferp buffer-of-tramp)
+      (kill-buffer buffer-of-tramp)))
+  (sit-for .5)
+  (find-file-noselect remote-path))
+;; Let ssh decide on its own.
+(setq tramp-ssh-controlmaster-options "")
+
+;; yasnippet
+(require 'yasnippet nil t)
+(when (boundp 'yas-global-mode)
+  (setq yas-prompt-functions '(yas-completing-prompt)
+        yas-also-auto-indent-first-line t
+        yas-snippet-dirs (file-expand-wildcards
+                          (expand-file-name "~/.emacs.d/snippets/*")))
+  (yas-global-mode 1)
+  (global-set-key (kbd "C-x r '") 'yas-insert-snippet)
+  (global-set-key (kbd "C-x r C-'") 'yas-new-snippet)
+  (global-set-key (kbd "C-x r \"") 'yas-visit-snippet-file))
+;; Not sure in what situation these might become necessary:
+;; (yas-reload-all)
+;; (yas-recompile-all)  ;; Generates a "compiled" snippet file.
+
 (provide 'config-misc)

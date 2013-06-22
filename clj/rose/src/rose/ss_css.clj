@@ -8,6 +8,22 @@
 ;;       and `bar' as namespaces.  style.clj should contain generic and/or
 ;;       classless rules.
 
+(defprotocol AbelianGroupIface
+  "Operations for an Abelian Group"
+  (add [m value])
+  (mul [m coeff]))
+
+(deftype NumberWithUnit
+    [num unit]
+  Object
+  (toString [_]
+    (if unit
+      (str num (name unit))
+      (str num)))
+  AbelianGroupIface
+  (mul [m coeff]
+    (NumberWithUnit. (* coeff num) unit)))
+
 (defn rulize [body]
   (loop [body body cur [] rules [] defs []]
     (if (empty? body)
@@ -260,6 +276,16 @@
                (str (evaluate defs head)
                     \( (clojure.string/join "," (map #(evaluate defs %)
                                                      args)) \)))
+       'sprite (when (= (count body) 2)
+                 (let [[resource cell-width cell-height m] (get defs (first body))
+                       resource (evaluate defs resource)
+                       cell-width (evaluate defs cell-width)
+                       cell-height (evaluate defs cell-height)
+                       spr-ind (get m (second body))]
+                   (when spr-ind
+                     (str "url(" (pr-str resource) ") "
+                          (mul cell-width (* -1 (first spr-ind))) " "
+                          (mul cell-height (* -1 (second spr-ind))) " no-repeat"))))
 
        "NOT IMPLEMENTED YET"))
 
@@ -272,7 +298,10 @@
 
       (when-let [[_ unit quantity]
                  (re-matches #"([a-z]+)\*([-+.0-9]+)" v)]
-        (str quantity unit))
+        ;; should be read-number but we don't have that apparently.
+        (NumberWithUnit. (read-string quantity) unit)
+        ;; (str quantity unit)
+        )
 
       (when-let [[_ hue-sat lum _ alpha]
                  (re-matches #"([a-zA-Z-]+)(\.?[0-9]+)(:([.0-9]+))?" v)]
