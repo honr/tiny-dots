@@ -40,8 +40,8 @@
                  [compojure "1.1.6"]
                  [hiccup "1.0.5"]
                  ;; ;; [ring "0.3.8"]
-                 [ring/ring-jetty-adapter "1.2.1"]
-                 [ring/ring-servlet "1.2.1"]
+                 [ring/ring-jetty-adapter "1.2.2"]
+                 [ring/ring-servlet "1.2.2"]
                  ;; [clout "1.0.1"]
                  ;;;; UP TO HERE.
                  ;; [jgraph "5.13.0.0"]

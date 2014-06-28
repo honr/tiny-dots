@@ -1,0 +1,52 @@
+Xft.antialias: 1
+Xft.hinting: 0
+Xft.hintstyle: hintnone
+Xft.rgba: rgb
+
+emacs.toolBar: 0
+emacs*shadowThickness: 1
+
+*customization: -color
+
+XTerm*fontMenu.Label: Unicode Fonts
+XTerm.VT100.utf8:	1
+XTerm*utf8Title: true
+XTerm*termName: xterm-256color
+XTerm*metaSendsEscape: true
+XTerm*scrollttyoutput: false
+XTerm*SimpleMenu.borderColor: gray20
+XTerm*saveLines: 8192
+XTerm*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
+XTerm*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
+XTerm*VT100.faceName: UbuntuMono
+XTerm*VT100.faceSize: 11
+! XTerm.*backarrowKey: false
+XTerm*ttyModes: weras ^-
+XTerm.VT100.translations: #override \
+    Super ~Shift <Key>c: copy-selection(CLIPBOARD) \n\
+    Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
+    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0) \n\
+    Ctrl Shift <Key>n: spawn-new-terminal() \n\
+    Shift <Key>space: string("_")
+
+! Refer to X Toolkit Intrinsics for more details.
+! Also, more possible keys can be found in /usr/include/X11/keysymdef.h
+
+XTermEmacs*fontMenu.Label: Unicode Fonts
+XTermEmacs.VT100.utf8:	1
+XTermEmacs*utf8Title: true
+XTermEmacs*termName: xterm-256color
+XTermEmacs*metaSendsEscape: true
+XTermEmacs*scrollttyoutput: false
+XTermEmacs*SimpleMenu.borderColor: gray20
+XTermEmacs*saveLines: 8192
+XTermEmacs*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
+XTermEmacs*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
+XTermEmacs*VT100.faceName: UbuntuMono
+XTermEmacs*VT100.faceSize: 11
+XTermEmacs*ttyModes: weras ^-
+XTermEmacs*VT100.translations: #override \
+    Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
+    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0) \n\
+    Ctrl Shift <Key>n: spawn-new-terminal() \n\
+    Shift <Key>space: string("_")
