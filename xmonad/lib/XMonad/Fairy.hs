@@ -140,7 +140,7 @@ workspace_shift t = (workspace_new t) >> ((windows . StackSet.shift) t)
 
 workspace_tag_sep = '/'
 workspace_tag_groups = (Actions.CycleWS.WSTagGroup workspace_tag_sep)
-workspace_tag_non_groups = 
+workspace_tag_non_groups =
   (Actions.CycleWS.WSIs
    (do cur <- (fmap
                (groupName . StackSet.workspace . StackSet.current)
@@ -195,13 +195,13 @@ prompt_config = (Prompt.defaultXPConfig
                    ((mod1Mask, xK_d), Prompt.killWord Prompt.Next),
                    ((mod1Mask, xK_BackSpace), Prompt.killWord Prompt.Prev),
                    ((controlMask, xK_p), Prompt.moveHistory StackSet.focusUp'),
-                   ((controlMask, xK_n), 
+                   ((controlMask, xK_n),
                     Prompt.moveHistory StackSet.focusDown')]),
                Prompt.searchPredicate = is_multifix_of})
 
 is_multifix_of :: String -> String -> Bool
 is_multifix_of needles haystack =
-  (and (map (flip List.isInfixOf haystack) 
+  (and (map (flip List.isInfixOf haystack)
        (List.words needles)))
 
 -- Applications
@@ -430,7 +430,7 @@ emacs_keys  =
          ("M-S-d " ++ k, (workspace_shift n))) topics_table) ++
 
   [("M-m", (withFocused Layout.Minimize.minimizeWindow)),
-   ("M-C-m", (withFocused (\ w -> (sendMessage 
+   ("M-C-m", (withFocused (\ w -> (sendMessage
                                    (Layout.Minimize.RestoreMinimizedWin w))))),
    ("M-S-m", (sendMessage Layout.Minimize.RestoreNextMinimizedWin)),
 
@@ -575,6 +575,9 @@ emacs_keys  =
    ("M-i 3", (Util.ExtensibleState.put color_theme_grey) >>
              (spawn "xrdb -merge .local/etc/Xresources-dark") >>
              (spawn "emacsclient -e \"(set-theme 'fruitsalad-dark)\"")),
+  ("M-i 4", (Util.ExtensibleState.put color_theme_light_wood) >>
+             (spawn "xrdb -merge .local/etc/Xresources-light") >>
+             (spawn "emacsclient -e \"(set-theme 'light-balcony)\"")),
 
    -- -- Commands
    -- , ("M-y", runCommand _commands)
