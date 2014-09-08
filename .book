@@ -5,8 +5,13 @@ $HOME/.emacs.d/init.el>$HOME/Pool/emacs/init.el
 $HOME/.emacs.d/insert
 $HOME/.emacs.d/site-lisp
 $HOME/.emacs.d/site-lisp/pool>$HOME/Pool/emacs/site-lisp
+$HOME/.emacs.d/themes
+$HOME/.emacs.d/themes/dark-forge-theme.el>$HOME/Pool/emacs/themes/dark-forge-theme.el
+$HOME/.emacs.d/themes/dark-ruthless-theme.el>$HOME/Pool/emacs/themes/dark-ruthless-theme.el
+$HOME/.emacs.d/themes/fruitsalad-dark-theme.el>$HOME/Pool/emacs/themes/fruitsalad-dark-theme.el
 $HOME/.emacs.d/themes/light-balcony-theme.el>$HOME/Pool/emacs/themes/light-balcony-theme.el
-$HOME/.emacs.d/themes>$HOME/Pool/emacs/themes
+$HOME/.emacs.d/themes/whitestone-serious-text-theme.el>$HOME/Pool/emacs/themes/whitestone-serious-text-theme.el
+$HOME/.emacs.d/themes/whitestone-serious-theme.el>$HOME/Pool/emacs/themes/whitestone-serious-theme.el
 $HOME/.fonts.conf>$HOME/Pool/etc/fonts.conf
 $HOME/.gnomerc>$HOME/Pool/etc/gnomerc
 $HOME/.inputrc>$HOME/Pool/etc/inputrc
@@ -39,6 +44,8 @@ $HOME/.local/etc/bash
 $HOME/.local/etc/bash/gconftool.linux>$HOME/Pool/etc/bash/gconftool.linux
 $HOME/.local/etc/bash/generic.clj.bash>$HOME/Pool/etc/bash/generic.clj.bash
 $HOME/.local/etc/bash/gsettings.linux>$HOME/Pool/etc/bash/gsettings.linux
+$HOME/.local/lib
+$HOME/.local/lib/make
 $HOME/.local/lib/make/common.make>$HOME/Pool/make/common.make
 $HOME/.local/share
 $HOME/.local/share/applications
