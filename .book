@@ -43,6 +43,7 @@ $HOME/.local/bin/xml-to-vector.clj>$HOME/Pool/bin/xml-to-vector.clj
 $HOME/.local/etc
 $HOME/.local/etc/bash
 $HOME/.local/etc/bash/alias.bash>$HOME/Pool/etc/bash/alias.bash
+$HOME/.local/etc/bash/path.linux>$HOME/Pool/etc/bash/path.linux
 $HOME/.local/etc/bash/term.bash>$HOME/Pool/etc/bash/term.bash
 $HOME/.local/etc/bash/term.mac>$HOME/Pool/etc/bash/term.mac
 $HOME/.local/etc/bash/term.linux>$HOME/Pool/etc/bash/term.linux
