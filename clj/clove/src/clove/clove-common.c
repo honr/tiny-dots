@@ -1,26 +1,6 @@
 #include "clove-common.h"
 
-// For OSX
-#ifndef _GNU_SOURCE
-
-size_t strnlen (const char* s, size_t len) {
-  size_t i;
-  for (i = 0; i < len && *s; i++, s++)
-    ;
-  return i;
-}
-
-char* strndup (const char* s, size_t n) {
-  size_t len = strnlen (s, n);  // Or n-1 ?
-  char* t;
-
-  if ((t = malloc (len + 1)) == NULL) return NULL;
-
-  t[len] = '\0';
-  return memcpy (t, s, len);
-}
-
-#endif
+#define LISTEN_BACKLOG 64
 
 struct sockaddr_gen addr_unix (int type, const char* sockpath) {
   struct sockaddr_gen a;

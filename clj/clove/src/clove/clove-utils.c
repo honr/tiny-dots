@@ -1,296 +1,6 @@
 #include "clove-common.h"
 #include "clove-utils.h"
-
-// If dest is NULL do nothing and just return NULL.  Otherwise, prepend the
-// character `S' and copy the string from src to dest, up to a certain point
-// in dest (the memory location of the limit is passed to the function).  If
-// '\0' does not occur within that range (src string is too long), return
-// NULL.
-//
-// Also, if src is NULL, only a 0 is appended at the end of dest.
-inline char* strlcpy_p (char* dest, const char* src, const char* dest_limit) {
-  int n = dest_limit - dest - 1;
-  if (dest && (n > 1)) {
-    if (src) {
-      *(dest++) = 'S';
-      dest = memccpy (dest, src, 0, n);
-    } else {  // Only append a 0 at the dest.
-      *(dest++) = 0;
-    }
-    return dest;
-  }
-  return NULL;
-}
-
-inline char* str_beginswith (char* haystack, char* needle) {
-  register char* cur1;
-  register char* cur2;
-  for (cur1 = haystack, cur2 = needle; (*cur1) && (*cur2) && (*cur1 == *cur2);
-       cur1++, cur2++) {
-  }
-  if ((*cur2) == '\0') {
-    return cur1;
-  }
-  return NULL;
-}
-
-struct str_list* str_list_cons (char* str, struct str_list* lst) {
-  struct str_list* head = (struct str_list*)malloc (sizeof(struct str_list));
-  head->str = str;
-  head->next = lst;
-  return head;
-}
-
-void str_list_nconcat (struct str_list** lst, struct str_list* tail) {
-  if (*lst) {
-    struct str_list* nxt = *lst;
-    while (nxt->next) {
-      nxt = nxt->next;
-    }
-    nxt->next = tail;
-  } else {
-    *lst = tail;
-  }
-}
-
-struct str_list* str_list_from_vec (char* vec[], int beg, int end) {
-  struct str_list* lst = NULL;
-  for (; end >= beg; end--) {
-    lst = str_list_cons (vec[end], lst);
-  }
-  return lst;
-}
-
-// WARNING: Currently str_list_pop leaks, since the address to the next is not
-// freed.
-// TODO: Fix leakage.
-char* str_list_pop (struct str_list** lst) {
-  if (lst && (*lst) && (*lst)->str) {
-    char* ret = (*lst)->str;
-    (*lst) = (*lst)->next;
-    return ret;
-  }
-  return NULL;
-}
-
-void str_list_nreverse (struct str_list** lst) {
-  if (lst) {
-    struct str_list* nxt;
-    struct str_list* prv = NULL;
-    while (true) {
-      nxt = (*lst)->next;
-      (*lst)->next = prv;
-      prv = (*lst);
-      if (nxt) {
-        (*lst) = nxt;
-      } else {
-        break;
-      }
-    }
-  }
-}
-
-int str_list_count (struct str_list* lst) {
-  int count;
-  for (count = 0; lst; lst = lst->next, count++) {
-  }
-  return count;
-}
-
-void str_list_free (struct str_list* lst) {
-  struct str_list* nxt;
-  while (lst) {
-    nxt = lst->next;
-    free (lst->str);
-    free (lst);
-    lst = nxt;
-  }
-}
-
-struct str_list* str_split (char* str, char* delims) {
-  struct str_list* head = NULL;
-  char* running = strdup (str);
-  char* token;
-  while ((token = strsep (&running, delims))) {
-    if (*token) {
-      head = str_list_cons (token, head);
-    }
-  }
-  return head;
-}
-
-struct str_list* str_split_n (char* str, int limit, char* delims) {
-  struct str_list* head = NULL;
-  char* running = strdup (str);
-  char* token;
-  while ((limit > 1) && (token = strsep (&running, delims))) {
-    if (*token) {
-      head = str_list_cons (token, head);
-      limit--;
-    }
-  }
-  if (*running) {
-    head = str_list_cons (running, head);
-  }
-  return head;
-}
-
-struct str_list* str_split_qe (char* buf, size_t buf_size) {
-  char* buf_cur, *bufout_cur, c, state, action, quote;
-  const char STATE_ESCAPE = 2;
-  const char STATE_TOKEN = 1;
-  const char STATE_SPACE = 0;
-  char* bufout = malloc (buf_size);
-  for (buf_cur = buf, bufout_cur = bufout, state = STATE_SPACE, quote = 0;
-       *buf_cur; buf_cur++) {
-    c = *buf_cur;
-    action = 0;
-
-    // State Transitions:
-    if (state & STATE_ESCAPE) {
-      state ^= STATE_ESCAPE;
-    } else if (c == '\\') {
-      state = STATE_TOKEN | STATE_ESCAPE;
-      action = 'f';
-    } else if (state == STATE_SPACE) {
-      if ((c == ' ') || (c == '\t') || (c == '\n') || (c == '\r')) {
-        action = 'p';  // Pass.
-      } else if ((c == '"') || (c == '\'')) {
-        state = STATE_TOKEN;
-        action = 'p';
-        quote = c;
-      } else {
-        state = STATE_TOKEN;  // Hold head.
-      }
-    } else if (state == STATE_TOKEN) {
-      if (quote) {
-        if (c == quote) {
-          state = STATE_SPACE;
-          action = 'c';
-          quote = 0;
-        }
-      } else {
-        if ((c == ' ') || (c == '\t') || (c == '\n') || (c == '\r')) {
-          state = STATE_SPACE;
-          action = 'c';
-        } else if ((c == '"') || (c == '\'')) {
-          state = STATE_TOKEN;
-          action = 'c';
-          quote = c;
-        }
-      }
-    }
-
-    // Copy or flush.
-    if ((action == 'c') || (action == 'f')) {
-      memcpy (bufout_cur, buf, buf_cur - buf);
-      bufout_cur += buf_cur - buf;
-      buf = buf_cur;
-      // Copy.
-      if (action == 'c') {
-        *bufout_cur = 0;  // NULL terminate.
-        bufout_cur++;
-      }
-    }
-
-    if (action) {
-      buf++;
-    }
-  }
-
-  // Termination:
-  if (state & STATE_ESCAPE) {
-    fprintf (stderr,
-             "Error: Tried to escape end-of-line.\n"
-             "       Reading next line is not implemented, yet.\n");
-    // TODO: read next line.
-  } else if (state == STATE_TOKEN) {
-    if (quote) {
-      fprintf (stderr,
-               "Error: Tried to extend quotation to the next line.\n"
-               "       Reading next line is not implemented, yet.\n");
-    } else {
-      memcpy (bufout_cur, buf, buf_cur - buf);
-      bufout_cur += buf_cur - buf;
-      buf = buf_cur + 1;  // Redundant.
-      *bufout_cur = 0;    // NULL terminate.
-      bufout_cur++;
-    }
-  }
-  // End.
-
-  *bufout_cur = 0;  // NULL terminate.
-  return str_list_from_pack (&bufout, bufout + buf_size);
-}
-
-void* str_list_to_pack (char** buf_cur, const char* buf_lim,
-                        struct str_list* lst) {
-  char* buf = *buf_cur;
-  char* cur;
-  for (cur = str_list_pop (&lst); cur; cur = str_list_pop (&lst)) {
-    buf = strlcpy_p (buf, cur, buf_lim);
-  }
-  buf = strlcpy_p (buf, NULL, buf_lim);
-  *buf_cur = buf;
-  return buf;
-}
-
-struct str_list* str_list_from_pack (char** buf_cur, const char* buf_lim) {
-  char* buf = *buf_cur;
-  int l;
-  struct str_list* lst = NULL;
-  for (; *buf;) {
-    if ((l = strnlen (buf, buf_lim - buf)) < buf_lim - buf) {
-      lst = str_list_cons (buf, lst);
-      buf += l + 1;  // Skip the string and its NULL.
-    } else {
-      break;
-    }
-  }
-  *buf_cur = buf + 1;
-  // str_list_nreverse (&lst);
-  return lst;
-}
-
-char* str_concat (char* s1, char* s2) {
-  int size_1 = strlen (s1);
-  int size_2 = strlen (s2);
-  char* res = (char*)malloc (size_1 + size_2 + 1);
-  char* resp = res;
-  memcpy (resp, s1, size_1);
-  resp += size_1;
-  memcpy (resp, s2, size_2);
-  resp += size_2;
-  *resp = 0;
-  return res;
-}
-
-char* str_replace (char* s, char* from, char* to) {
-  int size_from = strlen (from);
-  int size_to = strlen (to);
-  int size_s = strlen (s);
-  int i;
-  char* cur;
-  // Pass 1: Find the number of occurances, to find the size of the result.
-  for (cur = strstr (s, from), i = 0; cur && *cur;
-       cur = strstr (cur + size_from, from), i++) {
-  }
-  char* res = (char*)malloc (size_s + (size_to - size_from) * i + 1);
-  char* resp = res;
-
-  // Pass 2: Copy.
-  char* prev;
-  for (prev = s, cur = strstr (prev, from); cur;
-       prev = cur + size_from, cur = strstr (prev, from)) {
-    memcpy (resp, prev, cur - prev);
-    resp += cur - prev;
-    memcpy (resp, to, size_to);
-    resp += size_to;
-  }
-  strcpy (resp, prev);
-
-  return res;
-}
+#include "strl.h"
 
 char* expand_file_name (char* filename) {
   return str_replace (filename, "~", getenv ("HOME"));
@@ -349,7 +59,7 @@ char* service_call (struct service srv, char** default_envp) {
       struct serviceconf* sc = parse_conf_file (srv.confpath);
       service_envp = envp_dup_update_or_add (
           service_envp,
-          str_list_cons (str_concat ("CLOVESOCKET=", srv.sockpath), NULL));
+          strl_cons (str_concat ("CLOVESOCKET=", srv.sockpath), NULL));
       service_envp = envp_dup_update_or_add (service_envp, sc->envs);
       // TODO: Make sure this is working properly.
       //       Apparently the order of a duplicate env vars is different
@@ -458,7 +168,7 @@ struct serviceconf* parse_conf_file (char* filepath) {
       // not empty
       if (line && *line) {
         fprintf (stderr, "%s\n", line);  // Printout accepted line.
-        sc->envs = str_list_cons (line, sc->envs);
+        sc->envs = strl_cons (line, sc->envs);
       }
     }
     fclose (file);
@@ -466,7 +176,7 @@ struct serviceconf* parse_conf_file (char* filepath) {
   return sc;
 }
 
-char** envp_dup_update_or_add (char** envp, struct str_list* extraenvs) {
+char** envp_dup_update_or_add (char** envp, struct strl* extraenvs) {
   // find the number of envp key-vals.
   if (extraenvs == NULL) {
     return envp;
@@ -476,11 +186,9 @@ char** envp_dup_update_or_add (char** envp, struct str_list* extraenvs) {
   int envp_count = 0;
   char** cur1;
   char** cur2;
-  struct str_list* cur3;
-  for (cur1 = envp; *cur1; cur1++, envp_count++)
-    ;
-  for (cur3 = extraenvs; cur3; cur3 = cur3->next, envp_count++)
-    ;
+  struct strl* cur3;
+  for (cur1 = envp; *cur1; cur1++, envp_count++) {}
+  for (cur3 = extraenvs; cur3; cur3 = cur3->next, envp_count++) {}
 
   char** envp_new = (char**)malloc ((envp_count + 2) * (sizeof(char*)));
 
@@ -510,12 +218,11 @@ char** envp_dup_update_or_add (char** envp, struct str_list* extraenvs) {
   return envp_new;
 }
 
-char** argv_dup_add (char** oldargv, struct str_list* prefixargv) {
+char** argv_dup_add (char** oldargv, struct strl* prefixargv) {
   int count_old, count;
-  struct str_list* cur;
-  for (count_old = 0; oldargv[count_old]; count_old++) {
-  }
-  count = count_old + str_list_count (prefixargv);
+  struct strl* cur;
+  for (count_old = 0; oldargv[count_old]; count_old++) {}
+  count = count_old + strl_count (prefixargv);
   char** newargv = (char**)malloc ((count + 1) * sizeof(char*));
   for (; count_old >= 0; count_old--, count--) {
     newargv[count] = oldargv[count_old];

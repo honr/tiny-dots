@@ -17,16 +17,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#define true 1
-#define false 0
-#define LISTEN_BACKLOG 64
 #define BROKER_MESSAGE_LENGTH 8192
-
-#ifndef _GNU_SOURCE
-size_t strnlen (const char* s, size_t len);
-
-char* strndup (char const* s, size_t n);
-#endif  // _GNU_SOURCE
 
 struct sockaddr_gen {
   int domain;

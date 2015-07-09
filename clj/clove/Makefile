@@ -19,19 +19,22 @@ all: $(TARGETs)
 $(DOBJ)/clove-common.o: $(SRC)/clove-common.c $(SRC)/clove-common.h
 	gcc $(CFLAGS) -fPIC -c -o $@ $<
 
-$(DOBJ)/clove-utils.o: $(SRC)/clove-utils.c $(SRC)/clove-utils.h $(SRC)/clove-common.h
+$(DOBJ)/strl.o: $(SRC)/strl.c $(SRC)/strl.h
 	gcc $(CFLAGS) -fPIC -c -o $@ $<
 
-$(DOBJ)/clove-daemon.o: $(SRC)/clove-daemon.c $(SRC)/clove-utils.h $(SRC)/clove-common.h
+$(DOBJ)/clove-utils.o: $(SRC)/clove-utils.c $(SRC)/clove-utils.h $(SRC)/clove-common.h $(SRC)/strl.h
 	gcc $(CFLAGS) -fPIC -c -o $@ $<
 
-$(DBIN)/clove-daemon: $(DOBJ)/clove-daemon.o $(DOBJ)/clove-utils.o $(DOBJ)/clove-common.o
+$(DOBJ)/clove-daemon.o: $(SRC)/clove-daemon.c $(SRC)/clove-utils.h $(SRC)/clove-common.h $(SRC)/strl.h
+	gcc $(CFLAGS) -fPIC -c -o $@ $<
+
+$(DOBJ)/clove.o: $(SRC)/clove.c $(SRC)/clove-utils.h $(SRC)/clove-common.h $(SRC)/strl.h
+	gcc $(CFLAGS) -fPIC -c -o $@ $<
+
+$(DBIN)/clove-daemon: $(DOBJ)/clove-daemon.o $(DOBJ)/clove-utils.o $(DOBJ)/strl.o $(DOBJ)/clove-common.o
 	gcc $(CFLAGS) $^ -o $@
 
-$(DOBJ)/clove.o: $(SRC)/clove.c $(SRC)/clove-utils.h $(SRC)/clove-common.h
-	gcc $(CFLAGS) -fPIC -c -o $@ $<
-
-$(DBIN)/clove: $(DOBJ)/clove.o $(DOBJ)/clove-utils.o $(DOBJ)/clove-common.o
+$(DBIN)/clove: $(DOBJ)/clove.o $(DOBJ)/clove-utils.o $(DOBJ)/strl.o $(DOBJ)/clove-common.o
 	gcc $(CFLAGS) $^ -lreadline -o $@ # -lhistory -ltermcap
 
 $(BUILDDIR)/include/clove_CloveNet.h: $(SRC)/*.java

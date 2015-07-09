@@ -7,6 +7,10 @@
 #include <unistd.h>
 
 #include "clove-utils.h"
+#include "strl.h"
+
+#define true 1
+#define false 0
 
 // TODO: clean up BROKER_MESSAGE_LENGTH and other hard coded string lengthes.
 
@@ -92,13 +96,13 @@ int main (int argc, char* argv[], char** envp) {
 
   int c;
   int option_index = 0;
-  struct str_list* extraenvs = NULL;
+  struct strl* extraenvs = NULL;
   RTPREFIX = "~/.local";
   // RUNPATH = str_concat ("/tmp/clove-", getenv ("USER"));
   RUNPATH = malloc (128);
   sprintf (RUNPATH, "/tmp/clove-%d", geteuid ());
   struct service broker;
-  struct str_list* remote_args = NULL;
+  struct strl* remote_args = NULL;
 
   int force_wipe_sockpaths = false;
   int mode = 0;
@@ -117,7 +121,7 @@ int main (int argc, char* argv[], char** envp) {
                             &option_index)) != -1)) {
     switch (c) {
       case 'x':
-        extraenvs = str_list_cons (optarg, extraenvs);
+        extraenvs = strl_cons (optarg, extraenvs);
         break;
       case 'p':
         RUNPATH = optarg;
@@ -133,7 +137,7 @@ int main (int argc, char* argv[], char** envp) {
       case 'r':  // send a message to the broker, and exit.
       case 'i':  // start an interactive session (repl) with the service.
         mode = c;
-        remote_args = str_list_from_vec (argv, optind - 1, argc - 1);
+        remote_args = strl_from_vec (argv, optind - 1, argc - 1);
         opt_keep_processing = false;
         break;
       case 'h':
@@ -148,7 +152,7 @@ int main (int argc, char* argv[], char** envp) {
 
   broker = service_init ("broker");
 
-  if (mode == 0) {
+  if (mode == 0) {  // Mode not provided.  Initialize and default to 'c'.
     mode = 'c';
 
     FILE* file_in;
@@ -159,12 +163,11 @@ int main (int argc, char* argv[], char** envp) {
     }
     char* argbuf = malloc (4096);  // TODO: fix hardcoded size
     char* argline;
-    if (!fgets (argbuf, 4096, file_in)) {
-      // discard the first line. TODO: fix hardcoded size
+    if (!fgets (argbuf, 4096, file_in)) {  // TODO: fix hardcoded size.
+      // discard the first line.
       exit (1);
     }
-    // TODO: fix hardcoded size
-    if (!fgets (argbuf, 4096, file_in)) {
+    if (!fgets (argbuf, 4096, file_in)) {  // TODO: fix hardcoded size.
       exit (1);
     }
     if ((argline = strstr (argbuf, "-*- |"))) {
@@ -181,11 +184,11 @@ int main (int argc, char* argv[], char** envp) {
     }
     argline += strspn (argline, " \t");   // skip past whitespace
     argline = strsep (&argline, "\n\r");  // remove trailing newline
-    struct str_list* remote_args_tmp =
+    struct strl* remote_args_tmp =
         str_split_qe (argline, 4096);  // TODO: fix hardcoded size
-    str_list_nreverse (&remote_args_tmp);
-    str_list_nconcat (&remote_args, remote_args_tmp);
-    str_list_nconcat (&remote_args, str_list_from_vec (argv, 1, argc - 1));
+    strl_nreverse (&remote_args_tmp);
+    strl_nconcat (&remote_args, remote_args_tmp);
+    strl_nconcat (&remote_args, strl_from_vec (argv, 1, argc - 1));
 
     fclose (file_in);
   }
@@ -198,7 +201,7 @@ int main (int argc, char* argv[], char** envp) {
 
     case 'r': {
       char buf[BROKER_MESSAGE_LENGTH];
-      struct str_list* cur;
+      struct strl* cur;
       for (cur = remote_args; cur; cur = cur->next) {
         memccpy (buf + 1, cur->str, 0, BROKER_MESSAGE_LENGTH - 2);
         buf[0] = 0;  // means remote command, not a service.
@@ -224,7 +227,7 @@ int main (int argc, char* argv[], char** envp) {
       {
         int ret;
         int message_length;
-        char* remote_service = str_list_pop (&remote_args);
+        char* remote_service = strl_pop (&remote_args);
 
         buf[BROKER_MESSAGE_LENGTH - 1] = 0;
         strcpy (buf, remote_service);
@@ -248,7 +251,7 @@ int main (int argc, char* argv[], char** envp) {
 
       char* buf_cur = buf;
       char* buf_lim = buf + BROKER_MESSAGE_LENGTH;
-      str_list_to_pack (&buf_cur, buf_lim, remote_args);
+      strl_to_pack (&buf_cur, buf_lim, remote_args);
 
       {
         int envs_size = 0;
@@ -291,7 +294,7 @@ int main (int argc, char* argv[], char** envp) {
       {
         int ret;
         int message_length;
-        char* remote_service = str_list_pop (&remote_args);
+        char* remote_service = strl_pop (&remote_args);
 
         buf[BROKER_MESSAGE_LENGTH - 1] = 0;
         strcpy (buf, remote_service);
@@ -315,7 +318,7 @@ int main (int argc, char* argv[], char** envp) {
 
       char* buf_cur = buf;
       char* buf_lim = buf + BROKER_MESSAGE_LENGTH;
-      str_list_to_pack (&buf_cur, buf_lim, remote_args);
+      strl_to_pack (&buf_cur, buf_lim, remote_args);
 
       {
         int envs_size = 0;

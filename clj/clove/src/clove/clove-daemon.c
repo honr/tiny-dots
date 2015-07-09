@@ -1,8 +1,13 @@
-#include "clove-utils.h"
 #include <dirent.h>
 #include <getopt.h>
 #include <syslog.h>
 #include <unistd.h>
+
+#include "clove-utils.h"
+#include "strl.h"
+
+#define true 1
+#define false 0
 
 // TODO: clean up BROKER_MESSAGE_LENGTH and other hard coded string lengthes.
 
@@ -25,14 +30,13 @@ int usage (int n) {
   exit (n);
 }
 
-int running = true;
+int still_running = true;
 
 void sighup_handler (int signum) {
-  switch (signum) {
-    case SIGKILL:
-    case SIGHUP:
-    case SIGINT:
-      running = 0;
+  if (signum == SIGKILL ||
+      signum == SIGHUP ||
+      signum == SIGINT) {
+    still_running = false;
   }
 }
 
@@ -47,7 +51,7 @@ int main (int argc, char* argv[], char** envp) {
 
   int c;
   int option_index = 0;
-  struct str_list* extraenvs = NULL;
+  struct strl* extraenvs = NULL;
   RTPREFIX = "~/.local";
   // RUNPATH = str_concat ("/tmp/clove-", getenv ("USER"));
   RUNPATH = malloc (128);
@@ -60,7 +64,7 @@ int main (int argc, char* argv[], char** envp) {
                             &option_index)) != -1)) {
     switch (c) {
       case 'x':
-        extraenvs = str_list_cons (optarg, extraenvs);
+        extraenvs = strl_cons (optarg, extraenvs);
         break;
       case 'p':
         RUNPATH = optarg;
@@ -83,9 +87,8 @@ int main (int argc, char* argv[], char** envp) {
 
   broker = service_init ("broker");
 
-  // try to communicate with the existing broker if
-  // broker.sockpath exists.  If the broker responds, simply
-  // print out its pid and quit.
+  // Try to communicate with the existing broker if broker.sockpath exists.
+  // If the broker responds, simply print out its pid and quit.
   if ((!force_wipe_sockpaths) &&
       (broker.sock = sock_addr_connect (SOCK_STREAM, broker.sockpath)) != -1) {
     char buf[BROKER_MESSAGE_LENGTH];
@@ -153,8 +156,7 @@ int main (int argc, char* argv[], char** envp) {
   default_envp = envp_dup_update_or_add (default_envp, extraenvs);
   // TODO: wipe dead services in another thread.
 
-  // create sockpath parent directory:
-  makeancesdirs (broker.sockpath);
+  makeancesdirs (broker.sockpath);  // Create sockpath parent directory.
 
   broker.sock = sock_addr_bind (SOCK_STREAM, broker.sockpath, true);
   // or: SOCK_STREAM | SOCK_CLOEXEC;
@@ -186,7 +188,7 @@ int main (int argc, char* argv[], char** envp) {
 
   int main_process_pid = getpid ();
 
-  while (running) {
+  while (still_running) {
     int sock_a;
     if ((sock_a = accept (broker.sock, NULL, NULL)) == -1) {
       perror ("accept");
