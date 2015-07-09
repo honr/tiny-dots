@@ -101,7 +101,8 @@
    '(mouse-wheel-progressive-speed nil)
    '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
    '(next-screen-context-lines 8)
-   '(org-agenda-files '("~/agenda.org"))
+   '(org-agenda-files '("~/agenda.org" "~/notes.org"))
+   '(org-default-notes-file "~/notes.org")
    '(org-export-html-style
      "<link rel=\"stylesheet\" href=\"style.css\">")
    '(org-replace-disputed-keys t)

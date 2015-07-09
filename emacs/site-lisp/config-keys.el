@@ -244,5 +244,6 @@
 (global-set-key (kbd "M-<f4>") 'external-directory-browser-here)
 
 (global-set-key (kbd "C-x f a") 'org-agenda)
+(global-set-key (kbd "C-x f c") 'calendar)
 
 (provide 'config-keys)
