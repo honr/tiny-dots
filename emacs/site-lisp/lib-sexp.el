@@ -49,7 +49,7 @@
   (mapconcat 'capitalize (tokenize-name s) ""))
 
 (defun join-aaBb (s)
-  (let ((l (tokenize-name)))
+  (let ((l (tokenize-name s)))
     (concat (downcase (car l))
             (mapconcat 'capitalize (cdr l) ""))))
 
