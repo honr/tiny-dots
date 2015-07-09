@@ -6,15 +6,15 @@ if [ "$#" -eq 0 ] ; then
   for x in $rc_path/* ; do
     if [ -e "$x" ] ; then
       session_name="${x#$rc_path/}"
-      STY_SHORT="$session_name" screen -dmS "$session_name"
+      STY="$session_name" screen -dmS "$session_name"
       unset session_name
     fi
   done
 elif [ "$#" -eq 1 ] ; then
-  STY_SHORT="$1" screen -xR "$1"
+  STY="$1" screen -xR "$1"
 else
   for x ; do
-    STY_SHORT="$x" screen -dmS "$x"
+    STY="$x" screen -dmS "$x"
   done
 fi
 

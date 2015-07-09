@@ -38,6 +38,6 @@ term xterm-256color
 # backtick 1 0 1 pwd
 # %?%{.Rw}[:%u]%{-}%?
 
-caption always "%{-s .}%{-s Y}$STY_SHORT %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.gW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
+caption always "%{-s .}%{-s Y}$STY %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.gW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
 
-source ~/.screen/${STY_SHORT}
+source ~/.screen/${STY}
