@@ -124,6 +124,7 @@
     (interactive)
     (remove-hook 'find-file-hooks 'vc-find-file-hook)
     (setq vc-handled-backends nil)
+    (setq auto-save-timeout nil)
     (setq auto-save-interval 0))
 
   (package-initialize)

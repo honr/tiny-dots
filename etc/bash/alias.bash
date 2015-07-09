@@ -13,3 +13,10 @@ function sx () {
     STY="$1" screen -xR "$1"
   fi
 }
+
+function e.which(){
+  emacsclient -nc $(which $1)
+}
+complete -c e.which
+
+alias la='ls -larth'
