@@ -18,7 +18,8 @@ XTerm.VT100.translations: #override \
     Super ~Shift <Key>c: copy-selection(CLIPBOARD) \n\
     Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
     Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0) \n\
-    Ctrl Shift <Key>n: spawn-new-terminal()
+    Ctrl Shift <Key>n: spawn-new-terminal() \n\
+    Shift <Key>space: string("_")
 
 XTerm*fontMenu.Label: Unicode Fonts
 XTerm.VT100.utf8:	1
