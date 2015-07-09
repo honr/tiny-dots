@@ -74,5 +74,4 @@ function e.toc () {
   return ${exit_code}
 }
 
-
 alias la='ls -larth'
