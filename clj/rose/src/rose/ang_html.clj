@@ -1,6 +1,17 @@
 (ns rose.ang-html
   (:require [clojure.string]))
 
+;; Add the following features:
+;; 1. dumb indent (break at every tag).
+;; 2. polymer specific shorthands:
+;;    import: [link {:rel "import" :href imported-entry}]
+;;    def-element:
+;;      [polymer-element {:name "x" :attributes "attr1 attr2"}
+;;        [template (css "x.css")
+;;          ...]
+;;        (scripts "other.js" "stuff.js" "x.js")]
+;;    for or repeat: [template {:repeat "..."}]
+;; 3. evaluate arbitrary clojure code.
 (defn- escape [s]
   (clojure.string/escape s {\< "&lt;"
                             \> "&gt;"
@@ -9,7 +20,6 @@
                             \" "&quot;"}))
 (defn- escape-value [s]
   (clojure.string/escape s {\" "\\\""}))
-
 
 (declare print-node)
 (declare print-tree)
@@ -45,78 +55,82 @@
 (def shortenable-tags-set
   #{"br" "link" "hr" "img" "meta"})
 
-;; TODO: this should be extensible by the library user.
-(defn- eval-fn-node
-  ([x]
-     (cond
-      (list? x) (eval-fn-node (first x) (rest x))
-      (vector? x) (with-out-str (print-node x))
-      (symbol? x) (js-uglify-name (name x))
-      (keyword? x) (name x)
-      :else (str x)))
-  ([tag args]
-     (condp = tag
-       'call ;; Js call f(x, y, z).
-       (let [[fn-name & fn-args] (map eval-fn-node args)]
-         (str fn-name \( (clojure.string/join "," fn-args) \)))
+(defmulti process-node (fn [tag _] tag))
 
-       'scripts
-       (str-tree
-        (for [script args]
-          [:script {:src script} nil]))
+(defn- process-argless-node [x]
+  (cond
+   (list? x) (process-node (first x) (rest x))
+   (vector? x) (with-out-str (print-node x))
+   (symbol? x) (js-uglify-name (name x))
+   (keyword? x) (name x)
+   :else (str x)))
 
-       'import
-       (str-tree
-        (for [imported-entry args]
-          [:link {:rel "import" :href imported-entry}]))
+(defmethod process-node 'call [_ args]
+  ;; Javascript call f(x, y, z).
+  (let [[fn-name & fn-args] (map process-argless-node args)]
+    (str fn-name \( (clojure.string/join "," fn-args) \))))
 
-       'css
-       (str-tree
-        (for [stylesheet args]
-          [:link {:rel "stylesheet" :href stylesheet}]))
+(defmethod process-node 'scripts [_ args]
+  (str-tree
+   (for [script args]
+     [:script {:src script} nil])))
 
-       'a ;; Does not ng-evaluate.
-       (let [[base-url & [parameters]] args
-             href (str
-                   base-url
-                   (when parameters
-                     (str \?
-                          (clojure.string/join
-                           "&"
-                           (for [[k v] parameters]
-                             (str (java.net.URLEncoder/encode (name k))
-                                  \=
-                                  (java.net.URLEncoder/encode (str v))))))))]
-         (str-tree
-          [:a {:href href} href]))
+(defmethod process-node 'import [_ args]
+  (str-tree
+   (for [imported-entry args]
+     [:link {:rel "import" :href imported-entry}])))
 
-       'meta-utf-8
-       (str-tree
-        [:meta {:charset "UTF8" :http-equiv "content-type" :content "text/html"}])
+(defmethod process-node 'css [_ args]
+  (str-tree
+   (for [stylesheet args]
+     [:link {:rel "stylesheet" :href stylesheet}])))
 
-       'get ;; Angular {{x}}.
-       (str "{{" (apply str (map eval-fn-node args)) "}}")
+(defmethod process-node 'a [_ args]
+  ;; Does not ng-evaluate.
+  (let [[base-url & [parameters]] args
+        href (str
+              base-url
+              (when parameters
+                (str \?
+                     (clojure.string/join
+                      "&"
+                      (for [[k v] parameters]
+                        (str (java.net.URLEncoder/encode (name k))
+                             \=
+                             (java.net.URLEncoder/encode (str v))))))))]
+    (str-tree
+     [:a {:href href} href])))
 
-       'not
-       (apply str "!" (map eval-fn-node args))
+(defmethod process-node 'meta-utf-8 [_ args]
+  (str-tree
+   [:meta {:charset "UTF8" :http-equiv "content-type" :content "text/html"}]))
 
-       'str
-       (apply str (map eval-fn-node args))
+(defmethod process-node 'get [_ args]
+  ;; Angular {{x}}.
+  (str "{{" (apply str (map process-argless-node args)) "}}"))
 
-       'iter
-       (let [[v coll] args]
-         (str (eval-fn-node v) " in " (eval-fn-node coll)))
+(defmethod process-node 'not [_ args]
+  (apply str "!" (map process-argless-node args)))
 
-       'pipe
-       (clojure.string/join " | "
-                            (map eval-fn-node args))
+(defmethod process-node 'str [_ args]
+  (apply str (map process-argless-node args)))
 
-       'pipe-call
-       (clojure.string/join ":" (map eval-fn-node args))
+(defmethod process-node 'iter [_ args]
+  (let [[v coll] args]
+    (str (process-argless-node v) " in " (process-argless-node coll))))
 
-       ;; Default
-       "")))
+(defmethod process-node 'pipe [_ args]
+  (clojure.string/join " | "
+                       (map process-argless-node args)))
 
+(defmethod process-node 'pipe-call [_ args]
+  (clojure.string/join ":" (map process-argless-node args)))
+
+(defmethod process-node :default [_ args]
+  "") ;; Perhaps we should emit an error?
+
+;; TODO: Preprocess nodes to end up with a vector of strings.  Do the printing
+;; in another step.
 (defn- print-node [tag attributes contents]
   ;; Print a single node.  Calls print-tree to recurse.
   ;; Note: this "function" prints instead of returning.  Wrap in with-out-str
@@ -125,19 +139,12 @@
     (let [tag-name (name tag)]
       (print "<")
       (print tag-name)
-      (doseq [[k v] attributes]
-        (let [k-str
-              ;; Prepend data-ng- to keywords starting with an uppercase,
-              ;; and also turns those to lowercase.  Others are just
-              ;; `name'ed as is.
-              (let [k-name (name k)]
-                (if (Character/isUpperCase (first k-name))
-                  (str "data-ng-" (.toLowerCase k-name))
-                  k-name))]
-          (print
-           (if v
-             (format " %s=\"%s\"" k-str (escape-value (eval-fn-node v)))
-             (format " %s" k-str)))))
+      (doseq [[k v] (sort attributes)]
+        (let [k-str (name k)]
+         (print
+          (if v
+            (format " %s=\"%s\"" k-str (escape-value (process-argless-node v)))
+            (format " %s" k-str)))))
 
       (if (or (seq contents)            ; Not an empty tag.
               (not (shortenable-tags-set tag-name)))
@@ -146,7 +153,6 @@
           (doseq [c contents] (print-tree c))
           (print (format "</%s>" tag-name)))
         (print "/>")))                  ; Using short from for empty tags.
-
 
     ;; Tag is nil.  Print raw contents.
     (doseq [c contents] (print c))))
@@ -172,7 +178,7 @@
 
    (seq? x)
    (if (symbol? (first x))
-     (print (eval-fn-node (first x) (rest x)))
+     (print (process-node (first x) (rest x)))
      (doseq [c x] (print-tree c)))
 
    ;; considered an empty node.

@@ -108,6 +108,14 @@
    '(org-agenda-files '("~/org/a.org" "~/org/current.org"))
    '(org-default-notes-file "~/org/notes.org")
    '(org-html-style-default "<link rel=\"stylesheet\" href=\"style.css\"/>")
+   '(org-html-postamble t)
+   '(org-html-preamble nil)
+   '(org-html-head-extra "<script src=\"prettify/run_prettify.js\"></script>")
+   '(org-html-head-include-scripts nil)
+   '(org-html-postamble-format
+     '(("en"
+        "<span class=\"author\">author: %a (%e)</span>,
+<span class=\"date\">mtime: %C</span>")))
    '(org-replace-disputed-keys t)
    '(org-todo-keywords '("TODO" "CANCELLED" "PROGRESSING" "DONE"))
    '(python-guess-indent nil)
@@ -140,4 +148,6 @@
   (require 'config-tex nil t)
   (require 'config-algol nil t)
   (require 'config-site nil t)          ; Site-specific configurations.
-  (require 'config-host nil t))         ; Host-specific configurations.
+  (require 'config-host nil t)          ; Host-specific configurations.
+)
+

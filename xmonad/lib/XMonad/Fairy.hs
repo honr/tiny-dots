@@ -285,7 +285,6 @@ run_editor = (spawn editor_cmd)
 run_editor_here :: X ()
 run_editor_here = (spawn (editor_cmd ++ " " ++ "."))
 
-
 -- Topics and Premade Workspaces
 topics_table :: [TopicItem]
 topics_table = [
@@ -414,7 +413,7 @@ emacs_keys  =
     -- ("M-h n", manTerminal),
     ("M-C-S-e", (spawn "gedit")),
     ("M-C-e", run_editor),
-    ("M-C-S-e", run_editor_here),
+    -- ("M-C-S-e", run_editor_here),
     ("M-C-c", run_chrome),
     ("M-C-y", run_firefox),
     ("M-C-u", run_clove_clojure),

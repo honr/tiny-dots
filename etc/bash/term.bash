@@ -41,8 +41,8 @@ function prepare-for-prompt-update-ps1 () {
   if [ -z "$use_color_prompt" ]; then
       PS1_SRC="${plain_prompt}> "
   else
-    PS1_SRC='\[\033[1;32m\]{{num}}. {{date}}  ><(((º>\[\033[00m\]\n'
-    PS1_SRC+='\[\033[01;33m\]{{chroot}}\[\033[01;32m\]\u@\h:'
+    PS1_SRC='\[\033[1;33m\]        -------- {{date}}  ><(((º>\[\033[00m\]\n'
+    PS1_SRC+='\[\033[01;36m\]{{chroot}}\[\033[01;32m\]{{num}}. \u@\h:'
     PS1_SRC+='\[\033[36m\]{{branch}}\[\033[01;34m\]\W\[\033[00m\]$ '
     case "$TERM" in
       xterm*|rxvt*)
