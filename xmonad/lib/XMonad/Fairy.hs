@@ -213,8 +213,9 @@ run_term = (spawn term_cmd)
 
 run_colour_term = do
   [x, y] <- Util.ExtensibleState.gets term_background
-  (Actions.RandomBackground.randomBg
-   (Actions.RandomBackground.HSV x y))
+  c <- (Actions.RandomBackground.randomBg'
+        (Actions.RandomBackground.HSV x y))
+  (spawn (term_cmd  ++ " -bg " ++ c))
 
 run_in_colour_term cmd = do
     [x, y] <- Util.ExtensibleState.gets term_background
