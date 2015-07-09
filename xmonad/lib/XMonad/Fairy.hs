@@ -16,6 +16,7 @@ module XMonad.Fairy
        , prompt_config
        , run_colour_term
        , term_cmd
+       , editor_cmd
        , topics_config
        , topics_list
        , topics_table
@@ -66,11 +67,9 @@ import qualified XMonad.Hooks.ManageDocks as Hooks.ManageDocks
 import qualified XMonad.Hooks.ManageHelpers as Hooks.ManageHelpers
 import qualified XMonad.Hooks.Minimize as Hooks.Minimize
 import qualified XMonad.Hooks.Place as Hooks.Place
-import qualified XMonad.Layout.Accordion as Layout.Accordion
 import qualified XMonad.Layout.BoringWindows as Layout.BoringWindows
 import qualified XMonad.Layout.Circle as Layout.Circle
 import qualified XMonad.Layout.Combo as Layout.Combo
-import qualified XMonad.Layout.Dishes as Layout.Dishes
 import qualified XMonad.Layout.FixedColumn as Layout.FixedColumn
 import qualified XMonad.Layout.Gaps as Layout.Gaps
 -- import qualified XMonad.Layout.GridVariants as Layout.GridVariants
@@ -319,8 +318,6 @@ layouts_config =
        L.named "Isolated Left" layout_right_paned |||
        L.named "Circle" Layout.Circle.Circle |||
        L.named "Circular" L.Circular |||
-       L.named "Dishes" layout_dishes |||
-       L.named "Accordion" Layout.Accordion.Accordion |||
        (Layout.NoBorders.noBorders Full))))))
 
 layout_tall = Layout.ResizableTile.ResizableTall 1 0.03 0.5 []
@@ -332,7 +329,6 @@ layout_tall3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
 layout_tall3mid = Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2)
 layout_grid = Layout.Grid.GridRatio 1.1
 layout_right_paned = layout_grid **||* layout_tall3
-layout_dishes = L.limit 5 (Layout.Dishes.Dishes 1 (1/5))
 layout_fixed = Layout.FixedColumn.FixedColumn 1 20 80 10
 layout_multicol = Layout.MultiColumns.multiCol [1, 1] 3 0.02 0.28
 
@@ -450,7 +446,6 @@ emacs_keys  =
    ("M-e c", (sendMessage (JumpToLayout "Circle"))),
    ("M-e S-c", (sendMessage (JumpToLayout "Circular"))),
    ("M-e l", (sendMessage (JumpToLayout "Isolated Left"))),
-   ("M-e d", (sendMessage (JumpToLayout "Dishes"))),
    ("M-e s", (sendMessage (JumpToLayout "Fixed"))),
    ("M-e b", (sendMessage (JumpToLayout "Based Columns"))),
    ("M-e m", (sendMessage (JumpToLayout "Multicol"))),

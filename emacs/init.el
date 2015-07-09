@@ -27,18 +27,18 @@
                     "~/.nix-profile/share/info/")))
 
 ;; OS-dependent configurations:
-(cond ((eq system-type 'darwin)
-       (progn
-         ;; Start daemon when under NextStep.
-         (when (eq window-system 'ns) (server-start))
-         (require 'config-darwin nil t)))
+(cond ((eq system-type 'darwin) (require 'config-darwin nil t))
       ((eq system-type 'gnu/linux) (require 'config-linux nil t)))
 
-(when (or (daemonp) (server-running-p))
+(when (or (daemonp)
+          (and (boundp 'server-running-p) (server-running-p))
+          ;; I suspect these conditions are no longer necessary.  Trying out
+          ;; without them...
+          t)
   ;; Add a "layer" of protection around ‘C-x C-c’.
   (global-unset-key (kbd "C-x C-c"))
   (global-set-key (kbd "C-x C-c C-x C-x C-c") 'save-buffers-kill-emacs)
-  (icomplete-mode t)
+  ;; (icomplete-mode t)  ;; Diabled because it breaks several things...
   (savehist-mode t)
   (setq history-length 8192)
 
@@ -98,8 +98,8 @@
    '(indicate-buffer-boundaries 'left)
    ;; '(mouse-avoidance-mode 'banish)
    '(css-indent-offset 2)
-   '(icomplete-show-matches-on-no-input t)
-   '(icomplete-prospects-height 1)
+   '(icomplete-show-matches-on-no-input t) ; no-op, icomplete-mode disabled.
+   '(icomplete-prospects-height 1) ; no-op, icomplete-mode disabled.
    '(js-indent-level 2)
    '(major-mode 'org-mode)
    '(mouse-wheel-progressive-speed nil)
@@ -150,4 +150,3 @@
   (require 'config-site nil t)          ; Site-specific configurations.
   (require 'config-host nil t)          ; Host-specific configurations.
 )
-
