@@ -1,7 +1,7 @@
 (defproject jar-store "0.0.0-SNAPSHOT"
   :description "virtual package for obtaining all dependencies"
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.clojure/data.json "0.2.1"]
+                 [org.clojure/data.json "0.2.3"]
                  [org.clojure/data.csv "0.1.2"]
                  [org.clojure/java.jdbc "0.2.3"]
                  ;; [swank-clojure "1.4.2"]
@@ -10,9 +10,9 @@
                  ;; For ClojsureScript:
                  [com.google.javascript/closure-compiler "r2388"]
                  ;; [org.clojure/google-closure-library "0.0-2029-2"]
-                 [org.clojure/clojurescript "0.0-1806"]
+                 [org.clojure/clojurescript "0.0-1934"]
 
-                 [clj-http "0.7.2"]
+                 [clj-http "0.7.7"]
                  ;;;; FROM HERE:
                  ;; [org.apache.httpcomponents/httpclient "4.1.2"]
                  ;; [incanter/incanter-core "1.5.1"]
@@ -24,7 +24,7 @@
                  ;; [commons-fileupload "1.2.2"]
                  ;; ;; [commons-fileupload "1.2.1" :classifier "javadoc"]
                  ;; [commons-io "2.0.1"] ;; 1.4
-                 [com.google.guava/guava "14.0.1"]
+                 [com.google.guava/guava "15.0"]
                  ;; [javax.mail/mail "1.4.5"]
                  ;; [org.mortbay.jetty/jetty "6.1.15"]
                  ;; ;; jetty moved to eclipse. look for jetty 8.
@@ -32,10 +32,10 @@
                  [xpp3 "1.1.4c"]
                  [org.jsoup/jsoup "1.7.2"]
                  [compojure "1.1.5"]
-                 [hiccup "1.0.3"]
+                 [hiccup "1.0.4"]
                  ;; ;; [ring "0.3.8"]
-                 [ring/ring-jetty-adapter "1.1.8"]
-                 [ring/ring-servlet "1.1.8"]
+                 [ring/ring-jetty-adapter "1.2.0"]
+                 [ring/ring-servlet "1.2.0"]
                  ;; [clout "1.0.1"]
                  ;;;; UP TO HERE.
                  ;; [jgraph "5.13.0.0"]
