@@ -16,12 +16,16 @@
 (let ((default-directory "~/.emacs.d/site-lisp"))
   (normal-top-level-add-to-load-path (list default-directory))
   (normal-top-level-add-subdirs-to-load-path))
+(let ((default-directory "~/.nix-profile/share/emacs/site-lisp"))
+  (normal-top-level-add-to-load-path (list default-directory))
+  (normal-top-level-add-subdirs-to-load-path))
 (let ((default-directory "/usr/share/emacs/site-lisp"))
   (normal-top-level-add-to-load-path (list default-directory))
   (normal-top-level-add-subdirs-to-load-path))
 (setq Info-additional-directory-list
       (mapcar 'expand-file-name  ; The trailing slash is *IMPORTANT*.
-              (list "~/.emacs.d/info/")))
+              (list "~/.emacs.d/info/"
+                    "~/.nix-profile/share/info/")))
 
 ;; OS-dependent configurations:
 (cond ((eq system-type 'darwin)    (require 'config-darwin nil t))
