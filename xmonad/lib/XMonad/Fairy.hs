@@ -204,22 +204,10 @@ is_multifix_of needles haystack =
        (List.words needles)))
 
 -- Applications
-term_cmd = "xterm"
+term_cmd = "xterm"  -- "uxterm -class XTerm"
 shell_cmd = "bash"
--- term_cmd = "uxterm -class XTerm"
 run_term :: X ()
 run_term = (spawn term_cmd)
--- run_colour_term = (Actions.RandomBackground.randomBg
---                       (Actions.RandomBackground.HSV x y))
---                      where
---                         [x, y] = term_background color_theme
-
--- runInColourTerminal cmd = do
---     c <- (Actions.RandomBackground.randomBg'
---            (Actions.RandomBackground.HSV x y))
---     (spawn (term_cmd ++ " -bg " ++ c ++ " -e " ++ cmd))
---     where
---         [x, y] = term_background color_theme
 
 run_colour_term = do
   [x, y] <- Util.ExtensibleState.gets term_background
@@ -236,10 +224,11 @@ run_in_colour_term cmd = do
            (Actions.RandomBackground.HSV x y))
     (spawn (term_cmd ++ " -bg " ++ c ++ " -e " ++ cmd))
 
-run_colour_screen_term = (run_in_colour_term "screen -xR")
+run_colour_screen_term = do
+  tag <- gets (StackSet.currentTag . windowset)
+  (run_in_colour_term ("screen -xR " ++ (takeWhile (/= workspace_tag_sep) tag)))
 
 -- inTerminal cmd = (term_cmd ++ " -e " ++ cmd)
-
 -- saveSession cmd = "/bin/bash -c '" ++ cmd ++ "; /bin/bash'"
 -- runInTerminal f = transformPromptSelection f (term_cmd ++ " -e ")
 -- pasteTerminal = runInTerminal saveSession
