@@ -254,62 +254,48 @@
 (define-key dired-mode-map (kbd "C-;") 'dired-xdg-open)
 (define-key wdired-mode-map (kbd "C-;") 'dired-xdg-open)
 
+(defun terminal-here--build-remote-command (default-directory buffer-file-name)
+  (when (or (string-prefix-p "/ssh:" default-directory)
+            (string-prefix-p "/rsync:" default-directory)
+            (string-prefix-p "/scp:" default-directory)
+            (string-prefix-p "/s:" default-directory))
+    (let* ((abc (split-string default-directory ":"))
+           (ignored--remote-pseudo-protocol (car abc)) ; -ignored
+           (remote-host (cadr abc))                    ; remote
+           (remote-path (caddr abc))                   ; path on the remote
+           (remote-filename (when buffer-file-name
+                              (substring
+                               (caddr (split-string buffer-file-name ":"))
+                               (length remote-path)))))
+      ;; CAVEAT: assumes remote-path and remote-filename are single bash
+      ;; tokens, and have no '$' in them.
+      (format "ssh '%s' -t 'cd %s; %sbash'"
+              remote-host
+              remote-path
+              (if remote-filename
+                  (format "F=%s " remote-filename)
+                "")))))
+
 (defun terminal-here ()
   (interactive)
-  (if (and (equal 'darwin system-type)
-           (equal 'ns window-system))
+  (if (and (equal 'darwin system-type) (equal 'ns window-system))
       (ns-do-applescript
        (concat
         "tell application \"Terminal\"\n"
         "activate\n"
-        (if (or (string-prefix-p "/ssh:" default-directory)
-                (string-prefix-p "/rsync:" default-directory)
-                (string-prefix-p "/scp:" default-directory)
-                (string-prefix-p "/s:" default-directory))
-            (let* ((abc (split-string default-directory ":"))
-                   (a (car abc))
-                   (b (cadr abc))
-                   (c (caddr abc)))
-              (concat "do script \"ssh '" b "'"
-                      " -t "
-                      "'"
-                      "cd " c "; "
-                      (when buffer-file-name
-                        (concat
-                         "F=" (substring
-                               (caddr (split-string buffer-file-name ":"))
-                               (length c))
-                         " "))
-                      "bash"
-                      "'\"\n"))
-          (concat "do script \"cd '"
-                  (expand-file-name default-directory)
-                  "'\"\n"))
+        (format "do script \"%s\"\n"
+                (or (terminal-here--build-remote-command
+                     default-directory buffer-file-name)
+                    (format "cd '%s'"
+                            (expand-file-name default-directory))))
         "end tell"))
     ;; Under a terminal. For darwin we assume this is under Xquartz.
     (start-process-shell-command
      "external-xterm" nil "xterm"
      (format "-bg '%s'" (face-attribute 'default :background))
-     (if (or (string-prefix-p "/ssh:" default-directory)
-             (string-prefix-p "/rsync:" default-directory)
-             (string-prefix-p "/scp:" default-directory))
-         (let* ((abc (split-string default-directory ":"))
-                (a (car abc))
-                (b (cadr abc))
-                (c (caddr abc)))
-           (concat "-e \"ssh '" b "'"
-                   " -t "
-                   "'"
-                   "cd " c "; "
-                   (when buffer-file-name
-                     (concat
-                      "F=" (substring
-                            (caddr (split-string buffer-file-name ":"))
-                            (length c))
-                      " "))
-                   "bash"
-                   "'\""))
-       ""))))
+     (let ((rem (terminal-here--build-remote-command
+                 default-directory buffer-file-name)))
+       (if rem (format "-e \"%s\"" rem) "")))))
 
 (global-set-key (kbd "S-<f4>") 'terminal-here)
 
