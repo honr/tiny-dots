@@ -2,7 +2,7 @@ import XMonad
 import qualified Data.Map as Map
 import qualified System.Directory
 
-import qualified DBus.Client.Simple
+import qualified DBus.Client
 import qualified XMonad.Hooks.DynamicLog as Hooks.DynamicLog
 import qualified XMonad.Hooks.EwmhDesktops as Hooks.EwmhDesktops
 import qualified XMonad.Util.EZConfig as Util.EZConfig
@@ -31,7 +31,7 @@ main = do
   --            (home ++ "/bin/xmobar" ++ -- path to xmobar
   --             " " ++
   --             home ++ "/.xmonad/xmobar.hs"))
-  dbus <- DBus.Client.Simple.connectSession
+  dbus <- DBus.Client.connectSession
   get_well_known_name dbus
   check_topics
   liftIO (System.Directory.setCurrentDirectory home)

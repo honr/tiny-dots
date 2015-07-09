@@ -8,7 +8,8 @@ module XMonad.FairyGnome
 -- XMonad:
 import qualified XMonad
 import qualified System.Environment
-import qualified DBus.Client.Simple
+import qualified DBus
+import qualified DBus.Client
 import qualified Codec.Binary.UTF8.String as UTF8
 import qualified XMonad.Hooks.DynamicLog as Hooks.DynamicLog
 import qualified XMonad.Util.Run as Util.Run
@@ -32,9 +33,9 @@ gnome_register =
                              "string:" ++ sessionId]))))
 
 
-pretty_printer :: DBus.Client.Simple.Client -> Hooks.DynamicLog.PP
+pretty_printer :: DBus.Client.Client -> Hooks.DynamicLog.PP
 pretty_printer dbus = Hooks.DynamicLog.defaultPP
-    { Hooks.DynamicLog.ppOutput   = dbus_output dbus -- 
+    { Hooks.DynamicLog.ppOutput   = dbus_output dbus
     , Hooks.DynamicLog.ppTitle    = pango_sanitize
     , Hooks.DynamicLog.ppCurrent  = ((pango_color (dynamiclog_current color_theme)) .
                                      Hooks.DynamicLog.wrap "[" "]" .
@@ -48,20 +49,22 @@ pretty_printer dbus = Hooks.DynamicLog.defaultPP
                                      pango_sanitize) -- const ""
     , Hooks.DynamicLog.ppSep      = " ┆ "}
 
-get_well_known_name :: DBus.Client.Simple.Client -> IO ()
+get_well_known_name :: DBus.Client.Client -> IO ()
 get_well_known_name dbus = do
-  DBus.Client.Simple.requestName dbus (DBus.Client.Simple.busName_ "org.xmonad.Log")
-                [DBus.Client.Simple.AllowReplacement,
-                 DBus.Client.Simple.ReplaceExisting,
-                 DBus.Client.Simple.DoNotQueue]
+  DBus.Client.requestName dbus (DBus.busName_ "org.xmonad.Log")
+                [DBus.Client.nameAllowReplacement,
+                 DBus.Client.nameReplaceExisting,
+                 DBus.Client.nameDoNotQueue]
   return ()
 
-dbus_output :: DBus.Client.Simple.Client -> String -> IO ()
-dbus_output dbus str = DBus.Client.Simple.emit dbus
-                             "/org/xmonad/Log"
-                             "org.xmonad.Log"
-                             "Update"
-                             [DBus.Client.Simple.toVariant ("<b>" ++ (UTF8.decodeString str) ++ "</b>")]
+dbus_output :: DBus.Client.Client -> String -> IO ()
+dbus_output dbus str =
+  DBus.Client.emit dbus
+  (DBus.signal
+   "/org/xmonad/Log"
+   "org.xmonad.Log"
+   "Update") {DBus.signalBody =
+                 [DBus.toVariant ("<b>" ++ (UTF8.decodeString str) ++ "</b>")]}
 
 pango_color :: String -> String -> String
 pango_color fg = Hooks.DynamicLog.wrap left right
