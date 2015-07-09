@@ -11,6 +11,7 @@ $HOME/.inputrc>$HOME/Pool/etc/inputrc
 $HOME/.local
 $HOME/.local/bin
 $HOME/.local/bin/ang.clj>$HOME/Pool/bin/ang.clj
+$HOME/.local/bin/visit-in-screen>$HOME/Pool/bin/visit-in-screen
 $HOME/.local/bin/git_util_test.clj>$HOME/Pool/bin/git_util_test.clj
 $HOME/.local/bin/grepless>$HOME/Pool/bin/grepless
 $HOME/.local/bin/html_to_vector.clj>$HOME/Pool/bin/html_to_vector.clj

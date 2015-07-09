@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# This is a mess because: 1. It relies on no other screen commands being
+# submitted between the two commands here. 2. It changes the specified screen
+# session's global working directory.  It would be better if we could start
+# the shell in the specified directory.
+screen -S "$1" -X chdir "$PWD"
+if [ -n "$2" ] ; then
+    screen -S "$1" -X screen -t "$2"
+else
+    screen -S "$1" -X screen
+fi

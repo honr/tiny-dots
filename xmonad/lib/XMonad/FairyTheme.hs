@@ -6,7 +6,8 @@ module XMonad.FairyTheme
         color_theme_light,
         color_theme_dark,
         font_regular,
-        font_scalable) where
+        font_scalable
+       ) where
 
 
 import qualified XMonad
@@ -46,3 +47,6 @@ color_theme_dark = Colors { normal_border = "#000000",
 
 font_regular = "xft:UbuntuMono:pixelsize=16"
 font_scalable = "xft:Ubuntu:pixelsize=14"
+
+-- font_regular = "-b&h-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*"
+-- font_scalable = "-b&h-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*"
