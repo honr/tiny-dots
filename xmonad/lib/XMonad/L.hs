@@ -3,21 +3,44 @@
 -- Note: This is a temporary place for experimenting with different layouts,
 -- so please do not be bothered with the lack of a copyright notice.
 
-module XMonad.L (Circular (..),
-                 named) where
+module XMonad.L (
+  Circular (..),
+  limit,
+  named,
+  reflectVert,
+  reflectHoriz) where
 
 import Data.List
+import Control.Monad (msum)
+import Data.Maybe (fromMaybe)
 import XMonad
-import XMonad.StackSet (integrate, peek)
+
+import qualified XMonad.StackSet as W
+import XMonad.Core (X, LayoutClass(..), fromMessage, io, withDisplay)
+import XMonad.Layout (Resize(..), IncMasterN(..), tile)
+import Graphics.X11.Xlib (Window, rect_width)
+import Graphics.X11.Xlib.Extras ( getWMNormalHints
+                                , getWindowAttributes
+                                , sh_base_size
+                                , sh_resize_inc
+                                , wa_border_width)
+
 import qualified XMonad.Layout.Renamed as Layout.Renamed
+import qualified XMonad.Layout.LimitWindows as Layout.LimitWindows
+import qualified XMonad.Layout.Reflect as Layout.Reflect
 
+------------------------------------------------------------
 named s layout = Layout.Renamed.renamed [Layout.Renamed.Replace s] layout
+limit n layout = Layout.LimitWindows.limitWindows n layout
+reflectHoriz layout = Layout.Reflect.reflectHoriz layout
+reflectVert layout = Layout.Reflect.reflectVert layout
 
+------------------------------------------------------------
 data Circular a = Circular deriving (Read, Show)
 
 instance LayoutClass Circular Window where
   doLayout Circular r s =
-    do layout <- raiseFocus (circularLayout r (integrate s))
+    do layout <- raiseFocus (circularLayout r (W.integrate s))
        return (layout, Nothing)
 
 circularLayout :: Rectangle -> [a] -> [(a, Rectangle)]
@@ -29,7 +52,7 @@ circularLayout r (w:ws) = master : rest
                        [0, pi * 2 / fromIntegral (length ws) ..])
 
 raiseFocus :: [(Window, Rectangle)] -> X [(Window, Rectangle)]
-raiseFocus xs = do focused <- withWindowSet (return . peek)
+raiseFocus xs = do focused <- withWindowSet (return . W.peek)
                    return $ case find ((== focused) . Just . fst) xs of
                               Just x  -> x : delete x xs
                               Nothing -> xs

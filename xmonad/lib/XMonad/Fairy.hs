@@ -1,5 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings, DeriveDataTypeable #-}
 
 module XMonad.Fairy
        (TopicItem (..)
@@ -69,6 +68,7 @@ import qualified XMonad.Hooks.Place as Hooks.Place
 import qualified XMonad.Layout.Accordion as Layout.Accordion
 import qualified XMonad.Layout.BoringWindows as Layout.BoringWindows
 import qualified XMonad.Layout.Circle as Layout.Circle
+import qualified XMonad.Layout.Combo as Layout.Combo
 import qualified XMonad.Layout.Dishes as Layout.Dishes
 import qualified XMonad.Layout.FixedColumn as Layout.FixedColumn
 import qualified XMonad.Layout.Gaps as Layout.Gaps
@@ -80,6 +80,7 @@ import qualified XMonad.Layout.MultiColumns as Layout.MultiColumns
 import qualified XMonad.Layout.NoBorders as Layout.NoBorders
 import qualified XMonad.Layout.PerWorkspace as Layout.PerWorkspace
 import qualified XMonad.Layout.Renamed as Layout.Renamed
+import qualified XMonad.Layout.ResizableTile as Layout.ResizableTile
 -- import qualified XMonad.Layout.SimpleFloat as Layout.SimpleFloat -- unused
 -- import qualified XMonad.Layout.Tabbed as Layout.Tabbed -- unused
 -- import qualified XMonad.Layout.Spacing as Layout.Spacing -- unused
@@ -112,18 +113,15 @@ data TopicItem = TopicItem {topicName :: Actions.TopicSpace.Topic,
                             topicDir :: String,
                             topicAction :: X ()}
 
-topics_config = (Actions.TopicSpace.TopicConfig
-                 {Actions.TopicSpace.topicDirs = (Map.fromList
-                                                  (map
-                                                   (\(TopicItem n _ d _) -> (n, d))
-                                                   topics_table)),
-                  Actions.TopicSpace.topicActions = (Map.fromList
-                                                     (map
-                                                      (\(TopicItem n _ _ a) -> (n, a))
-                                                      topics_table)),
-                  Actions.TopicSpace.defaultTopicAction = (const (return ())),
-                  Actions.TopicSpace.defaultTopic = "*scratch*",
-                  Actions.TopicSpace.maxTopicHistory = 128})
+topics_config =
+  (Actions.TopicSpace.TopicConfig
+    {Actions.TopicSpace.topicDirs =
+       (Map.fromList (map (\(TopicItem n _ d _) -> (n, d)) topics_table)),
+     Actions.TopicSpace.topicActions =
+       (Map.fromList (map (\(TopicItem n _ _ a) -> (n, a)) topics_table)),
+     Actions.TopicSpace.defaultTopicAction = const (return ()),
+     Actions.TopicSpace.defaultTopic = "*scratch*",
+     Actions.TopicSpace.maxTopicHistory = 128})
 
 topics_list = (map (\(TopicItem n _ _ _) -> n) topics_table)
 check_topics = Actions.TopicSpace.checkTopicConfig topics_list topics_config
@@ -136,7 +134,8 @@ workspace_goto t = (workspace_new t) >>
 workspace_shift :: Actions.TopicSpace.Topic -> X ()
 workspace_shift t = (workspace_new t) >> ((windows . StackSet.shift) t)
 
--- isWorkspace sc w = w `elem` map StackSet.tag (StackSet.current w : StackSet.visible w)
+-- isWorkspace sc w =
+--   w `elem` map StackSet.tag (StackSet.current w : StackSet.visible w)
 
 workspace_tag_sep = '/'
 workspace_tag_groups = (Actions.CycleWS.WSTagGroup workspace_tag_sep)
@@ -159,8 +158,11 @@ workspace_id_exist wid = do
   xs <- get
   return (workspace_id_exists wid (windowset xs))
 
-workspace_id_exists :: WorkspaceId -> StackSet.StackSet WorkspaceId l a s sd -> Bool
-workspace_id_exists wid ws = (elem wid (map StackSet.tag  (StackSet.workspaces ws)))
+workspace_id_exists :: WorkspaceId ->
+                       StackSet.StackSet WorkspaceId l a s sd ->
+                       Bool
+workspace_id_exists wid ws = (elem wid (map StackSet.tag
+                                        (StackSet.workspaces ws)))
 
 change_dir c = (Prompt.Directory.directoryPrompt
                 c
@@ -181,17 +183,19 @@ prompt_config = (Prompt.defaultXPConfig
 	       -- historySize = 100,
 	       -- historyFilter = deleteConsecutive,
 	       -- Prompt.autoComplete = Just 1000000, -- wait 0.1 second
-               Prompt.promptKeymap = Map.union
-                                     Prompt.defaultXPKeymap
-                                     (Map.fromList
-                                      [((controlMask, xK_b), Prompt.moveCursor Prompt.Prev),
-                                       ((controlMask, xK_f), Prompt.moveCursor Prompt.Next),
-                                       ((mod1Mask, xK_b), Prompt.moveWord Prompt.Prev),
-                                       ((mod1Mask, xK_f), Prompt.moveWord Prompt.Next),
-                                       ((mod1Mask, xK_d), Prompt.killWord Prompt.Next),
-                                       ((mod1Mask, xK_BackSpace), Prompt.killWord Prompt.Prev),
-                                       ((controlMask, xK_p), Prompt.moveHistory StackSet.focusUp'),
-                                       ((controlMask, xK_n), Prompt.moveHistory StackSet.focusDown')]),
+               Prompt.promptKeymap =
+                 Map.union
+                 Prompt.defaultXPKeymap
+                 (Map.fromList
+                  [((controlMask, xK_b), Prompt.moveCursor Prompt.Prev),
+                   ((controlMask, xK_f), Prompt.moveCursor Prompt.Next),
+                   ((mod1Mask, xK_b), Prompt.moveWord Prompt.Prev),
+                   ((mod1Mask, xK_f), Prompt.moveWord Prompt.Next),
+                   ((mod1Mask, xK_d), Prompt.killWord Prompt.Next),
+                   ((mod1Mask, xK_BackSpace), Prompt.killWord Prompt.Prev),
+                   ((controlMask, xK_p), Prompt.moveHistory StackSet.focusUp'),
+                   ((controlMask, xK_n), 
+                    Prompt.moveHistory StackSet.focusDown')]),
                Prompt.searchPredicate = is_multifix_of})
 
 is_multifix_of :: String -> String -> Bool
@@ -199,9 +203,9 @@ is_multifix_of needles haystack =
   (and (map (flip List.isInfixOf haystack) 
        (List.words needles)))
 
-
 -- Applications
 term_cmd = "xterm"
+shell_cmd = "bash"
 -- term_cmd = "uxterm -class XTerm"
 run_term :: X ()
 run_term = (spawn term_cmd)
@@ -219,9 +223,12 @@ run_term = (spawn term_cmd)
 
 run_colour_term = do
   [x, y] <- Util.ExtensibleState.gets term_background
+  dir <- Actions.TopicSpace.currentTopicDir topics_config
   c <- (Actions.RandomBackground.randomBg'
         (Actions.RandomBackground.HSV x y))
-  (spawn (term_cmd  ++ " -bg " ++ c))
+  (spawn (term_cmd ++
+          " -bg " ++ c ++
+          " -e 'cd " ++ dir ++ " ; " ++ shell_cmd ++ "'"))
 
 run_in_colour_term cmd = do
     [x, y] <- Util.ExtensibleState.gets term_background
@@ -275,7 +282,8 @@ run_file_manager = (spawn file_manager_cmd)
 restart_xmonad = (broadcastMessage ReleaseResources) >>
                  (restart "xmonad" True)
 
--- rememberCmd = "/path/to/emacsclient-starter org-protocol:/remember:/t/foo/" -- for adding quick reminders to your agenda
+-- rememberCmd = "/path/to/emacsclient-starter org-protocol:/remember:/t/foo/"
+-- -- for adding quick reminders to your agenda
 -- runRemember = spawn rememberCmd
 
 editor_cmd :: String
@@ -291,16 +299,15 @@ run_editor_here = (spawn (editor_cmd ++ " " ++ "."))
 -- Topics and Premade Workspaces
 topics_table :: [TopicItem]
 topics_table = [
-  TopicItem "*scratch*" "s" "~" (run_colour_term >> run_editor),
+  TopicItem "*scratch*" "s" "~/tmp" (run_colour_term >> run_editor),
   TopicItem "terminals" "r" "~" (Monad.replicateM_ 2 run_colour_term),
   TopicItem "browse"    "y" "~" run_chrome,
   TopicItem "irc" "i" "~" run_chat,
   TopicItem "mail" "m" "~" run_mail,
   TopicItem "agenda" "a" "~" ((spawn (editor_cmd ++ " ~/agenda.org")) >>
                               (run_calendar))]
+-- TODO: specify perworkspace layout in topics_table
 
--- Work in progress ...
--- TODO: specify perworkspace layout in _topicsTable
 layouts_config =
   Hooks.ManageDocks.avoidStruts
   (Layout.WindowNavigation.configurableNavigation
@@ -310,51 +317,35 @@ layouts_config =
      -- Layout.PerWorkspace.onWorkspace "agenda" layout_tiled2 $
      -- Layout.PerWorkspace.onWorkspace "rtb/main" layout_grid $
      (Layout.Gaps.gaps [(Layout.Gaps.L, 0)]
-      (layout_tiled_fixed_2 |||
-       layout_tiled2 |||
-       (Layout.Renamed.renamed [Layout.Renamed.Replace "Tall2-Limited"]
-        (Layout.LimitWindows.limitWindows 5 layout_tiled2)) |||
-
-       (Mirror layout_tiled2) |||
-
-       (L.named "Wide2-Limited"
-        (Layout.LimitWindows.limitWindows 5 (Mirror layout_tiled2))) |||
-       layout_multicol |||
-       layout_tiled3 |||
-       layout_tiled3mid |||
-       layout_grid |||
-       layout_right_paned |||
-       Layout.Circle.Circle |||
-       (L.named "Circular" L.Circular) |||
-       layout_dishes |||
-       Layout.Accordion.Accordion |||
+      (L.named "Based Columns" layout_based_columns |||
+       L.named "Fixed" layout_fixed |||
+       L.named "Tall" layout_tall |||
+       L.named "Tall Limited" (L.limit 5 layout_tall) |||
+       L.named "Wide" layout_wide |||
+       L.named "Wide Limited" (L.limit 5 layout_wide) |||
+       L.named "Multicol" layout_multicol |||
+       L.named "Tall3 Mid" layout_tall3mid |||
+       L.named "Tall3 Left" layout_tall3 |||
+       L.named "Grid" layout_grid |||
+       L.named "Isolated Left" layout_right_paned |||
+       L.named "Circle" Layout.Circle.Circle |||
+       L.named "Circular" L.Circular |||
+       L.named "Dishes" layout_dishes |||
+       L.named "Accordion" Layout.Accordion.Accordion |||
        (Layout.NoBorders.noBorders Full))))))
 
-layout_tiled2 = Tall 1 (3/100) (1/2)
-layout_tiled3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
-layout_tiled3mid = Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2)
-layout_grid = L.named "Grid" (Layout.Grid.GridRatio 1.1)
-layout_right_paned = (L.named "Isolated Left"
-                      (layout_grid ***||** layout_tiled3))
-layout_dishes = (L.named "Dishes"
-                 (Layout.LimitWindows.limitWindows 5
-                  (Layout.Dishes.Dishes 1 (1/5))))
-layout_tiled_fixed_2 = (L.named "Fixed"
-                        (Layout.FixedColumn.FixedColumn 1 20 80 10))
-layout_multicol = (L.named "Multicol"
-                   (Layout.MultiColumns.multiCol [1, 1] 3 0.02 0.28))
-
--- _layoutTable = (("1", "Tall2", _tiled2),
---                 ("S-1", "Tall2-Limited", (Layout.LimitWindows.limitWindows 5 _tiled2)),
---                 ("2", "Wide2", (Mirror _tiled2)),
---                 ("S-2", "Wide2-Limited", (Layout.LimitWindows.limitWindows 5 (Mirror _tiled2))),
---                 ("3", "Tall3", _tiled3),
---                 ("S-3", "Tall3-Mid", _tiled3mid),
---                 ("g", "Grid", (Layout.Grid.GridRatio 1.1)),
---                 ("c", "Circle", Layout.Circle.Circle),
---                 ("a", "Accordion", Layout.Accordion.Accordion),
---                 ("f", "Full", (Layout.NoBorders.noBorders Full)))
-
+layout_tall = Layout.ResizableTile.ResizableTall 1 0.03 0.5 []
+layout_wide = Mirror (Layout.ResizableTile.ResizableTall 0 0.03 0.8 [])
+layout_based_columns =
+  L.reflectVert
+  (L.limit 5 (Mirror (Layout.ResizableTile.ResizableTall 1 0.03 0.2 [])))
+layout_tall3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
+layout_tall3mid = Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2)
+layout_grid = Layout.Grid.GridRatio 1.1
+layout_right_paned = layout_grid **||* layout_tall3
+layout_dishes = L.limit 5 (Layout.Dishes.Dishes 1 (1/5))
+layout_fixed = Layout.FixedColumn.FixedColumn 1 20 80 10
+layout_multicol = Layout.MultiColumns.multiCol [1, 1] 3 0.02 0.28
 
 -- _onWorkspace t l = (Layout.PerWorkspace.onWorkspace
 --                       t
@@ -409,7 +400,8 @@ window_map :: (Window -> Bool) -> X (Map.Map String Window)
 window_map pred = do
   ws <- gets windowset
   Map.fromList `fmap` concat `fmap` mapM keyValuePairs (StackSet.workspaces ws)
-    where keyValuePairs ws = mapM (keyValuePair ws) $ StackSet.integrate' (StackSet.stack ws)
+    where keyValuePairs ws =
+            mapM (keyValuePair ws) (StackSet.integrate' (StackSet.stack ws))
           keyValuePair ws w = flip (,) w `fmap` decorate_window_name ws w
 
 -- | Returns the window name as will be listed in dmenu.
@@ -442,8 +434,10 @@ emacs_keys  =
     ("M-S-s", (change_dir prompt_config)),
     ("M-C-t", run_file_manager)] ++
 
-  (map (\(TopicItem n k _ _) -> ("M-d " ++ k, (workspace_goto n))) topics_table) ++
-  (map (\(TopicItem n k _ _) -> ("M-S-d " ++ k, (workspace_shift n))) topics_table) ++
+  (map (\(TopicItem n k _ _) ->
+         ("M-d " ++ k, (workspace_goto n))) topics_table) ++
+  (map (\(TopicItem n k _ _) ->
+         ("M-S-d " ++ k, (workspace_shift n))) topics_table) ++
 
   [("M-m", (withFocused Layout.Minimize.minimizeWindow)),
    ("M-C-m", (withFocused (\ w -> (sendMessage 
@@ -458,16 +452,18 @@ emacs_keys  =
 
   [("M-e f", (sendMessage (JumpToLayout "Full"))),
    ("M-e 1", (sendMessage (JumpToLayout "Tall"))),
-   ("M-e S-1", (sendMessage (JumpToLayout "Tall2-Limited"))),
-   ("M-e 2", (sendMessage (JumpToLayout "Mirror Tall"))),
-   ("M-e S-2", (sendMessage (JumpToLayout "Wide2-Limited"))),
-   ("M-e 3", (sendMessage (JumpToLayout "ThreeCol"))),
+   ("M-e S-1", (sendMessage (JumpToLayout "Tall Limited"))),
+   ("M-e 2", (sendMessage (JumpToLayout "Wide"))),
+   ("M-e S-2", (sendMessage (JumpToLayout "Wide Limited"))),
+   ("M-e 3", (sendMessage (JumpToLayout "Tall3 Mid"))),
+   ("M-e S-3", (sendMessage (JumpToLayout "Tall3 Left"))),
    ("M-e g", (sendMessage (JumpToLayout "Grid"))),
    ("M-e c", (sendMessage (JumpToLayout "Circle"))),
    ("M-e S-c", (sendMessage (JumpToLayout "Circular"))),
    ("M-e l", (sendMessage (JumpToLayout "Isolated Left"))),
    ("M-e d", (sendMessage (JumpToLayout "Dishes"))),
    ("M-e s", (sendMessage (JumpToLayout "Fixed"))),
+   ("M-e b", (sendMessage (JumpToLayout "Based Columns"))),
    ("M-e m", (sendMessage (JumpToLayout "Multicol"))),
 
    ("M-e r", (sendMessage (Layout.Gaps.ToggleGaps))),
@@ -475,7 +471,8 @@ emacs_keys  =
    ("M-e M-r M-t", (sendMessage (Layout.Gaps.IncGap 200 Layout.Gaps.L)))
   ] ++
 
-  (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++ ["p", "f", "n", "b"]
+  (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++
+                  ["p", "f", "n", "b"]
        nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
                    Layout.WindowNavigation.D, Layout.WindowNavigation.L]
        floatsnap_dirs = [Actions.FloatSnap.U, Actions.FloatSnap.R,
@@ -494,7 +491,8 @@ emacs_keys  =
   -- ("M-<Tab>", (Layout.BoringWindows.focusDown)),
   -- ("M-S-<Tab>", (Layout.BoringWindows.focusUp)),
   [(k, (Actions.CycleWindows.cycleRecentWindows [xK_Super_L] xK_Tab xK_grave) >>
-       (Actions.UpdatePointer.updatePointer (Actions.UpdatePointer.Relative 1 1)))
+       (Actions.UpdatePointer.updatePointer
+        (Actions.UpdatePointer.Relative 1 1)))
    | k <- ["M-S-e", "M-<Tab>"]] ++
 
   [("M-<Return>", (Actions.DwmPromote.dwmpromote)),
@@ -503,10 +501,15 @@ emacs_keys  =
    ("M-C-1", (screenWorkspace 0) >>= (flip whenJust (windows . StackSet.view))),
    ("M-C-2", (screenWorkspace 1) >>= (flip whenJust (windows . StackSet.view))),
    ("M-C-3", (screenWorkspace 2) >>= flip whenJust (windows . StackSet.view)),
-   ("M-C-S-1", (screenWorkspace 0 >>= flip whenJust (windows . StackSet.shift))),
-   ("M-C-S-2", (screenWorkspace 1 >>= flip whenJust (windows . StackSet.shift))),
-   ("M-C-S-3", (screenWorkspace 2 >>= flip whenJust (windows . StackSet.shift))),
+   ("M-C-S-1", (screenWorkspace 0 >>=
+                flip whenJust (windows . StackSet.shift))),
+   ("M-C-S-2", (screenWorkspace 1 >>=
+                flip whenJust (windows . StackSet.shift))),
+   ("M-C-S-3", (screenWorkspace 2 >>=
+                flip whenJust (windows . StackSet.shift))),
 
+   ("M-S-=", (sendMessage Layout.ResizableTile.MirrorShrink)),
+   ("M-S--", (sendMessage Layout.ResizableTile.MirrorExpand)),
    ("M--", (sendMessage Shrink)),
    ("M-=", (sendMessage Expand)),
    ("M-<F10>", (withFocused (windows . StackSet.sink))),
@@ -519,12 +522,9 @@ emacs_keys  =
    ("M-S-[", (Layout.LimitWindows.increaseLimit)),
    ("M-S-]", (Layout.LimitWindows.decreaseLimit)),
 
-
    -- Toggle full screen
-   ("M-S-<F10>", (sendMessage Hooks.ManageDocks.ToggleStruts) >>
-                 (refresh)),
-   ("M-S-t", (sendMessage Hooks.ManageDocks.ToggleStruts) >>
-             (refresh)),
+   ("M-S-<F10>", (sendMessage Hooks.ManageDocks.ToggleStruts) >> (refresh)),
+   ("M-S-t", (sendMessage Hooks.ManageDocks.ToggleStruts) >> (refresh)),
 
    ("M-a", (Prompt.Workspace.workspacePrompt prompt_config workspace_goto)),
    ("M-S-a", (Prompt.Workspace.workspacePrompt prompt_config workspace_shift)),
@@ -629,7 +629,8 @@ emacs_keys  =
 --   , ((modm .|. mod1Mask,    xK_d    ), windowToScreen D False)
 
 -- Mouse bindings
-mouse_bindings :: XConfig Layout -> Map.Map (ButtonMask, Button) (Window -> X ())
+mouse_bindings :: XConfig Layout ->
+                  Map.Map (ButtonMask, Button) (Window -> X ())
 mouse_bindings (XConfig {XMonad.modMask = modMask}) =
                (Map.fromList
                  ([((modMask, button1),
