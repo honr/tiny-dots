@@ -28,10 +28,14 @@
                     "~/.nix-profile/share/info/")))
 
 ;; OS-dependent configurations:
-(cond ((eq system-type 'darwin)    (require 'config-darwin nil t))
+(cond ((eq system-type 'darwin)
+       (progn
+         ;; Start daemon when under NextStep.
+         (when (eq window-system 'ns) (server-start))
+         (require 'config-darwin nil t)))
       ((eq system-type 'gnu/linux) (require 'config-linux nil t)))
 
-(when (or (daemonp) (eq system-type 'darwin))
+(when (or (daemonp) (server-running-p))
   ;; Add a "layer" of protection around ‘C-x C-c’.
   (global-unset-key (kbd "C-x C-c"))
   (global-set-key (kbd "C-x C-c C-x C-x C-c") 'save-buffers-kill-emacs)
@@ -56,6 +60,7 @@
   (line-number-mode t)
   (column-number-mode t)
   (blink-cursor-mode -1)
+  (setq ring-bell-function 'ignore)
   (if (boundp 'tool-bar-mode)
       (tool-bar-mode -1))
   ;; (mouse-avoidance-mode 'banish)
