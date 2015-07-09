@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ -z "$1" ] ; then
+    screen -ls
+else
+  export STY="$1"
+  screen -xR "$STY"
+fi
