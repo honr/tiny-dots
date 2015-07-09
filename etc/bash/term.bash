@@ -24,6 +24,11 @@ function git_current_branch () {
   fi
 }
 
+# Redefine to customize.
+function current_workspace () {
+  echo ""
+}
+
 export PS1_SRC=''
 function prepare-for-prompt-update-ps1 () {
   local use_color_prompt
@@ -53,7 +58,8 @@ function prompt-update-ps1 () {
   PS1="${PS1_SRC//'{{date}}'/$(date +%Y-%m-%d\ %H:%M:%S)}"
   PS1="${PS1//'{{num}}'/$PS1_line_number}"
   PS1="${PS1//'{{chroot}}'/${debian_chroot:+($debian_chroot)}}"
-  local branch="$(git_current_branch)"
+  local branch="$(current_workspace)"
+  branch+="${branch:+ }$(git_current_branch)"
   PS1="${PS1//'{{branch}}'/${branch:+[$branch]}}"
 }
 
