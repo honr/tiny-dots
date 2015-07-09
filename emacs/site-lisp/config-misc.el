@@ -88,4 +88,7 @@ prefix spaces into the quotes."
            t t nil 1))))))
 (global-set-key (kbd "C-M-\"") 'wrap-lines-in-quotes)
 
+(when (require 'markdown-mode nil t)
+  (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode)))
+
 (provide 'config-misc)

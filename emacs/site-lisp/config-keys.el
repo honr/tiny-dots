@@ -200,6 +200,24 @@
                                (delete-and-extract-region
                                 (car bounds) (cdr bounds))))))))
 
+(global-set-key (kbd "C-t s")
+                (lambda ()
+                  (interactive)
+                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
+                    (when bounds
+                      (insert (join-aa-space-bb
+                               (delete-and-extract-region
+                                (car bounds) (cdr bounds))))))))
+
+(global-set-key (kbd "C-t S")
+                (lambda ()
+                  (interactive)
+                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
+                    (when bounds
+                      (insert (join-Aa-space-Bb
+                               (delete-and-extract-region
+                                (car bounds) (cdr bounds))))))))
+
 (require 'browse-kill-ring)
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
   "If last action was not a yank, run `browse-kill-ring' instead."
@@ -246,7 +264,8 @@
         "activate\n"
         (if (or (string-prefix-p "/ssh:" default-directory)
                 (string-prefix-p "/rsync:" default-directory)
-                (string-prefix-p "/scp:" default-directory))
+                (string-prefix-p "/scp:" default-directory)
+                (string-prefix-p "/s:" default-directory))
             (let* ((abc (split-string default-directory ":"))
                    (a (car abc))
                    (b (cadr abc))

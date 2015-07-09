@@ -46,6 +46,7 @@
                  [ring/ring-jetty-adapter "1.2.2"]
                  [ring/ring-servlet "1.2.2"]
                  ;; [clout "1.0.1"]
+                 [org.yaml/snakeyaml "1.14"]
                  ;;;; UP TO HERE.
                  ;; [jgraph "5.13.0.0"]
                  ;; [lwjgl "2.2.2"]

@@ -6,9 +6,9 @@
 
 (ns rose.clu ;; command line utils
   (:require [clojure.string :as string]
-	    [clojure.java.shell]
-	    [rose.complete]
-	    [rose.file])) ;; only path
+            [clojure.java.shell]
+            [rose.complete]
+            [rose.file])) ;; only path
 
 (declare ^{:dynamic true} *opts*)
 (declare ^{:dynamic true} *opts-global*)
@@ -43,8 +43,8 @@
     (str coll)
     (let [[l1 & l-rest] l]
       (string/join l1
-		   (seq (for [subcoll coll]
-			  (colls-string-join l-rest subcoll)))))))
+                   (seq (for [subcoll coll]
+                          (colls-string-join l-rest subcoll)))))))
 
 (defn- shell-escape-simple [s]
   (string/replace (str s) #"([	 \\\"()\[\]])" "\\\\$1"))
@@ -69,10 +69,10 @@
 
 (defn ascii-color
   ([c s] (format "\033[%dm%s\033[m"
-		 (or (ascii-color-map c) c) s))
+                 (or (ascii-color-map c) c) s))
   ([c cc s] (format "\033[%d;%dm%s\033[m"
-		    (or (ascii-color-map c) c)
-		    (or (ascii-color-extra-map cc) cc) s)))
+                    (or (ascii-color-map c) c)
+                    (or (ascii-color-extra-map cc) cc) s)))
 
 (defn- path->ns [s]
   (.. (.replaceAll s "\\.clj$" "")
@@ -81,9 +81,9 @@
 
 (defn- path<-ns [n]
   (str (.. (.replaceAll (str (ns-name n))
-			"^bin\\." "")
-	   (replace \- \_)
-	   (replace \. \/))
+                        "^bin\\." "")
+           (replace \- \_)
+           (replace \. \/))
        ".clj"))
 
 (defn- str-drop-last [#^String s]
@@ -91,9 +91,10 @@
 
 (defn string-split-qe [s]
   "split a string while honouring escaping and a simple quotations.
-Returns flags and a list in which tokens are placed in reverse order, i.e., head of the list is the last token.
-Flags are: [escape, token, nil].  Hopefully flags should be [false true nil].
-Otherwise you can decide what to do to malformed or partial input."
+Returns flags and a list in which tokens are placed in reverse order, i.e.,
+head of the list is the last token.  Flags are: [escape, token, nil].
+Hopefully flags should be [false true nil].  Otherwise you can decide what to
+do to malformed or partial input."
   (reduce
    (let [add (fn [c [partial-token & rest-out]]
                (cons (str partial-token c) rest-out))
@@ -108,9 +109,8 @@ Otherwise you can decide what to do to malformed or partial input."
 
              (not flag-token)
              (cond (get set-sep c)   [[false false quote-char] out]
-                   (get set-quote c) [[false true c] out ;; (add c out)
-                                      ]
-                   :esle             [[false true quote-char] (add c out)])
+                   (get set-quote c) [[false true c] out] ; (add c out)
+                   :else             [[false true quote-char] (add c out)])
 
              :else
              (if quote-char
@@ -120,7 +120,8 @@ Otherwise you can decide what to do to malformed or partial input."
                  [[false flag-token quote-char] (add c out)])
                (cond (get set-sep c)   [[false false quote-char] (cons nil out)]
                      (get set-quote c) [[false true c] (cons nil out)]
-                     :else             [[false flag-token quote-char] (add c out)])))))
+                     :else             [[false flag-token quote-char]
+                                        (add c out)])))))
    [[false false nil] nil]
    s))
 
@@ -131,10 +132,12 @@ Otherwise you can decide what to do to malformed or partial input."
     (vec
      (reverse
       (cond ;; what if two or more conditions apply??
-        (not flag-token) (if (first out) out (rest out)) ;; conservative. probably just (rest out) instead of the `if' form is correct.
-        ;; quote-char out
-        ;; flag-escape out
-        :else out)))))
+       ;; Conservative.  Probably just (rest out) instead of the `if' form is
+       ;; correct.
+       (not flag-token) (if (first out) out (rest out))
+       ;; quote-char out
+       ;; flag-escape out
+       :else out)))))
 
 ;; (string-split-qe-forgiving "abc \\ def 'x\\ ")
 ;; (string/split "abc \\ def " #" +")
@@ -143,12 +146,14 @@ Otherwise you can decide what to do to malformed or partial input."
   ;; TODO: consider quotations, and shell escape.
   ([line] {:prev (string-split-qe-forgiving line)})
   ([line point]
-     (let [l-before (string-split-qe-forgiving (str (.substring line 0 point) "$"))
-	   l-after  (string-split-qe-forgiving (str "^" (.substring line point)))]
+     (let [l-before (string-split-qe-forgiving
+                     (str (.substring line 0 point) "$"))
+           l-after  (string-split-qe-forgiving
+                     (str "^" (.substring line point)))]
        {:prev (drop-last l-before)
-	:cur (str-drop-last (last l-before))
-	:cur-residue (.substring (first l-after) 1)
-	:extra (next l-after)})))
+        :cur (str-drop-last (last l-before))
+        :cur-residue (.substring (first l-after) 1)
+        :extra (next l-after)})))
 
 (defn- make-instance [c & args]
   "A reflective and slow version of new"
@@ -181,7 +186,8 @@ Otherwise you can decide what to do to malformed or partial input."
                    their-ns-cmds))}))
 
   ([their-ns cli-key]
-     (let [their-ns-cmds (filter #(cli-key (meta (second %))) (ns-publics their-ns))]
+     (let [their-ns-cmds (filter #(cli-key (meta (second %)))
+                                 (ns-publics their-ns))]
        {:fns (into {}
                    (map (fn [[k v]] (vector (str k) v))
                         their-ns-cmds))
@@ -224,86 +230,101 @@ example:
       parsed-args
 
       (let [[first-arg next-args] [(first args) (next args)]]
-	(if (= first-arg "--")
-	  (if (empty? subcmd)
-	    (update-in parsed-args [nil] into next-args)
-	    (recur parsed-args next-args (vec (drop-last subcmd)))) ;; subcmd must be kept a vector.
+        (if (= first-arg "--")
+          (if (empty? subcmd)
+            (update-in parsed-args [nil] into next-args)
+            ;; subcmd must be kept a vector.
+            (recur parsed-args next-args (vec (drop-last subcmd))))
 
-	  ;; else, it is either an option or a normal argument.
-	  (let [[_ beg-short opt-name-short opt-name-residue beg-long opt-name-long opt-value]
-		(re-matches #"(?:(-|\+)([^=+-])([^=]+)?|(--)?([^=]+))(?:=(.+))?" first-arg)
-		;; opt-name-residue is used for cases like `-xy' which means `-x -y'
-		beg (or beg-long beg-short)
-		opt-name (or opt-name-long opt-name-short)
+          ;; else, it is either an option or a normal argument.
+          (let [[_ beg-short opt-name-short opt-name-residue beg-long
+                 opt-name-long opt-value]
+                (re-matches
+                 #"(?:(-|\+)([^=+-])([^=]+)?|(--)?([^=]+))(?:=(.+))?" first-arg)
+                ;; `opt-name-residue' is used for cases like `-xy' which means
+                ;; `-x -y'
+                beg (or beg-long beg-short)
+                opt-name (or opt-name-long opt-name-short)
 
-		;; resolve aliases (cases like: :l :list)
-		[opt-key opt-spec] (loop [k (if beg (keyword opt-name) opt-name),
-					  v (get (get-in grammar subcmd) k)]
-				     (if (not (keyword? v))
-				       [k v]
-				       (recur v (get (get-in grammar subcmd) v))))]
-	    ;; check if it is an option:
-	    (if opt-spec
-	      (let [opt-type (if (vector? opt-spec)
-			       (cond (empty? opt-spec)
-				     Boolean
+                ;; resolve aliases (cases like: :l :list)
+                [opt-key opt-spec]
+                (loop [k (if beg (keyword opt-name) opt-name)
+                       v (get (get-in grammar subcmd) k)]
+                  (if (not (keyword? v))
+                    [k v]
+                    (recur v (get (get-in grammar subcmd) v))))]
+            ;; Check if it is an option:
+            (if opt-spec
+              (let [opt-type (if (vector? opt-spec)
+                               (cond (empty? opt-spec)
+                                     Boolean
 
-				     :else
-				     (first opt-spec))
-			       opt-spec)
-		    update-fn (if (:multi (meta opt-spec))
-				(fn [v] (update-in parsed-args (conj subcmd opt-key) conj v))
-				(fn [v] (assoc-in parsed-args (conj subcmd opt-key) v)))]
-		(cond
-		  (= opt-type Boolean)
-		  (if opt-value
-		    (.println *err*
-			      (str "Error: Boolean option `" opt-name "' does not accept an argument.\n"
-				   "       `" opt-value "' was supplied."))
-		    (let [opt-value (not (= beg "+"))]
-		      (recur (update-fn opt-value) (if (empty? opt-name-residue)
-						     next-args
-						     (into [(str beg opt-name-residue)] next-args))
-			     subcmd)))
+                                     :else
+                                     (first opt-spec))
+                               opt-spec)
+                    update-fn
+                    (if (:multi (meta opt-spec))
+                      (fn [v]
+                        (update-in parsed-args (conj subcmd opt-key) conj v))
+                      (fn [v]
+                        (assoc-in parsed-args (conj subcmd opt-key) v)))]
+                (cond
+                 (= opt-type Boolean)
+                 (if opt-value
+                   (.println *err* (str "Error: Boolean option `" opt-name "' "
+                                        "does not accept an argument.\n"
+                                        "       `" opt-value "' was supplied."))
+                   (let [opt-value (not (= beg "+"))]
+                     (recur (update-fn opt-value)
+                            (if (empty? opt-name-residue)
+                              next-args
+                              (into [(str beg opt-name-residue)] next-args))
+                            subcmd)))
 
-		  (map? opt-type)
-		  (recur (update-fn {}) next-args (conj subcmd opt-key))
+                 (map? opt-type)
+                 (recur (update-fn {}) next-args (conj subcmd opt-key))
 
-		  ;; it is not Boolean or map, therefore it needs an arguemnt.
-		  :else
-		  (let [[opt-value residue-args]
-			(if opt-value
-			  [opt-value next-args]
-			  [(first next-args) (next next-args)])]
-		    (cond
-		      (= beg "+")
-		      (.println *err* (str "Error: option `" opt-name "' started with `+'. "
-					   "Only Boolean options are allowed to do so."))
+                 ;; It is not Boolean or map, therefore it needs an arguemnt.
+                 :else
+                 (let [[opt-value residue-args]
+                       (if opt-value
+                         [opt-value next-args]
+                         [(first next-args) (next next-args)])]
+                   (cond
+                    (= beg "+")
+                    (.println *err* (str "Error: option `" opt-name "' started "
+                                         "with `+'.  Only Boolean options are "
+                                         "allowed to do so."))
 
-		      (empty? opt-value)
-		      (.println *err* (str "Error: No value supplied for option `" opt-name "'"))
+                    (empty? opt-value)
+                    (.println *err* (str "Error: No value supplied for option "
+                                         "`" opt-name "'"))
 
-		      (not-empty opt-name-residue)
-		      (.println *err* (str "Error: Residue bundled options found for `" opt-name "'"
-					   " which requires a value."))
+                    (not-empty opt-name-residue)
+                    (.println *err* (str "Error: Residue bundled options found "
+                                         "for `" opt-name "' "
+                                         "which requires a value."))
 
-		      (class? opt-type)
-		      (recur (update-fn (make-instance opt-type opt-value)) residue-args subcmd)
+                    (class? opt-type)
+                    (recur (update-fn (make-instance opt-type opt-value))
+                           residue-args subcmd)
 
-		      (or (set? opt-type)
-			  (fn? opt-type))
-		      (if (opt-type opt-value)
-			(recur (update-fn opt-value) residue-args subcmd)
-			(.println *err* (str "Error: Value for option `" opt-name "'"
-					     " cannot be `" opt-value "'.")))
+                    (or (set? opt-type)
+                        (fn? opt-type))
+                    (if (opt-type opt-value)
+                      (recur (update-fn opt-value) residue-args subcmd)
+                      (.println *err* (str "Error: Value for option `" opt-name
+                                           "' cannot be `" opt-value "'.")))
 
-		      :else
-		      (.println *err* (str "Error: Option type for `" opt-name "'"
-					   " is " opt-type ", which is not allowed."))))))
+                    :else
+                    (.println *err* (str "Error: Option type for "
+                                         "`" opt-name "' is " opt-type ", "
+                                         "which is not allowed."))))))
 
-	      ;; so it is not an option, then it is a normal argument
-	      ;; TODO: check arglists to see if this arg is acceptable
-	      (recur (update-in parsed-args (conj subcmd nil) (comp vec conj) first-arg) next-args subcmd))))))))
+              ;; So it is not an option, then it is a normal argument.
+              ;; TODO: Check arglists to see if this arg is acceptable.
+              (recur (update-in parsed-args (conj subcmd nil) (comp vec conj)
+                                first-arg) next-args subcmd))))))))
 
 (defn- key-to-opt [x]
   (if (keyword? x)
@@ -318,102 +339,122 @@ example:
       {:cur subcmd
        :grammar (get-in grammar subcmd)
        :keys (map key-to-opt
-		  (filter identity (keys (get-in grammar subcmd))))
+                  (filter identity (keys (get-in grammar subcmd))))
        ;; :args (get-in grammar (conj subcmd nil))
        ;; :subargs (get-in parsed-args (conj subcmd nil))
-       :arg-classes (let [cnt (count (get-in parsed-args (conj subcmd nil)))] ;; args parsed so far
-		      (set (filter identity (map (fn [arglist]
-						   (:tag (meta
-							  (get arglist
-							       (if-let [ampersand-pos ;; position of first '& in arglist
-									(first (filter identity (map (fn [x n] (and (= '& x) n))
-												     arglist (iterate inc 0))))]
-								 (min cnt ampersand-pos)
-								 cnt)))))
-						 (get-in grammar (conj subcmd nil))))))
-       ;; based on :args guess what types the next item can have
-
+       :arg-classes
+       (let [cnt (count (get-in parsed-args (conj subcmd nil)))]
+         ;; args parsed so far
+         (set (filter
+               identity
+               (map (fn [arglist]
+                      (:tag (meta
+                             (get arglist
+                                  ;; Position of first '& in arglist.
+                                  (if-let [ampersand-pos
+                                           (first
+                                            (filter
+                                             identity
+                                             (map (fn [x n]
+                                                    (and (= '& x) n))
+                                                  arglist (iterate inc 0))))]
+                                    (min cnt ampersand-pos)
+                                    cnt)))))
+                    (get-in grammar (conj subcmd nil))))))
+       ;; Based on :args guess what types the next item can have
        }
 
       (let [[first-arg next-args] [(first args) (next args)]]
-	(if (= first-arg "--")
-	  (if (empty? subcmd)
-	    (update-in parsed-args [nil] into next-args)
-	    (recur parsed-args next-args (vec (drop-last subcmd)))) ;; subcmd must be kept a vector.
+        (if (= first-arg "--")
+          (if (empty? subcmd)
+            (update-in parsed-args [nil] into next-args)
+            ;; `subcmd' must be kept a vector.
+            (recur parsed-args next-args (vec (drop-last subcmd))))
 
-	  ;; else, it is either an option or a normal argument.
-	  (let [[_ beg-short opt-name-short opt-name-residue beg-long opt-name-long opt-value]
-		(re-matches #"(?:(-|\+)([^=+-])([^=]+)?|(--)?([^=]+))(?:=(.+))?" first-arg)
-		;; opt-name-residue is used for cases like `-xy' which means `-x -y'
-		beg (or beg-long beg-short)
-		opt-name (or opt-name-long opt-name-short)
+          ;; Else, it is either an option or a normal argument.
+          (let [[_ beg-short opt-name-short opt-name-residue beg-long
+                 opt-name-long opt-value]
+                (re-matches
+                 #"(?:(-|\+)([^=+-])([^=]+)?|(--)?([^=]+))(?:=(.+))?" first-arg)
+                ;; `opt-name-residue' is used for cases like "-xy" which means
+                ;; "-x -y"
+                beg (or beg-long beg-short)
+                opt-name (or opt-name-long opt-name-short)
 
-		;; resolve aliases (cases like: :l :list)
-		[opt-key opt-spec] (loop [k (if beg (keyword opt-name) opt-name),
-					  v (get (get-in grammar subcmd) k)]
-				     (if (not (keyword? v))
-				       [k v]
-				       (recur v (get (get-in grammar subcmd) v))))]
-	    ;; check if it is an option:
-	    (if opt-spec
-	      (let [opt-type (if (vector? opt-spec)
-			       (cond (empty? opt-spec)
-				     Boolean
+                ;; resolve aliases (cases like: :l :list)
+                [opt-key opt-spec]
+                (loop [k (if beg (keyword opt-name) opt-name),
+                       v (get (get-in grammar subcmd) k)]
+                  (if (not (keyword? v))
+                    [k v]
+                    (recur v (get (get-in grammar subcmd) v))))]
+            ;; Check if it is an option:
+            (if opt-spec
+              (let [opt-type (if (vector? opt-spec)
+                               (cond (empty? opt-spec) Boolean
+                                     :else (first opt-spec))
+                               opt-spec)
+                    update-fn (if (:multi (meta opt-spec))
+                                (fn [v]
+                                  (update-in parsed-args (conj subcmd opt-key)
+                                             conj v))
+                                (fn [v]
+                                  (assoc-in parsed-args (conj subcmd opt-key)
+                                            v)))]
+                (cond
+                 (= opt-type Boolean)
+                 (if opt-value
+                   {:error (str "Error: Boolean option `" opt-name "' "
+                                "does not accept an argument.  "
+                                "`" opt-value "' was supplied.")}
+                   (let [opt-value (not (= beg "+"))]
+                     (recur (update-fn opt-value)
+                            (if (empty? opt-name-residue)
+                              next-args
+                              (into [(str beg opt-name-residue)] next-args))
+                            subcmd)))
 
-				     :else
-				     (first opt-spec))
-			       opt-spec)
-		    update-fn (if (:multi (meta opt-spec))
-				(fn [v] (update-in parsed-args (conj subcmd opt-key) conj v))
-				(fn [v] (assoc-in parsed-args (conj subcmd opt-key) v)))]
-		(cond
-		  (= opt-type Boolean)
-		  (if opt-value
-		    {:error (str "Error: Boolean option `" opt-name "' does not accept an argument."
-				 " `" opt-value "' was supplied.")}
-		    (let [opt-value (not (= beg "+"))]
-		      (recur (update-fn opt-value) (if (empty? opt-name-residue)
-						     next-args
-						     (into [(str beg opt-name-residue)] next-args))
-			     subcmd)))
+                 (map? opt-type)
+                 (recur (update-fn {}) next-args (conj subcmd opt-key))
 
-		  (map? opt-type)
-		  (recur (update-fn {}) next-args (conj subcmd opt-key))
+                 ;; It is not Boolean or map, therefore it needs an arguemnt.
+                 :else
+                 (let [[opt-value residue-args]
+                       (if opt-value
+                         [opt-value next-args]
+                         [(first next-args) (next next-args)])]
+                   (cond
+                    (= beg "+")
+                    {:error (str "Error: option `" opt-name "' started with "
+                                 "\"+\".  Only Boolean options are allowed to "
+                                 "do so.")}
 
-		  ;; it is not Boolean or map, therefore it needs an arguemnt.
-		  :else
-		  (let [[opt-value residue-args]
-			(if opt-value
-			  [opt-value next-args]
-			  [(first next-args) (next next-args)])]
-		    (cond
-		      (= beg "+")
-		      {:error (str "Error: option `" opt-name "' started with `+'. "
-				   "Only Boolean options are allowed to do so.")}
+                    (empty? opt-value)
+                    {:error (str "Error: No value supplied for option "
+                                 "`" opt-name "'")}
 
-		      (empty? opt-value)
-		      {:error (str "Error: No value supplied for option `" opt-name "'")}
+                    (not-empty opt-name-residue)
+                    {:error (str "Error: Residue bundled options found for "
+                                 "`" opt-name "' which requires a value.")}
 
-		      (not-empty opt-name-residue)
-		      {:error (str "Error: Residue bundled options found for `" opt-name "'"
-				   " which requires a value.")}
+                    (class? opt-type)
+                    (recur (update-fn (make-instance opt-type opt-value))
+                           residue-args subcmd)
 
-		      (class? opt-type)
-		      (recur (update-fn (make-instance opt-type opt-value)) residue-args subcmd)
+                    (or (set? opt-type)
+                        (fn? opt-type))
+                    (if (opt-type opt-value)
+                      (recur (update-fn opt-value) residue-args subcmd)
+                      {:error (str "Error: Value for option `" opt-name "'"
+                                   " cannot be `" opt-value "'.")})
 
-		      (or (set? opt-type)
-			  (fn? opt-type))
-		      (if (opt-type opt-value)
-			(recur (update-fn opt-value) residue-args subcmd)
-			{:error (str "Error: Value for option `" opt-name "'"
-				     " cannot be `" opt-value "'.")})
+                    :else
+                    {:error (str "Error: Option type for `" opt-name "'"
+                                 " is " opt-type ", which is not allowed.")}))))
 
-		      :else
-		      {:error (str "Error: Option type for `" opt-name "'"
-				   " is " opt-type ", which is not allowed.")}))))
-
-	      ;; so it is not an option, then it is a normal argument
-	      (recur (update-in parsed-args (conj subcmd nil) (comp vec conj) first-arg) next-args subcmd))))))))
+              ;; So it is not an option, then it is a normal argument
+              (recur (update-in parsed-args (conj subcmd nil) (comp vec conj)
+                                first-arg) next-args subcmd))))))))
 
 ;; unused:
 ;; comp-type (*env* "COMP_TYPE")
@@ -422,9 +463,9 @@ example:
 (defn main-dbg [& args]
   (.println *err* (str "args:" *command-line-args*))
   (.println *err* (str "comp-point: " (get *env* "COMP_POINT") ", "
-		       "comp-line:  " (get *env* "COMP_LINE")
-		       "comp-type:  " (get *env* "COMP_TYPE")
-		       "comp-key:   " (get *env* "COMP_KEY"))))
+                       "comp-line:  " (get *env* "COMP_LINE")
+                       "comp-type:  " (get *env* "COMP_TYPE")
+                       "comp-key:   " (get *env* "COMP_KEY"))))
 
 (defn- completor-respond [coll]
   (println (string/join "\n" (sort (map shell-escape-simple coll)))))
@@ -452,12 +493,12 @@ example:
                      (list
                       (filter-prefix cur (:keys sub))
                       (mapcat #(cond
-                                 (class? %)
-                                 (.complete (make-instance % cur))
+                                (class? %)
+                                (.complete (make-instance % cur))
 
-                                 (symbol? %)
-                                 (.complete (make-instance
-                                             (ns-resolve their-ns %) cur)))
+                                (symbol? %)
+                                (.complete (make-instance
+                                            (ns-resolve their-ns %) cur)))
                               (:arg-classes sub)))))))))))
 
 (defn -main [& args]
@@ -465,7 +506,7 @@ example:
     ;; running as completer
     (completor-respond
      (cli-command-complete (get *env* "COMP_LINE")
-                       (Integer/parseInt point)))
+                           (Integer/parseInt point)))
 
     ;; probably launching mode:
     (.println *err* "Sorry, COMP_POINT was not set.")))
@@ -510,10 +551,10 @@ and keywords are turned into longopts (:this --> --this)."
   (clojure.java.shell/with-sh-env *env*
     (clojure.java.shell/with-sh-dir *cwd*
       (apply clojure.java.shell/sh
-	     (map #(cond (vector? %) (apply rose.file/path %)
+             (map #(cond (vector? %) (apply rose.file/path %)
                          (= :< %) :in
-			 (keyword? %) (key-to-opt %)
-			 :else %) args)))))
+                         (keyword? %) (key-to-opt %)
+                         :else %) args)))))
 
 ;; ------------------------------------------------------------
 ;; this part is taken from the popen library
@@ -531,11 +572,11 @@ and keywords are turned into longopts (:this --> --this)."
   :redirect - Redirect stderr to stdout
   :dir - Set initial directory"
     (-> (ProcessBuilder. args)
-	(.directory (if dir
-		      (clojure.java.io/file dir)
-		      (java.io.File. *cwd)))
-	(.redirectErrorStream (boolean redirect))
-	(.start)))
+        (.directory (if dir
+                      (clojure.java.io/file dir)
+                      (java.io.File. *cwd)))
+        (.redirectErrorStream (boolean redirect))
+        (.start)))
 
   (defprotocol Popen
     (stdout [this] "Process standard output (read from)")
@@ -567,8 +608,7 @@ and keywords are turned into longopts (:this --> --this)."
   args - List of command line arguments
   :redirect - Redirect stderr to stdout
   :dir - Set initial directory"
-    (stdout (popen args :redirect redirect :dir dir)))
-  )
+    (stdout (popen args :redirect redirect :dir dir))))
 ;; ------------------------------------------------------------
 
 (comment
@@ -576,29 +616,29 @@ and keywords are turned into longopts (:this --> --this)."
     ;; command not specified
     (completor-respond
      (filter-prefix cur (map #(:name (meta %))
-			     (ns-interactive-fns current-ns))))
+                             (ns-interactive-fns current-ns))))
 
     ;; command specified
     (let [current-command (ns-resolve
-			   current-ns (symbol (nth prev 1)))
-	  prev-args (drop 2 prev)
-	  an-arglist (first
-		      (filter #(> (count %) (count prev-args))
-			      (:arglists (meta current-command))))
-	  current-arg-tag (:tag
-			   (meta (get an-arglist (count prev-args))))]
+                           current-ns (symbol (nth prev 1)))
+          prev-args (drop 2 prev)
+          an-arglist (first
+                      (filter #(> (count %) (count prev-args))
+                              (:arglists (meta current-command))))
+          current-arg-tag (:tag
+                           (meta (get an-arglist (count prev-args))))]
       ;; [an-arglist]
       (completor-respond
        (when an-arglist
-	 (if current-arg-tag
-	   (.complete (make-instance current-arg-tag cur))
-	   ;; new is apparently broken a bit
+         (if current-arg-tag
+           (.complete (make-instance current-arg-tag cur))
+           ;; new is apparently broken a bit
 
-	   ;; (rose.complete/complete
-	   ;;  (eval `(new ~(ns-resolve current-ns current-arg-tag) ~cur)))
+           ;; (rose.complete/complete
+           ;;  (eval `(new ~(ns-resolve current-ns current-arg-tag) ~cur)))
 
-	   ["foo"] ;; TODO: use some default completion
-	   ))))))
+           ["foo"] ;; TODO: use some default completion
+           ))))))
 
 (defn run-command-maybe-ns
   ([their-ns their-ns-path]
@@ -620,42 +660,48 @@ and keywords are turned into longopts (:this --> --this)."
                  (println "Usage:")
                  (doseq [cmd (filter (comp not keyword?) (keys (:grammar cli)))]
                    (println (format " %-15s" (or cmd ""))
-                            (str (when-let [cmd-doc (:doc (meta (get (:fns cli) cmd)))]
+                            (str (when-let [cmd-doc (:doc (meta (get (:fns cli)
+                                                                     cmd)))]
                                    (ascii-color :y cmd-doc))))
                    (doseq [[k v] (sort-by #(str (first %))
-                                          (get-in cli (if cmd [:grammar cmd] [:grammar])))]
+                                          (get-in cli (if cmd
+                                                        [:grammar cmd]
+                                                        [:grammar])))]
                      (if k
                        (println (format " %-15s %s: %s%s" "" (key-to-opt k)
                                         (cond
-                                          (keyword? v)
-                                          (str "alias for " (key-to-opt v))
+                                         (keyword? v)
+                                         (str "alias for " (key-to-opt v))
 
-                                          (or (= Boolean v) (= [] v))
-                                          "on/off option"
+                                         (or (= Boolean v) (= [] v))
+                                         "on/off option"
 
-                                          :else
-                                          v)
+                                         :else
+                                         v)
                                         (if-let [opt-doc (:doc (meta v))]
                                           (ascii-color :y (str " " opt-doc))
                                           "")))
-                       (println (format " %-15s args: %s" "" (ascii-color :r (into (list) v))))))))
+                       (println (format " %-15s args: %s" ""
+                                        (ascii-color :r (into (list) v))))))))
 
                :else
                (let [cli-fns (get cli :fns)
                      cmds (filter cli-fns (filter identity (keys parsed-opts)))]
-                 ;; NOTE: We only run the default command when no command is specified.
+                 ;; NOTE: We only run the default command when no command is
+                 ;; specified.
                  (if (empty? cmds)
-                   ;; run default command
+                   ;; Run default command
                    (binding [*opts* (dissoc parsed-opts nil)]
                      (when-let [f (get cli-fns nil)]
                        (apply f (get-in parsed-opts [nil]))))
 
-                   ;; run specified commands
+                   ;; Run specified commands
                    (doseq [cmd cmds]
                      (binding [*opts* (dissoc (get-in parsed-opts [cmd]) nil)
-                               *opts-global* (select-keys parsed-opts
-                                                          (filter #(and % (not (string? %)))
-                                                                  (keys parsed-opts)))]
+                               *opts-global*
+                               (select-keys parsed-opts
+                                            (filter #(and % (not (string? %)))
+                                                    (keys parsed-opts)))]
                        (when-let [f (get cli-fns cmd)]
                          (apply f (get-in parsed-opts [cmd nil])))))))))))
   ([their-ns]
