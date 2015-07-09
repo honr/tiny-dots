@@ -1,0 +1,21 @@
+#!/bin/bash
+
+source ~/.local/etc/bash/sys.bash
+source-maybe ~/.local/etc/bash/path.$SYSOSTYPE
+
+# If not running interactively, don't do anything.
+[ -z "$PS1" ] && return
+
+source-maybe ~/.local/etc/bash/term.bash
+source-maybe ~/.local/etc/bash/term.$SYSOSTYPE
+source-maybe ~/.local/etc/bash/generic.clj.bash
+source-maybe ~/.local/etc/bash/alias.bash
+
+export PROMPT_COMMAND="prompt-update"
+prepare-for-prompt-update-ps1
+function prompt-update () {
+  history -a
+  prompt-update-ps1
+}
+
+source-maybe ~/.local/etc/bash/site-local.bash

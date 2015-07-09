@@ -95,16 +95,19 @@
    '(glasses-uncapitalize-p t)
    '(glasses-uncapitalize-regexp "[a-zA-Z_]")
    '(indent-tabs-mode nil)
-   ;; '(indicate-buffer-boundaries 'left)
+   '(indicate-buffer-boundaries 'left)
    ;; '(mouse-avoidance-mode 'banish)
+   '(css-indent-offset 2)
+   '(icomplete-show-matches-on-no-input t)
+   '(icomplete-prospects-height 1)
    '(js-indent-level 2)
+   '(major-mode 'org-mode)
    '(mouse-wheel-progressive-speed nil)
    '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
    '(next-screen-context-lines 8)
-   '(org-agenda-files '("~/agenda.org" "~/notes.org"))
-   '(org-default-notes-file "~/notes.org")
-   '(org-html-style-default
-     "<link rel=\"stylesheet\" href=\"style.css\"/>")
+   '(org-agenda-files '("~/org/a.org" "~/org/current.org"))
+   '(org-default-notes-file "~/org/notes.org")
+   '(org-html-style-default "<link rel=\"stylesheet\" href=\"style.css\"/>")
    '(org-replace-disputed-keys t)
    '(org-todo-keywords '("TODO" "CANCELLED" "PROGRESSING" "DONE"))
    '(python-guess-indent nil)
@@ -115,14 +118,13 @@
    '(vc-follow-symlinks t)
    '(view-read-only t))
 
-  (add-hook 'prog-mode-hook
-            (lambda ()
-              (setq show-trailing-whitespace t)))
+  (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
   (defun go-easy-on-remote ()
     (interactive)
     (remove-hook 'find-file-hooks 'vc-find-file-hook)
     (setq vc-handled-backends nil)
+    (setq auto-save-timeout nil)
     (setq auto-save-interval 0))
 
   (package-initialize)
@@ -137,7 +139,5 @@
   (require 'config-lisp nil t)
   (require 'config-tex nil t)
   (require 'config-algol nil t)
-  ;; Site-specific configurations.
-  (require 'config-site nil t)
-  ;; Host-specific configurations.
-  (require 'config-host nil t))
+  (require 'config-site nil t)          ; Site-specific configurations.
+  (require 'config-host nil t))         ; Host-specific configurations.

@@ -1,0 +1,8 @@
+# -*- Mode: Shell-Script -*-
+
+if [ -z "$BASHRC_LOADED_P" ] ; then
+    export PATH="$HOME/.local/bin/$SYSARCH:$HOME/.local/bin:$HOME/.opt/bin:$PATH"
+    export GOPATH="$HOME/.local"
+    export ALTERNATE_EDITOR=""
+    export BASHRC_LOADED_P=t
+fi

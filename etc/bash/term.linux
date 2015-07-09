@@ -1,0 +1,28 @@
+# -*- Mode: Shell-Script -*-
+
+# Make less more friendly for non-text input files, see lesspipe(1)
+if [ -x /usr/bin/lesspipe ] ; then
+    export LESSOPEN="| /usr/bin/lesspipe %s"
+    export LESSCLOSE="/usr/bin/lesspipe %s %s"
+fi
+
+# Set variable identifying the chroot you work in (used in the prompt below).
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+	  debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+if [ "$COLORTERM" = "gnome-terminal" ] ; then
+	  TERM="xterm-256color"
+fi
+
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    source /etc/bash_completion
+fi
+
+case "$TERM" in
+    *-color|*-*color)
+        export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:'
+        alias ls='ls --color=auto'
+        alias grep='grep --color=auto'
+    ;;
+esac

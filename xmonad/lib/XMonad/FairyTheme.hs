@@ -14,7 +14,7 @@ module XMonad.FairyTheme
 
 import qualified XMonad
 
-color_theme = color_theme_light_wood
+color_theme = color_theme_grey
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],

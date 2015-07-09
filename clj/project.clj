@@ -48,6 +48,8 @@
                  ;; [lwjgl "2.2.2"]
                  [joda-time "2.3"]
                  [org.xerial/sqlite-jdbc "3.7.2"]
+                 [com.cognitect/transit-clj "0.8.229"]
+                 [com.cognitect/transit-js "0.8.616"]
                  ;; [tagsoup "1.2"]
                  ;; [org.apache.maven/maven-ant-tasks "2.1.3"]
                  ;; [org.apache.ant/ant "1.8.2"]

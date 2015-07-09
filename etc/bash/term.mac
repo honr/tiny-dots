@@ -1,0 +1,10 @@
+# -*- Mode: Shell-Script -*-
+
+# Requires term.bash
+
+export PROMPT_COMMAND="prompt-update"
+prepare-for-prompt-update-ps1
+function prompt-update () {
+  history -a
+  prompt-update-ps1
+}
