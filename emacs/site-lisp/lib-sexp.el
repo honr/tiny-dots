@@ -12,9 +12,13 @@
     (let ((res nil)
           (m (match-data)))
       (while m
-        (let ((item (substring-no-properties s (first m) (second m))))
+        (let ((beg (first m))
+              (end (second m)))
           (setq m (cddr m))
-          (setq res (nconc res (list item)))))
+          (setq res (nconc res (list
+                                (if (and beg end)
+                                    (substring-no-properties s beg end)
+                                  nil))))))
       res)))
 
 (defun tokenize-name (s)

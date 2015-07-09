@@ -148,4 +148,6 @@
   (require 'config-tex nil t)
   (require 'config-algol nil t)
   (require 'config-site nil t)          ; Site-specific configurations.
-  (require 'config-host nil t))         ; Host-specific configurations.
+  (require 'config-host nil t)          ; Host-specific configurations.
+)
+
