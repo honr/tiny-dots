@@ -19,7 +19,7 @@ esac
 SYSARCH="${SYSOSTYPE}-${CPUARCH}"
 
 function source-maybe () {
-  if [ -x "$1" ] ; then
+  if [ -r "$1" ] ; then
       source "$1"
   fi
 }
