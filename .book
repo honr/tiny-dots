@@ -1,5 +1,6 @@
 $HOME/.Xresources>$HOME/Pool/etc/Xresources
-$HOME/.bash_profile>$HOME/Pool/etc/bash_profile
+$HOME/.bash_profile>$HOME/Pool/etc/bash/bash_profile
+$HOME/.bashrc>$HOME/Pool/etc/bash/bashrc
 $HOME/.emacs.d
 $HOME/.emacs.d/init.el>$HOME/Pool/emacs/init.el
 $HOME/.emacs.d/insert

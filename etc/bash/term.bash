@@ -1,3 +1,20 @@
+export HISTSIZE=16384
+export HISTFILE=$HOME/.history/bash
+unset HISTFILESIZE
+export HISTCONTROL=ignoreboth
+export VISUAL="emacsclient"
+export EDITOR="emacsclient"
+
+# don't put duplicate lines in the history. See bash(1) for more options
+# ... or force ignoredups and ignorespace
+# HISTCONTROL=ignoredups:ignorespace
+
+export CLICOLOR=1
+
+shopt -s histappend
+shopt -s checkwinsize
+set +o histexpand
+
 function git_current_branch () {
   local current_branch="$(git symbolic-ref -q HEAD 2>/dev/null)"
   if [ -n "$current_branch" ] ; then
