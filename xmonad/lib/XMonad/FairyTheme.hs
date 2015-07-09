@@ -12,7 +12,7 @@ module XMonad.FairyTheme (
 
 import qualified XMonad
 
-colorTheme = colorThemeLight
+colorTheme = colorThemeDark
 
 data Colors = Colors {
   normalBorder :: String,

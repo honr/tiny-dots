@@ -80,10 +80,11 @@
 (require 'newcomment)
 (require 'org)
 
+(setq-default abbrev-mode t)
+
 (custom-set-variables
  '(compilation-skip-threshold 2)
- ;; '(custom-enabled-themes '(whitestone-serious))
- ;; '(custom-enabled-themes '(fruitsalad-dark))
+ '(css-indent-offset 2)
  '(custom-enabled-themes '(dark-forge))
  '(custom-safe-themes t)
  '(custom-theme-directory "~/.emacs.d/themes")
@@ -94,30 +95,31 @@
  '(glasses-separator "-")
  '(glasses-uncapitalize-p t)
  '(glasses-uncapitalize-regexp "[a-zA-Z_]")
+ '(gud-gdb-command-name "gdb --annotate=1")
+ ;; '(icomplete-prospects-height 1)
+ ;; '(icomplete-show-matches-on-no-input t)
  '(indent-tabs-mode nil)
- '(indicate-buffer-boundaries 'left)
- ;; '(mouse-avoidance-mode 'banish)
- '(css-indent-offset 2)
- '(icomplete-show-matches-on-no-input t) ; no-op, icomplete-mode disabled.
- '(icomplete-prospects-height 1) ; no-op, icomplete-mode disabled.
+ ;; currently disabled until theming is in place
+ ;; '(indicate-buffer-boundaries 'left)
  '(js-indent-level 2)
+ '(large-file-warning-threshold nil)
  '(major-mode 'org-mode)
  '(mouse-wheel-progressive-speed nil)
  '(mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control))))
  '(next-screen-context-lines 8)
- '(org-agenda-files '("~/org/a.org" "~/org/current.org"))
+ '(org-agenda-files (quote ("~/org/a.org" "~/org/current.org")))
  '(org-default-notes-file "~/org/notes.org")
- '(org-html-style-default "<link rel=\"stylesheet\" href=\"style.css\"/>")
- '(org-html-postamble t)
- '(org-html-preamble nil)
  '(org-html-head-extra "<script src=\"prettify/run_prettify.js\"></script>")
  '(org-html-head-include-scripts nil)
+ '(org-html-postamble t)
  '(org-html-postamble-format
-   '(("en"
-      "<span class=\"author\">author: %a (%e)</span>,
+   '(("en" "<span class=\"author\">author: %a (%e)</span>,
 <span class=\"date\">mtime: %C</span>")))
+ '(org-html-preamble nil)
+ '(org-html-style-default "<link rel=\"stylesheet\" href=\"style.css\"/>")
  '(org-replace-disputed-keys t)
  '(org-todo-keywords '("TODO" "CANCELLED" "PROGRESSING" "DONE"))
+ '(package-selected-packages '(powerline))
  '(python-guess-indent nil)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)

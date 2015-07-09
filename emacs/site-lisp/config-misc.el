@@ -98,4 +98,6 @@ prefix spaces into the quotes."
   (setq auto-save-timeout nil)
   (setq auto-save-interval 0))
 
+(require 'config-general-abbrevs nil t)
+
 (provide 'config-misc)

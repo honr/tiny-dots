@@ -12,3 +12,5 @@ require-clj-modules:
 	@clove -c clojure -e "(require ['clojure.edn :reload true])"
 	@clove -c clojure -e "(require ['clojure.data.json :reload true])"
 	@clove -c clojure -e "(require ['rose.ang-html :reload true])"
+
+.PHONY: require-clj-modules
