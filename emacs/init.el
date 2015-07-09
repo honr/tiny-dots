@@ -13,15 +13,14 @@
 (set-language-environment "UTF-8")
 ;; (setq completion-styles '(partial-completion initials))
 ;; (partial-completion-mode t)
-(let ((default-directory "~/.emacs.d/site-lisp"))
-  (normal-top-level-add-to-load-path (list default-directory))
-  (normal-top-level-add-subdirs-to-load-path))
-(let ((default-directory "~/.nix-profile/share/emacs/site-lisp"))
-  (normal-top-level-add-to-load-path (list default-directory))
-  (normal-top-level-add-subdirs-to-load-path))
-(let ((default-directory "/usr/share/emacs/site-lisp"))
-  (normal-top-level-add-to-load-path (list default-directory))
-  (normal-top-level-add-subdirs-to-load-path))
+(defun add-to-load-path-if-exists (dir)
+  (when (file-exists-p dir)
+    (let ((default-directory dir))
+      (normal-top-level-add-to-load-path (list default-directory))
+      (normal-top-level-add-subdirs-to-load-path))))
+(add-to-load-path-if-exists "~/.emacs.d/site-lisp")
+(add-to-load-path-if-exists "~/.nix-profile/share/emacs/site-lisp")
+(add-to-load-path-if-exists "/usr/share/emacs/site-lisp")
 (setq Info-additional-directory-list
       (mapcar 'expand-file-name  ; The trailing slash is *IMPORTANT*.
               (list "~/.emacs.d/info/"
