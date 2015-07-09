@@ -45,7 +45,8 @@ $HOME/.local/share/java/project.clj>$HOME/Pool/clj/project.clj
 $HOME/.local/share/man
 $HOME/.local/share/man/man1
 $HOME/.local/share/man/man1/pool.deploy.1>$HOME/Pool/man/pool.deploy.1
-$HOME/Pool/bin/css.clj>$HOME/Pool/bin/css.clj
+$HOME/.local/src>$HOME/Lake/go
+$HOME/.local/bin/css.clj>$HOME/Pool/bin/css.clj
 $HOME/.pythonrc>$HOME/Pool/python/pythonrc
 $HOME/.screenrc>$HOME/Pool/etc/screenrc
 $HOME/.xmonad>$HOME/Pool/xmonad
