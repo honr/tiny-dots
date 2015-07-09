@@ -56,15 +56,17 @@
 
 ;; yasnippet
 (require 'yasnippet nil t)
-(when (boundp 'yas-global-mode)
-  (setq yas-prompt-functions '(yas-completing-prompt)
-        yas-also-auto-indent-first-line t
-        yas-snippet-dirs (file-expand-wildcards
-                          (expand-file-name "~/.emacs.d/snippets/*")))
-  (yas-global-mode 1)
-  (global-set-key (kbd "C-x r '") 'yas-insert-snippet)
-  (global-set-key (kbd "C-x r C-'") 'yas-new-snippet)
-  (global-set-key (kbd "C-x r \"") 'yas-visit-snippet-file))
+(eval-after-load "yasnippet" ;; (boundp 'yas-global-mode)
+  '(progn
+     (setq yas-prompt-functions '(yas-completing-prompt)
+           yas-also-auto-indent-first-line t
+           yas-snippet-dirs (file-expand-wildcards
+                             (expand-file-name "~/.emacs.d/snippets/*")))
+     (yas-global-mode 1)
+     (global-set-key (kbd "C-x r '") 'yas-insert-snippet)
+     (global-set-key (kbd "C-x r C-'") 'yas-new-snippet)
+     (global-set-key (kbd "C-x r \"") 'yas-visit-snippet-file)))
+
 ;; Not sure in what situation these might become necessary:
 ;; (yas-reload-all)
 ;; (yas-recompile-all)  ;; Generates a "compiled" snippet file.

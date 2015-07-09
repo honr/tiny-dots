@@ -124,6 +124,7 @@
     (setq vc-handled-backends nil)
     (setq auto-save-interval 0))
 
+  (package-initialize)
   (require 'config-custom-variables nil t)
 
   (require 'config-gnus nil t)
