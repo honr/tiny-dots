@@ -126,6 +126,35 @@
 (global-set-key (kbd "M-g `") (lambda () (interactive) (insert "º")))
 (global-set-key (kbd "M-g ,") "◊")
 
+(global-set-key (kbd "S-SPC") "_")
+(global-set-key (kbd "C-t") prefix-arg)
+(global-set-key (kbd "C-t k")
+                (lambda ()
+                  (interactive)
+                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
+                    (when bounds
+                      (insert (join-AaBb
+                               (delete-and-extract-region
+                                (car bounds) (cdr bounds))))))))
+
+(global-set-key (kbd "C-t u")
+                (lambda ()
+                  (interactive)
+                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
+                    (when bounds
+                      (insert (join-AA_BB
+                               (delete-and-extract-region
+                                (car bounds) (cdr bounds))))))))
+
+(global-set-key (kbd "C-t j")
+                (lambda ()
+                  (interactive)
+                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
+                    (when bounds
+                      (insert (join-aa-bb
+                               (delete-and-extract-region
+                                (car bounds) (cdr bounds))))))))
+
 (require 'browse-kill-ring)
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
   "If last action was not a yank, run `browse-kill-ring' instead."

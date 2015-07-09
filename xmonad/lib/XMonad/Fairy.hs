@@ -430,6 +430,8 @@ emacs_keys  =
   (map (\(TopicItem n k _ _) -> ("M-S-d " ++ k, (workspace_shift n))) topics_table) ++
 
   [("M-m", (withFocused Layout.Minimize.minimizeWindow)),
+   ("M-C-m", (withFocused (\ w -> (sendMessage 
+                                   (Layout.Minimize.RestoreMinimizedWin w))))),
    ("M-S-m", (sendMessage Layout.Minimize.RestoreNextMinimizedWin)),
 
    -- Layouts

@@ -19,35 +19,21 @@
                           turn-on-haskell-decl-scan))
 (add-to-list 'auto-mode-alist '("\\.hs\\'" . haskell-mode))
 
-(define-key c-mode-map (kbd "S-SPC") "_")
-(define-key c++-mode-map (kbd "S-SPC") "_")
-
-(define-key c++-mode-map (kbd "C-t") prefix-arg)
-(define-key c++-mode-map (kbd "C-t j")
+(define-key c++-mode-map (kbd "C-t o") "->")
+(define-key c++-mode-map (kbd "C-t i")
   (lambda ()
-    (interactive)
-    (let ((bounds (bounds-of-thing-at-point 'symbol)))
-      (when bounds
-        (insert (join-AaBb
-                 (delete-and-extract-region
-                  (car bounds) (cdr bounds))))))))
-
-(define-key c++-mode-map (kbd "C-t k")
+    (interactive) (insert "()") (backward-char 1)))
+(define-key c++-mode-map (kbd "C-t n")
   (lambda ()
-    (interactive)
-    (let ((bounds (bounds-of-thing-at-point 'symbol)))
-      (when bounds
-        (insert (join-AA_BB
-                 (delete-and-extract-region
-                  (car bounds) (cdr bounds))))))))
-
-(define-key c++-mode-map (kbd "C-t l")
+    (interactive) (insert (format "{\n\n}")) (backward-char 2) (c-indent-line)))
+(define-key c++-mode-map (kbd "C-t '")
   (lambda ()
-    (interactive)
-    (let ((bounds (bounds-of-thing-at-point 'symbol)))
-      (when bounds
-        (insert (join-aa-bb
-                 (delete-and-extract-region
-                  (car bounds) (cdr bounds))))))))
+    (interactive) (insert (format "\"\"")) (backward-char 1)))
+(define-key c++-mode-map (kbd "C-t [")
+  (lambda ()
+    (interactive) (insert (format "[]")) (backward-char 1)))
+(define-key c++-mode-map (kbd "C-t ,")
+  (lambda ()
+    (interactive) (insert (format "<>")) (backward-char 1)))
 
 (provide 'config-algol)
