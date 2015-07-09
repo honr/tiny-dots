@@ -155,6 +155,15 @@
                                (delete-and-extract-region
                                 (car bounds) (cdr bounds))))))))
 
+(global-set-key (kbd "C-t l")
+                (lambda ()
+                  (interactive)
+                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
+                    (when bounds
+                      (insert (join-aa_bb
+                               (delete-and-extract-region
+                                (car bounds) (cdr bounds))))))))
+
 (require 'browse-kill-ring)
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
   "If last action was not a yank, run `browse-kill-ring' instead."
