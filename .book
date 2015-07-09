@@ -39,6 +39,7 @@ $HOME/.local/etc/bash/ew.bash>$HOME/Pool/etc/bash/ew.bash
 $HOME/.local/etc/bash/gconftool.bash>$HOME/Pool/etc/bash/gconftool.bash
 $HOME/.local/etc/bash/generic.clj.bash>$HOME/Pool/etc/bash/generic.clj.bash
 $HOME/.local/etc/bash/gsettings.bash>$HOME/Pool/etc/bash/gsettings.bash
+$HOME/.local/lib/make/common.make>$HOME/Pool/make/common.make
 $HOME/.local/share
 $HOME/.local/share/applications
 $HOME/.local/share/applications/clove-daemon.desktop>$HOME/Pool/clj/clove/clove-daemon.desktop
