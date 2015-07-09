@@ -71,4 +71,7 @@
 (defun guess-mode-for-file (filename)
   (assoc-default filename auto-mode-alist 'string-match))
 
+(defun mapfmt (fmt-string coll)
+  (mapcar (lambda (x) (format fmt-string x)) coll))
+
 (provide 'lib-sexp)
