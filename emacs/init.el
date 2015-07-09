@@ -13,15 +13,14 @@
 (set-language-environment "UTF-8")
 ;; (setq completion-styles '(partial-completion initials))
 ;; (partial-completion-mode t)
-(let ((default-directory "~/.emacs.d/site-lisp"))
-  (normal-top-level-add-to-load-path (list default-directory))
-  (normal-top-level-add-subdirs-to-load-path))
-(let ((default-directory "~/.nix-profile/share/emacs/site-lisp"))
-  (normal-top-level-add-to-load-path (list default-directory))
-  (normal-top-level-add-subdirs-to-load-path))
-(let ((default-directory "/usr/share/emacs/site-lisp"))
-  (normal-top-level-add-to-load-path (list default-directory))
-  (normal-top-level-add-subdirs-to-load-path))
+(defun add-to-load-path-if-exists (dir)
+  (when (file-exists-p dir)
+    (let ((default-directory dir))
+      (normal-top-level-add-to-load-path (list default-directory))
+      (normal-top-level-add-subdirs-to-load-path))))
+(add-to-load-path-if-exists "~/.emacs.d/site-lisp")
+(add-to-load-path-if-exists "~/.nix-profile/share/emacs/site-lisp")
+(add-to-load-path-if-exists "/usr/share/emacs/site-lisp")
 (setq Info-additional-directory-list
       (mapcar 'expand-file-name  ; The trailing slash is *IMPORTANT*.
               (list "~/.emacs.d/info/"
@@ -39,9 +38,7 @@
   ;; Add a "layer" of protection around ‘C-x C-c’.
   (global-unset-key (kbd "C-x C-c"))
   (global-set-key (kbd "C-x C-c C-x C-x C-c") 'save-buffers-kill-emacs)
-
-  (iswitchb-mode t) (setq iswitchb-max-to-show 10)
-
+  (icomplete-mode t)
   (savehist-mode t)
   (setq history-length 8192)
 
@@ -99,7 +96,6 @@
    '(glasses-uncapitalize-regexp "[a-zA-Z_]")
    '(indent-tabs-mode nil)
    ;; '(indicate-buffer-boundaries 'left)
-   '(iswitchb-default-method 'maybe-frame)
    ;; '(mouse-avoidance-mode 'banish)
    '(js-indent-level 2)
    '(mouse-wheel-progressive-speed nil)
