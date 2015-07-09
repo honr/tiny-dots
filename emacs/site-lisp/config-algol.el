@@ -11,7 +11,7 @@
 (require 'haskell-decl-scan)
 (require 'haskell-doc)
 (require 'inf-haskell)
-(require 'haskell-ghci)
+(require 'haskell-ghci nil t)
 (require 'haskell-mode)
 (setq haskell-mode-hook '(turn-on-haskell-indentation
                           turn-on-eldoc-mode

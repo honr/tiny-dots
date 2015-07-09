@@ -107,8 +107,8 @@
    '(next-screen-context-lines 8)
    '(org-agenda-files '("~/agenda.org" "~/notes.org"))
    '(org-default-notes-file "~/notes.org")
-   '(org-export-html-style
-     "<link rel=\"stylesheet\" href=\"style.css\">")
+   '(org-html-style-default
+     "<link rel=\"stylesheet\" href=\"style.css\"/>")
    '(org-replace-disputed-keys t)
    '(org-todo-keywords '("TODO" "CANCELLED" "PROGRESSING" "DONE"))
    '(python-guess-indent nil)
