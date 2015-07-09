@@ -17,9 +17,3 @@ case "${CPUARCH}" in
 	  ;;
 esac
 SYSARCH="${SYSOSTYPE}-${CPUARCH}"
-
-function source-maybe () {
-  if [ -r "$1" ] ; then
-      source "$1"
-  fi
-}
