@@ -67,4 +67,25 @@
 ;; (yas-reload-all)
 ;; (yas-recompile-all)  ;; Generates a "compiled" snippet file.
 
+(defun wrap-lines-in-quotes (beg end &optional prefixarg)
+  "Wraps lines in quotes while quoting the string itself.  Uses
+regular emacs-lisp prin1 for quoting.  With a prefix arg, places
+prefix spaces into the quotes."
+  (interactive "*r\np")
+  (let ((re (if (zerop (logand 1 prefixarg)) "^\\(.*\\)$" "^\s*\\(.*\\)$"))
+        (line-prefix (if (zerop (logand 2 prefixarg)) "" "  "))
+        (line-trail (if (zerop (logand 4 prefixarg)) "" "\\n")))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region beg end)
+        (goto-char (point-min))
+        (while (search-forward-regexp re)
+          (replace-match
+           (concat "\"" line-prefix
+                   (substring (prin1-to-string
+                               (match-string-no-properties 1)) 1 -1)
+                   line-trail "\"")
+           t t nil 1))))))
+(global-set-key (kbd "C-M-\"") 'wrap-lines-in-quotes)
+
 (provide 'config-misc)
