@@ -21,6 +21,7 @@ $HOME/.local/bin/pool.deploy>$HOME/Pool/bin/pool.deploy
 $HOME/.local/bin/pool.manage>$HOME/Pool/bin/pool.manage
 $HOME/.local/bin/ruler2.clj>$HOME/Pool/bin/ruler2.clj
 $HOME/.local/bin/ruler.clj>$HOME/Pool/bin/ruler.clj
+$HOME/.local/bin/screen-init>$HOME/Pool/bin/screen-init
 $HOME/.local/bin/thesaurus.clj>$HOME/Pool/bin/thesaurus.clj
 $HOME/.local/bin/url_decode.clj>$HOME/Pool/bin/url_decode.clj
 $HOME/.local/bin/visit-in-screen>$HOME/Pool/bin/visit-in-screen

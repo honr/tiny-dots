@@ -36,4 +36,7 @@
   (lambda ()
     (interactive) (insert (format "<>")) (backward-char 1)))
 
+(when (require 'dart-mode nil t)
+  (add-to-list 'auto-mode-alist '("\\.dart\\'" . dart-mode)))
+
 (provide 'config-algol)
