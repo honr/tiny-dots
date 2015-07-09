@@ -20,7 +20,7 @@ key_bindings = \conf ->
    (emacs_keys ++
     [("M-e d", (setLayout (XMonad.layoutHook conf))),
      ("M-C-S-c", (spawn "chrome-tmp")),
-     ("M-y w", Util.XSelection.transformSafePromptSelection 
+     ("M-y w", Util.XSelection.transformSafePromptSelection
                (\s -> ("'http://en.wikipedia.org/wiki/Special:Search?search=" ++ s ++ "'"))
                "firefox")]))
 

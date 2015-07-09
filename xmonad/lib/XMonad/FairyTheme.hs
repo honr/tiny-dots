@@ -4,6 +4,7 @@ module XMonad.FairyTheme
        (color_theme,
         Colors (..),
         color_theme_light,
+        color_theme_light_wood,
         color_theme_dark,
         color_theme_grey,
         font_regular,
@@ -13,7 +14,7 @@ module XMonad.FairyTheme
 
 import qualified XMonad
 
-color_theme = color_theme_grey
+color_theme = color_theme_light_wood
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
@@ -34,15 +35,22 @@ color_theme_light = Colors { normal_border = "#AAAAAA",
                              dynamiclog_visible = "#444400",
                              dynamiclog_urgent = "#880000" }
 
+color_theme_light_wood = Colors { normal_border = "#b9a99f",
+                                  focused_border = "#683718",
+                                  term_background = [0xEE, 0xE0],
+                                  dynamiclog_current = "#683718",
+                                  dynamiclog_visible = "#444400",
+                                  dynamiclog_urgent = "#880000" }
+
 color_theme_dark = Colors { normal_border = "#000000",
                             focused_border = "#66BBFF", -- "#0088FF",
                             term_background = [0x18, 0x00],
                             dynamiclog_current = "green",
                             dynamiclog_visible = "yellow",
                             dynamiclog_urgent = "red" }
-                   
+
 color_theme_grey = Colors { normal_border = "#000000",
-                            focused_border = "#66BBFF", -- "#0088FF",
+                            focused_border = "#66BBFF",
                             term_background = [0x30, 0x20],
                             dynamiclog_current = "green",
                             dynamiclog_visible = "yellow",
