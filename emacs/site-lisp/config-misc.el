@@ -10,20 +10,13 @@
       uniquify-strip-common-suffix t
       uniquify-separator " *")
 
-(defun set-theme (kind)
+(defun set-theme (new-theme)
   (interactive)
-  (load-theme 'whitestone-serious t t)
-  (load-theme 'fruitsalad-dark t t)
-  (load-theme 'dark-forge t t)
-  (cond
-   ((eq kind :dark) (progn
-                      (disable-theme 'whitestone-serious)
-                      ;; (enable-theme 'fruitsalad-dark)
-                      (enable-theme 'dark-forge)))
-   ((eq kind :light) (progn
-                       ;; (disable-theme 'fruitsalad-dark)
-                       (disable-theme 'dark-forge)
-                       (enable-theme 'whitestone-serious)))))
+
+  (dolist (th custom-enabled-themes)
+    (disable-theme th))
+
+  (load-theme new-theme))
 
 (require 'calendar)
 (defun calendar-cursor-as-kill ()
@@ -56,15 +49,17 @@
 
 ;; yasnippet
 (require 'yasnippet nil t)
-(when (boundp 'yas-global-mode)
-  (setq yas-prompt-functions '(yas-completing-prompt)
-        yas-also-auto-indent-first-line t
-        yas-snippet-dirs (file-expand-wildcards
-                          (expand-file-name "~/.emacs.d/snippets/*")))
-  (yas-global-mode 1)
-  (global-set-key (kbd "C-x r '") 'yas-insert-snippet)
-  (global-set-key (kbd "C-x r C-'") 'yas-new-snippet)
-  (global-set-key (kbd "C-x r \"") 'yas-visit-snippet-file))
+(eval-after-load "yasnippet" ;; (boundp 'yas-global-mode)
+  '(progn
+     (setq yas-prompt-functions '(yas-completing-prompt)
+           yas-also-auto-indent-first-line t
+           yas-snippet-dirs (file-expand-wildcards
+                             (expand-file-name "~/.emacs.d/snippets/*")))
+     (yas-global-mode 1)
+     (global-set-key (kbd "C-x r '") 'yas-insert-snippet)
+     (global-set-key (kbd "C-x r C-'") 'yas-new-snippet)
+     (global-set-key (kbd "C-x r \"") 'yas-visit-snippet-file)))
+
 ;; Not sure in what situation these might become necessary:
 ;; (yas-reload-all)
 ;; (yas-recompile-all)  ;; Generates a "compiled" snippet file.

@@ -3,7 +3,7 @@
 (require 'cc-mode)
 ;; (defun config-c-mode-hook () (glasses-mode t) (subword-mode t))
 ;; (add-hook 'c-mode-common-hook 'config-c-mode-hook)
-(add-hook 'c-mode-common-hook (lambda () (flyspell-prog-mode)))
+;; (add-hook 'c-mode-common-hook (lambda () (flyspell-prog-mode)))
 
 (require 'go-mode)
 

@@ -39,3 +39,5 @@ term xterm-256color
 # %?%{.Rw}[:%u]%{-}%?
 
 caption always "%{-s .} %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.gW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
+
+# source ~/.screen/rc-${STY}

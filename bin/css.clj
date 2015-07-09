@@ -47,4 +47,9 @@
                              "background: " color)}
                  color]])]]))))
 
+(defn rgb-to-hsl {:cli {}}
+  [^String rgbs]
+  (doseq [rgb (clojure.string/split rgbs #"\s")]
+    (println rgb "->" (vec (map double (rose.ss-css/rgbhexstr-to-hsl rgb))))))
+
 (clu/run-command-maybe-ns *ns* "css.clj")
