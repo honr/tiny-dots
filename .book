@@ -32,6 +32,7 @@ $HOME/.local/bin/xinput-scroll-direction.sh>$HOME/Pool/bin/xinput-scroll-directi
 $HOME/.local/bin/xml-from-vector.clj>$HOME/Pool/bin/xml-from-vector.clj
 $HOME/.local/bin/xml-to-vector.clj>$HOME/Pool/bin/xml-to-vector.clj
 $HOME/.local/etc
+$HOME/.local/etc/Xresources-common>$HOME/Pool/etc/Xresources-common
 $HOME/.local/etc/bash
 $HOME/.local/etc/bash/ew.bash>$HOME/Pool/etc/bash/ew.bash
 $HOME/.local/etc/bash/gconftool.bash>$HOME/Pool/etc/bash/gconftool.bash
