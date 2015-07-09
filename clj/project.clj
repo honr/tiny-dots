@@ -4,6 +4,14 @@
                  [org.clojure/data.json "0.2.4"]
                  [org.clojure/data.csv "0.1.2"]
                  [org.clojure/java.jdbc "0.3.3"]
+
+                 ;; [org.clojure/core.unify "0.5.6"]
+                 ;; [org.clojure/core.cache "0.6.3"]
+                 ;; [org.clojure/tools.reader "0.8.3"]
+                 ;; [org.clojure/core.match "0.2.1"]
+                 ;; [org.clojure/core.typed "0.2.37"]
+                 ;; [org.clojure/tools.nrepl "0.2.3"]
+
                  ;; [swank-clojure "1.4.2"]
                  [org.mozilla/rhino "1.7R4"]
 
@@ -11,9 +19,9 @@
                  ;; [com.google.javascript/closure-compiler "r2388"]
                  [com.google.javascript/closure-compiler "v20131014"]
                  ;; [org.clojure/google-closure-library "0.0-2029-2"]
-                 [org.clojure/clojurescript "0.0-2156"]
+                 [org.clojure/clojurescript "0.0-2173"]
 
-                 [clj-http "0.7.9"]
+                 [clj-http "0.9.1"]
                  ;;;; FROM HERE:
                  ;; [org.apache.httpcomponents/httpclient "4.1.2"]
                  ;; [incanter/incanter-core "1.5.1"]
@@ -35,8 +43,8 @@
                  [compojure "1.1.6"]
                  [hiccup "1.0.5"]
                  ;; ;; [ring "0.3.8"]
-                 [ring/ring-jetty-adapter "1.2.1"]
-                 [ring/ring-servlet "1.2.1"]
+                 [ring/ring-jetty-adapter "1.2.2"]
+                 [ring/ring-servlet "1.2.2"]
                  ;; [clout "1.0.1"]
                  ;;;; UP TO HERE.
                  ;; [jgraph "5.13.0.0"]
