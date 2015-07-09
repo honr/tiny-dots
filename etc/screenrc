@@ -42,6 +42,6 @@ bell_msg "^Gbell in %n"
 # %?%{.Rw}[:%u]%{-}%?
 
 caption always "%{-s .}%{-s Y}$STY %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.gW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
-shell ${HOME}/.local/bin/bash
+shell ${HOME}/.local/bin/sh
 
 source ${HOME}/.screen/${STY}
