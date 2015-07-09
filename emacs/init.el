@@ -39,9 +39,7 @@
   ;; Add a "layer" of protection around ‘C-x C-c’.
   (global-unset-key (kbd "C-x C-c"))
   (global-set-key (kbd "C-x C-c C-x C-x C-c") 'save-buffers-kill-emacs)
-
-  (iswitchb-mode t) (setq iswitchb-max-to-show 10)
-
+  (icomplete-mode t)
   (savehist-mode t)
   (setq history-length 8192)
 
@@ -99,7 +97,6 @@
    '(glasses-uncapitalize-regexp "[a-zA-Z_]")
    '(indent-tabs-mode nil)
    ;; '(indicate-buffer-boundaries 'left)
-   '(iswitchb-default-method 'maybe-frame)
    ;; '(mouse-avoidance-mode 'banish)
    '(js-indent-level 2)
    '(mouse-wheel-progressive-speed nil)

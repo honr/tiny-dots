@@ -7,6 +7,9 @@
                             \& "&amp;"
                             \' "&apos;"
                             \" "&quot;"}))
+(defn- escape-value [s]
+  (clojure.string/escape s {\" "\\\""}))
+
 
 (declare print-node)
 (declare print-tree)
@@ -38,6 +41,9 @@
                         (str (.toUpperCase (.substring x 0 1))
                              (.substring x 1))))
                     (rest coll)))))))
+
+(def shortenable-tags-set
+  #{"br" "link" "hr" "img" "meta"})
 
 ;; TODO: this should be extensible by the library user.
 (defn- eval-fn-node
@@ -130,17 +136,17 @@
                   k-name))]
           (print
            (if v
-             (format " %s=\"%s\"" k-str (escape (eval-fn-node v)))
+             (format " %s=\"%s\"" k-str (escape-value (eval-fn-node v)))
              (format " %s" k-str)))))
 
-      (if (seq contents)
-        ;; Not an empty tag.
+      (if (or (seq contents)            ; Not an empty tag.
+              (not (shortenable-tags-set tag-name)))
         (do
           (print ">")
           (doseq [c contents] (print-tree c))
           (print (format "</%s>" tag-name)))
-        ;; Empty tag:
-        (print "/>")))
+        (print "/>")))                  ; Using short from for empty tags.
+
 
     ;; Tag is nil.  Print raw contents.
     (doseq [c contents] (print c))))
