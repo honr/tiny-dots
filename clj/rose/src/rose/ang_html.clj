@@ -59,6 +59,11 @@
         (for [script args]
           [:script {:src script} nil]))
 
+       'import
+       (str-tree
+        (for [imported-entry args]
+          [:link {:rel "import" :href imported-entry}]))
+
        'css
        (str-tree
         (for [stylesheet args]
