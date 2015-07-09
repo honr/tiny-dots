@@ -19,6 +19,7 @@ module XMonad.Fairy
        , topics_config
        , topics_list
        , topics_table
+       , workspace_tag_sep
        ) where
 
 -- XMonad:
