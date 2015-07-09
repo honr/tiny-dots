@@ -43,4 +43,4 @@ bell_msg "^Gbell in %n"
 
 caption always "%{-s .}%{-s Y}$STY %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.gW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
 
-source ~/.screen/${STY}
+source ${HOME}/.screen/${STY}

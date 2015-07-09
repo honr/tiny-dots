@@ -24,7 +24,10 @@ else ifeq ($(UNAME), Darwin)
 PLATFORM=mac
 LIBSWITCH=-dynamiclib
 LIBEXT := dylib
+JDKVERSION := $(shell basename /Library/Java/JavaVirtualMachines/*)
 INCLUDESJAVA := -Ibuild/include -I/usr/include -I/System//Library/Frameworks/JavaVM.framework/Headers -I/Library/Java/Home/include
+INCLUDESJAVA += -I/Library/Java/JavaVirtualMachines/$(JDKVERSION)/Contents/Home/include
+INCLUDESJAVA += -I/Library/Java/JavaVirtualMachines/$(JDKVERSION)/Contents/Home/include/darwin
 endif
 
 ifeq ($(UNAMEM), i686)

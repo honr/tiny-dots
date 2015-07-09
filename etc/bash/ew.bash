@@ -1,4 +1,4 @@
-function ew(){
+function ew() {
     emacsclient -nc $(which $1)
 }
 

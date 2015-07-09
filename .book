@@ -1,3 +1,4 @@
+$HOME/.Xresources>$HOME/Pool/etc/Xresources
 $HOME/.bash_profile>$HOME/Pool/etc/bash_profile
 $HOME/.emacs.d
 $HOME/.emacs.d/init.el>$HOME/Pool/emacs/init.el
@@ -19,9 +20,10 @@ $HOME/.local/bin/lein2>$HOME/Pool/bin/lein2
 $HOME/.local/bin/lein>$HOME/Pool/bin/lein
 $HOME/.local/bin/pool.deploy>$HOME/Pool/bin/pool.deploy
 $HOME/.local/bin/pool.manage>$HOME/Pool/bin/pool.manage
-$HOME/.local/bin/ruler2.clj>$HOME/Pool/bin/ruler2.clj
 $HOME/.local/bin/ruler.clj>$HOME/Pool/bin/ruler.clj
+$HOME/.local/bin/ruler2.clj>$HOME/Pool/bin/ruler2.clj
 $HOME/.local/bin/screen-init>$HOME/Pool/bin/screen-init
+$HOME/.local/bin/sx>$HOME/Pool/bin/sx
 $HOME/.local/bin/thesaurus.clj>$HOME/Pool/bin/thesaurus.clj
 $HOME/.local/bin/url_decode.clj>$HOME/Pool/bin/url_decode.clj
 $HOME/.local/bin/visit-in-screen>$HOME/Pool/bin/visit-in-screen
@@ -30,6 +32,7 @@ $HOME/.local/bin/xinput-scroll-direction.sh>$HOME/Pool/bin/xinput-scroll-directi
 $HOME/.local/bin/xml-from-vector.clj>$HOME/Pool/bin/xml-from-vector.clj
 $HOME/.local/bin/xml-to-vector.clj>$HOME/Pool/bin/xml-to-vector.clj
 $HOME/.local/etc
+$HOME/.local/etc/Xresources-common>$HOME/Pool/etc/Xresources-common
 $HOME/.local/etc/bash
 $HOME/.local/etc/bash/ew.bash>$HOME/Pool/etc/bash/ew.bash
 $HOME/.local/etc/bash/gconftool.bash>$HOME/Pool/etc/bash/gconftool.bash
@@ -45,8 +48,7 @@ $HOME/.local/share/java/project.clj>$HOME/Pool/clj/project.clj
 $HOME/.local/share/man
 $HOME/.local/share/man/man1
 $HOME/.local/share/man/man1/pool.deploy.1>$HOME/Pool/man/pool.deploy.1
-$HOME/Pool/bin/css.clj>$HOME/Pool/bin/css.clj
+$HOME/.local/src>$HOME/Lake/go
 $HOME/.pythonrc>$HOME/Pool/python/pythonrc
 $HOME/.screenrc>$HOME/Pool/etc/screenrc
 $HOME/.xmonad>$HOME/Pool/xmonad
-$HOME/.Xresources>$HOME/Pool/etc/Xresources

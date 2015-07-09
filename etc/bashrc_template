@@ -19,6 +19,7 @@ SYSARCH="${SYSOSTYPE}-${CPUARCH}"
 if [ -z "${MY_BASHRC_LOADED}" ] ; then
     export PATH="$HOME/.local/bin/$SYSARCH:$HOME/.local/bin:$PATH"
     export MANPATH="$HOME/.local/share/man:$MANPATH"
+    export GOPATH="$HOME/.local"
     export PYTHONSTARTUP="$HOME/.local/etc/pythonrc"
     export ALTERNATE_EDITOR=""
     export VISUAL="emacsclient"
