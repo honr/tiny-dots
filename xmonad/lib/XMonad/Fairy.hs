@@ -555,10 +555,13 @@ emacs_keys  =
 
    ("M-i 1", (Util.ExtensibleState.put color_theme_dark) >>
              (spawn "xrdb -merge .local/etc/Xresources-dark") >>
-             (spawn "emacsclient -e \"(set-theme :dark)\"")),
+             (spawn "emacsclient -e \"(set-theme 'dark-forge)\"")),
    ("M-i 2", (Util.ExtensibleState.put color_theme_light) >>
              (spawn "xrdb -merge .local/etc/Xresources-light") >>
-             (spawn "emacsclient -e \"(set-theme :light)\"")),
+             (spawn "emacsclient -e \"(set-theme 'whitestone-serious)\"")),
+   ("M-i 3", (Util.ExtensibleState.put color_theme_grey) >>
+             (spawn "xrdb -merge .local/etc/Xresources-dark") >>
+             (spawn "emacsclient -e \"(set-theme 'fruitsalad-dark)\"")),
 
    -- -- Commands
    -- , ("M-y", runCommand _commands)
@@ -644,8 +647,8 @@ manage_hook =
 fairy_config = (defaultConfig
         {borderWidth = 4,
          terminal = term_cmd,
-         normalBorderColor = normal_border color_theme,
-         focusedBorderColor = focused_border color_theme,
+         normalBorderColor = normal_border color_theme,  -- Well, this sucks!
+         focusedBorderColor = focused_border color_theme,  -- Same as this.
          workspaces = topics_list,
          layoutHook = layouts_config,
          modMask = mod4Mask,

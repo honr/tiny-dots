@@ -5,6 +5,7 @@ module XMonad.FairyTheme
         Colors (..),
         color_theme_light,
         color_theme_dark,
+        color_theme_grey,
         font_regular,
         font_scalable
        ) where
@@ -12,7 +13,7 @@ module XMonad.FairyTheme
 
 import qualified XMonad
 
-color_theme = color_theme_dark
+color_theme = color_theme_grey
 
 data Colors = Colors { normal_border :: String,
                        term_background :: [Double],
@@ -36,6 +37,13 @@ color_theme_light = Colors { normal_border = "#AAAAAA",
 color_theme_dark = Colors { normal_border = "#000000",
                             focused_border = "#66BBFF", -- "#0088FF",
                             term_background = [0x18, 0x00],
+                            dynamiclog_current = "green",
+                            dynamiclog_visible = "yellow",
+                            dynamiclog_urgent = "red" }
+                   
+color_theme_grey = Colors { normal_border = "#000000",
+                            focused_border = "#66BBFF", -- "#0088FF",
+                            term_background = [0x30, 0x20],
                             dynamiclog_current = "green",
                             dynamiclog_visible = "yellow",
                             dynamiclog_urgent = "red" }
