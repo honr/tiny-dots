@@ -35,6 +35,9 @@ defbce "on"
 # term screen-256color-bce
 term xterm-256color
 
+bell_msg "^Gbell in %n"
+# activity "^Gactivity in %n"
+
 # backtick 1 0 1 pwd
 # %?%{.Rw}[:%u]%{-}%?
 
