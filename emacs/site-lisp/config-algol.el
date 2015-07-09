@@ -19,4 +19,35 @@
                           turn-on-haskell-decl-scan))
 (add-to-list 'auto-mode-alist '("\\.hs\\'" . haskell-mode))
 
+(define-key c-mode-map (kbd "S-SPC") "_")
+(define-key c++-mode-map (kbd "S-SPC") "_")
+
+(define-key c++-mode-map (kbd "C-t") prefix-arg)
+(define-key c++-mode-map (kbd "C-t j")
+  (lambda ()
+    (interactive)
+    (let ((bounds (bounds-of-thing-at-point 'symbol)))
+      (when bounds
+        (insert (join-AaBb
+                 (delete-and-extract-region
+                  (car bounds) (cdr bounds))))))))
+
+(define-key c++-mode-map (kbd "C-t k")
+  (lambda ()
+    (interactive)
+    (let ((bounds (bounds-of-thing-at-point 'symbol)))
+      (when bounds
+        (insert (join-AA_BB
+                 (delete-and-extract-region
+                  (car bounds) (cdr bounds))))))))
+
+(define-key c++-mode-map (kbd "C-t l")
+  (lambda ()
+    (interactive)
+    (let ((bounds (bounds-of-thing-at-point 'symbol)))
+      (when bounds
+        (insert (join-aa-bb
+                 (delete-and-extract-region
+                  (car bounds) (cdr bounds))))))))
+
 (provide 'config-algol)
