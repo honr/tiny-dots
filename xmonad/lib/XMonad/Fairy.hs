@@ -1,26 +1,26 @@
 {-# LANGUAGE OverloadedStrings, DeriveDataTypeable #-}
 
-module XMonad.Fairy
-       (TopicItem (..)
-       , change_dir
-       , check_topics
-       , dynamiclog_current
-       , dynamiclog_urgent
-       , dynamiclog_visible
-       , emacs_keys
-       , fairy_config
-       , focused_border
-       , layouts_config
-       , manage_hook
-       , normal_border
-       , prompt_config
-       , run_colour_term
-       , term_cmd
-       , topics_config
-       , topics_list
-       , topics_table
-       , workspace_tag_sep
-       ) where
+module XMonad.Fairy (
+  TopicItem (..),
+  changeDir,
+  checkTopics,
+  dynamiclogCurrent,
+  dynamiclogUrgent,
+  dynamiclogVisible,
+  emacsKeys,
+  fairyConfig,
+  layoutsConfig,
+  XMonad.Fairy.manageHook,
+  XMonad.FairyTheme.normalBorder,
+  promptConfig,
+  runColourTerm,
+  termCmd,
+  editorCmd,
+  topicsConfig,
+  topicsList,
+  topicsTable,
+  workspaceTagSep
+  ) where
 
 -- XMonad:
 import XMonad hiding ( (|||) )
@@ -66,11 +66,9 @@ import qualified XMonad.Hooks.ManageDocks as Hooks.ManageDocks
 import qualified XMonad.Hooks.ManageHelpers as Hooks.ManageHelpers
 import qualified XMonad.Hooks.Minimize as Hooks.Minimize
 import qualified XMonad.Hooks.Place as Hooks.Place
-import qualified XMonad.Layout.Accordion as Layout.Accordion
 import qualified XMonad.Layout.BoringWindows as Layout.BoringWindows
 import qualified XMonad.Layout.Circle as Layout.Circle
 import qualified XMonad.Layout.Combo as Layout.Combo
-import qualified XMonad.Layout.Dishes as Layout.Dishes
 import qualified XMonad.Layout.FixedColumn as Layout.FixedColumn
 import qualified XMonad.Layout.Gaps as Layout.Gaps
 -- import qualified XMonad.Layout.GridVariants as Layout.GridVariants
@@ -109,158 +107,155 @@ import qualified XMonad.L as L
 import XMonad.FairyTheme
 
 -- Utils:
-data TopicItem = TopicItem {topicName :: Actions.TopicSpace.Topic,
-                            topicAccel :: String,
-                            topicDir :: String,
-                            topicAction :: X ()}
+data TopicItem = TopicItem {
+  topicName :: Actions.TopicSpace.Topic,
+  topicAccel :: String,
+  topicDir :: String,
+  topicAction :: X ()
+}
 
-topics_config =
-  (Actions.TopicSpace.TopicConfig
-    {Actions.TopicSpace.topicDirs =
-       (Map.fromList (map (\(TopicItem n _ d _) -> (n, d)) topics_table)),
-     Actions.TopicSpace.topicActions =
-       (Map.fromList (map (\(TopicItem n _ _ a) -> (n, a)) topics_table)),
-     Actions.TopicSpace.defaultTopicAction = const (return ()),
-     Actions.TopicSpace.defaultTopic = "*scratch*",
-     Actions.TopicSpace.maxTopicHistory = 128})
+topicsConfig = Actions.TopicSpace.TopicConfig {
+  Actions.TopicSpace.topicDirs =
+     (Map.fromList (map (\(TopicItem n _ d _) -> (n, d)) topicsTable)),
+  Actions.TopicSpace.topicActions =
+    (Map.fromList (map (\(TopicItem n _ _ a) -> (n, a)) topicsTable)),
+  Actions.TopicSpace.defaultTopicAction = const (return ()),
+  Actions.TopicSpace.defaultTopic = "*scratch*",
+  Actions.TopicSpace.maxTopicHistory = 128
+}
 
-topics_list = (map (\(TopicItem n _ _ _) -> n) topics_table)
-check_topics = Actions.TopicSpace.checkTopicConfig topics_list topics_config
+topicsList = map (\(TopicItem n _ _ _) -> n) topicsTable
+checkTopics = Actions.TopicSpace.checkTopicConfig topicsList topicsConfig
 
 -- Creates the workspace if needed.
-workspace_goto :: Actions.TopicSpace.Topic -> X ()
-workspace_goto t = (workspace_new t) >>
-                   (Actions.TopicSpace.switchTopic topics_config t)
+workspaceGoto :: Actions.TopicSpace.Topic -> X ()
+workspaceGoto t = (workspaceNew t) >>
+                  (Actions.TopicSpace.switchTopic topicsConfig t)
 
-workspace_shift :: Actions.TopicSpace.Topic -> X ()
-workspace_shift t = (workspace_new t) >> ((windows . StackSet.shift) t)
+workspaceShift :: Actions.TopicSpace.Topic -> X ()
+workspaceShift t = (workspaceNew t) >> ((windows . StackSet.shift) t)
 
 -- isWorkspace sc w =
 --   w `elem` map StackSet.tag (StackSet.current w : StackSet.visible w)
 
-workspace_tag_sep = '/'
-workspace_tag_groups = (Actions.CycleWS.WSTagGroup workspace_tag_sep)
-workspace_tag_non_groups =
+workspaceTagSep = '/'
+workspaceTagGroups = (Actions.CycleWS.WSTagGroup workspaceTagSep)
+workspaceTagNonGroups =
   (Actions.CycleWS.WSIs
    (do cur <- (fmap
                (groupName . StackSet.workspace . StackSet.current)
                (gets windowset))
        return ((\ x -> (cur /= x)) . groupName)))
-  where groupName = (takeWhile (/= workspace_tag_sep) . StackSet.tag)
+  where groupName = (takeWhile (/= workspaceTagSep) . StackSet.tag)
 
-workspace_new :: WorkspaceId -> X ()
-workspace_new w = do exists <- workspace_id_exist w
-                     if (not exists)
-                       then (Actions.DynamicWorkspaces.addHiddenWorkspace w)
-                       else return ()
+workspaceNew :: WorkspaceId -> X ()
+workspaceNew w = do exists <- workspaceIdExist w
+                    if (not exists)
+                    then (Actions.DynamicWorkspaces.addHiddenWorkspace w)
+                    else return ()
 
-workspace_id_exist :: WorkspaceId -> X Bool
-workspace_id_exist wid = do
+workspaceIdExist :: WorkspaceId -> X Bool
+workspaceIdExist wid = do
   xs <- get
-  return (workspace_id_exists wid (windowset xs))
+  return (workspaceIdExists wid (windowset xs))
 
-workspace_id_exists :: WorkspaceId ->
-                       StackSet.StackSet WorkspaceId l a s sd ->
-                       Bool
-workspace_id_exists wid ws = (elem wid (map StackSet.tag
-                                        (StackSet.workspaces ws)))
+workspaceIdExists :: WorkspaceId ->
+                     StackSet.StackSet WorkspaceId l a s sd ->
+                     Bool
+workspaceIdExists wid ws = elem wid (map StackSet.tag (StackSet.workspaces ws))
 
-change_dir c = (Prompt.Directory.directoryPrompt
-                c
-                "Directory: "
-                (liftIO . System.Directory.setCurrentDirectory))
+changeDir c = Prompt.Directory.directoryPrompt
+              c "Directory: " (liftIO . System.Directory.setCurrentDirectory)
 
 -- Prompt theme
-prompt_config = (Prompt.defaultXPConfig
-              {Prompt.font = font_regular,
-	       Prompt.bgColor = "#000",
-	       Prompt.fgColor = "#eee",
-               -- bgHLight = colorBlue,
-	       -- fgHLight = colorWhite,
-	       Prompt.borderColor = "#111",
-	       -- promptBorderWidth = 1,
-	       Prompt.height = 24,
-	       -- position = Top,
-	       -- historySize = 100,
-	       -- historyFilter = deleteConsecutive,
-	       -- Prompt.autoComplete = Just 1000000, -- wait 0.1 second
-               Prompt.promptKeymap =
-                 Map.union
-                 Prompt.defaultXPKeymap
-                 (Map.fromList
-                  [((controlMask, xK_b), Prompt.moveCursor Prompt.Prev),
-                   ((controlMask, xK_f), Prompt.moveCursor Prompt.Next),
-                   ((mod1Mask, xK_b), Prompt.moveWord Prompt.Prev),
-                   ((mod1Mask, xK_f), Prompt.moveWord Prompt.Next),
-                   ((mod1Mask, xK_d), Prompt.killWord Prompt.Next),
-                   ((mod1Mask, xK_BackSpace), Prompt.killWord Prompt.Prev),
-                   ((controlMask, xK_p), Prompt.moveHistory StackSet.focusUp'),
-                   ((controlMask, xK_n),
-                    Prompt.moveHistory StackSet.focusDown')]),
-               Prompt.searchPredicate = is_multifix_of})
+promptConfig = Prompt.defaultXPConfig {
+  Prompt.font = XMonad.FairyTheme.font,
+  Prompt.bgColor = promptBg colorTheme,
+  Prompt.fgColor = promptFg colorTheme,
+  -- bgHLight = colorBlue,
+  -- fgHLight = colorWhite,
+  Prompt.borderColor = promptBorder colorTheme,
+  -- promptBorderWidth = 1,
+  Prompt.height = 24,
+  -- position = Top,
+  -- historySize = 100,
+  -- historyFilter = deleteConsecutive,
+  -- Prompt.autoComplete = Just 1000000, -- wait 0.1 second
+  Prompt.promptKeymap =
+    Map.union
+    Prompt.defaultXPKeymap
+    (Map.fromList
+     [((controlMask, xK_b), Prompt.moveCursor Prompt.Prev),
+      ((controlMask, xK_f), Prompt.moveCursor Prompt.Next),
+      ((mod1Mask, xK_b), Prompt.moveWord Prompt.Prev),
+      ((mod1Mask, xK_f), Prompt.moveWord Prompt.Next),
+      ((mod1Mask, xK_d), Prompt.killWord Prompt.Next),
+      ((mod1Mask, xK_BackSpace), Prompt.killWord Prompt.Prev),
+      ((controlMask, xK_p), Prompt.moveHistory StackSet.focusUp'),
+      ((controlMask, xK_n),
+       Prompt.moveHistory StackSet.focusDown')]),
+  Prompt.searchPredicate = isMultifixOf
+}
 
-is_multifix_of :: String -> String -> Bool
-is_multifix_of needles haystack =
+isMultifixOf :: String -> String -> Bool
+isMultifixOf needles haystack =
   (and (map (flip List.isInfixOf haystack)
        (List.words needles)))
 
 -- Applications
-term_cmd = "xterm"  -- "uxterm -class XTerm"
-shell_cmd = "bash"
-run_term :: X ()
-run_term = (spawn term_cmd)
+termCmd = "xterm" -- "uxterm -class XTerm"
+shellCmd = "bash"
+runTerm :: X ()
+runTerm = (spawn termCmd)
 
-run_colour_term = do
-  [x, y] <- Util.ExtensibleState.gets term_background
-  dir <- Actions.TopicSpace.currentTopicDir topics_config
-  c <- (Actions.RandomBackground.randomBg'
-        (Actions.RandomBackground.HSV x y))
-  (spawn (term_cmd ++
-          " -bg " ++ c ++
-          " -e 'cd " ++ dir ++ " ; " ++ shell_cmd ++ "'"))
+runColourTerm = do
+  [x, y] <- Util.ExtensibleState.gets termBackground
+  dir <- Actions.TopicSpace.currentTopicDir topicsConfig
+  c <- Actions.RandomBackground.randomBg' (Actions.RandomBackground.HSV x y)
+  spawn
+    (termCmd ++ " -bg " ++ c ++ " -e 'cd " ++ dir ++ " ; " ++ shellCmd ++ "'")
 
-run_in_colour_term cmd = do
-    [x, y] <- Util.ExtensibleState.gets term_background
-    c <- (Actions.RandomBackground.randomBg'
-           (Actions.RandomBackground.HSV x y))
-    (spawn (term_cmd ++ " -bg " ++ c ++ " -e " ++ cmd))
+runInColourTerm cmd = do
+    [x, y] <- Util.ExtensibleState.gets termBackground
+    c <- Actions.RandomBackground.randomBg' (Actions.RandomBackground.HSV x y)
+    spawn (termCmd ++ " -bg " ++ c ++ " -e " ++ cmd)
 
-run_colour_screen_term = do
+runColourScreenTerm = do
   tag <- gets (StackSet.currentTag . windowset)
-  (run_in_colour_term ("screen -xR " ++ (takeWhile (/= workspace_tag_sep) tag)))
+  runInColourTerm ("screen -xR " ++ (takeWhile (/= workspaceTagSep) tag))
 
--- inTerminal cmd = (term_cmd ++ " -e " ++ cmd)
+-- inTerminal cmd = (termCmd ++ " -e " ++ cmd)
 -- saveSession cmd = "/bin/bash -c '" ++ cmd ++ "; /bin/bash'"
--- runInTerminal f = transformPromptSelection f (term_cmd ++ " -e ")
+-- runInTerminal f = transformPromptSelection f (termCmd ++ " -e ")
 -- pasteTerminal = runInTerminal saveSession
 -- manTerminal = runInTerminal manPage
 
-run_chat = (run_in_colour_term "ssh -t personal-server emacsclient -t")
+runChat = runInColourTerm "ssh -t personal-server emacsclient -t"
 
-run_clove_clojure = (run_in_colour_term "clove -i clojure")
-run_ghci = (run_in_colour_term "ghci")
-run_python_interactive = (run_in_colour_term "python -i")
+runCloveClojure = runInColourTerm "clove -i clojure"
+runGhci = runInColourTerm "ghci"
+runPythonInteractive = runInColourTerm "python -i"
 
-chrome_cmd = "chromium"
-run_chrome = (spawn chrome_cmd)
+chromeCmd = "chromium"
+runChrome = spawn chromeCmd
  -- TODO: This is unreliable; properly escape or use execve.
-run_in_chrome uri = (spawn (chrome_cmd ++ " --new-window '" ++ uri ++ "'"))
+runInChrome uri = spawn (chromeCmd ++ " --new-window '" ++ uri ++ "'")
 -- pasteChrome = safePromptSelection ChromeCmd
 
-firefox_cmd = "firefox"
-run_firefox :: X ()
-run_firefox = (spawn firefox_cmd)
-run_in_firefox uri = (spawn (firefox_cmd ++ " -new-window '" ++ uri ++ "'"))
+firefoxCmd = "firefox"
+runFirefox :: X ()
+runFirefox = spawn firefoxCmd
+runInFirefox uri = spawn (firefoxCmd ++ " -new-window '" ++ uri ++ "'")
 
 -- Using Gmail for mail and calendar.
-run_mail = (run_in_chrome "https://mail.google.com/mail")
-run_calendar = (run_in_chrome "https://www.google.com/calendar")
+runMail = runInChrome "https://mail.google.com/mail"
+runCalendar = runInChrome "https://www.google.com/calendar"
 
-run_cmd_line = (Prompt.Shell.shellPrompt prompt_config)
+runCmdLine = Prompt.Shell.shellPrompt promptConfig
 
-file_manager_cmd = "nautilus"
-run_file_manager :: X ()
-run_file_manager = (spawn file_manager_cmd)
+fileManagerCmd = "nautilus"
+runFileManager :: X ()
+runFileManager = spawn fileManagerCmd
 
 -- musicPlayerCmd = inTerminal "ncmpc"
 -- runMusicPlayer = spawn musicPlayerCmd
@@ -269,72 +264,69 @@ run_file_manager = (spawn file_manager_cmd)
 -- mixerCmd = inTerminal "alsamixer"
 -- runMixer = spawn mixerCmd
 
-restart_xmonad = (broadcastMessage ReleaseResources) >>
-                 (restart "xmonad" True)
+restartXmonad = (broadcastMessage ReleaseResources) >>
+                (restart "xmonad" True)
 
 -- rememberCmd = "/path/to/emacsclient-starter org-protocol:/remember:/t/foo/"
 -- -- for adding quick reminders to your agenda
 -- runRemember = spawn rememberCmd
 
-editor_cmd :: String
-editor_cmd = "emacsclient -nc"
+editorCmd = "emacsclient -nc"
 
-run_editor :: X ()
-run_editor = (spawn editor_cmd)
+runEditor :: X ()
+runEditor = spawn editorCmd
 
-run_editor_here :: X ()
-run_editor_here = (spawn (editor_cmd ++ " " ++ "."))
+runEditorHere :: X ()
+runEditorHere = spawn (editorCmd ++ " " ++ ".")
 
 -- Topics and Premade Workspaces
-topics_table :: [TopicItem]
-topics_table = [
-  TopicItem "*scratch*" "s" "~/tmp" (run_colour_term >> run_editor),
-  TopicItem "terminals" "r" "~" (Monad.replicateM_ 2 run_colour_term),
-  TopicItem "browse"    "y" "~" run_chrome,
-  TopicItem "irc" "i" "~" run_chat,
-  TopicItem "mail" "m" "~" run_mail,
-  TopicItem "agenda" "a" "~" ((spawn (editor_cmd ++ " ~/agenda.org")) >>
-                              (run_calendar))]
--- TODO: specify perworkspace layout in topics_table
+topicsTable :: [TopicItem]
+topicsTable = [
+  TopicItem "*scratch*" "s" "~/tmp" (runColourTerm >> runEditor),
+  TopicItem "terminals" "r" "~" (Monad.replicateM_ 2 runColourTerm),
+  TopicItem "browse"    "y" "~" runChrome,
+  TopicItem "irc" "i" "~" runChat,
+  TopicItem "mail" "m" "~" runMail,
+  TopicItem "agenda" "a" "~" ((spawn (editorCmd ++ " ~/agenda.org")) >>
+                              (runCalendar))
+  ]
+-- TODO: specify perworkspace layout in topicsTable
 
-layouts_config =
+layoutsConfig =
   Hooks.ManageDocks.avoidStruts
   (Layout.WindowNavigation.configurableNavigation
    Layout.WindowNavigation.noNavigateBorders
    (Layout.BoringWindows.boringWindows
     (Layout.Minimize.minimize
-     -- Layout.PerWorkspace.onWorkspace "agenda" layout_tiled2 $
-     -- Layout.PerWorkspace.onWorkspace "rtb/main" layout_grid $
+     -- Layout.PerWorkspace.onWorkspace "agenda" layoutTiled2 $
+     -- Layout.PerWorkspace.onWorkspace "rtb/main" layoutGrid $
      (Layout.Gaps.gaps [(Layout.Gaps.L, 0)]
-      (L.named "Based Columns" layout_based_columns |||
-       L.named "Fixed" layout_fixed |||
-       L.named "Tall" layout_tall |||
-       L.named "Tall Limited" (L.limit 5 layout_tall) |||
-       L.named "Wide" layout_wide |||
-       L.named "Wide Limited" (L.limit 5 layout_wide) |||
-       L.named "Multicol" layout_multicol |||
-       L.named "Tall3 Mid" layout_tall3mid |||
-       L.named "Tall3 Left" layout_tall3 |||
-       L.named "Grid" layout_grid |||
-       L.named "Isolated Left" layout_right_paned |||
+      (L.named "Based Columns" layoutBasedColumns |||
+       L.named "Fixed" layoutFixed |||
+       L.named "Tall" layoutTall |||
+       L.named "Tall Limited" (L.limit 5 layoutTall) |||
+       L.named "Wide" layoutWide |||
+       L.named "Wide Limited" (L.limit 5 layoutWide) |||
+       L.named "Multicol" layoutMulticol |||
+       L.named "Tall3 Mid" layoutTall3mid |||
+       L.named "Tall3 Left" layoutTall3 |||
+       L.named "Grid" layoutGrid |||
+       L.named "Isolated Left" layoutRightPaned |||
        L.named "Circle" Layout.Circle.Circle |||
        L.named "Circular" L.Circular |||
-       L.named "Dishes" layout_dishes |||
-       L.named "Accordion" Layout.Accordion.Accordion |||
        (Layout.NoBorders.noBorders Full))))))
 
-layout_tall = Layout.ResizableTile.ResizableTall 1 0.03 0.5 []
-layout_wide = Mirror (Layout.ResizableTile.ResizableTall 0 0.03 0.8 [])
-layout_based_columns =
+layoutTall = Layout.ResizableTile.ResizableTall 1 0.03 0.5 []
+layoutWide = Mirror (Layout.ResizableTile.ResizableTall 0 0.03 0.8 [])
+layoutBasedColumns =
   L.reflectVert
   (L.limit 5 (Mirror (Layout.ResizableTile.ResizableTall 1 0.03 0.2 [])))
-layout_tall3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
-layout_tall3mid = Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2)
-layout_grid = Layout.Grid.GridRatio 1.1
-layout_right_paned = layout_grid **||* layout_tall3
-layout_dishes = L.limit 5 (Layout.Dishes.Dishes 1 (1/5))
-layout_fixed = Layout.FixedColumn.FixedColumn 1 20 80 10
-layout_multicol = Layout.MultiColumns.multiCol [1, 1] 3 0.02 0.28
+layoutTall3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
+layoutTall3mid = Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2)
+layoutGrid = Layout.Grid.GridRatio 1.1
+layoutRightPaned = layoutGrid **||* layoutTall3
+layoutFixed = Layout.FixedColumn.FixedColumn 1 20 80 10
+layoutMulticol = Layout.MultiColumns.multiCol [1, 1] 3 0.02 0.28
 
 -- _onWorkspace t l = (Layout.PerWorkspace.onWorkspace
 --                       t
@@ -355,21 +347,21 @@ layout_multicol = Layout.MultiColumns.multiCol [1, 1] 3 0.02 0.28
 --       - Allow multiple (but this should really depend on the action we are taking).
 data WindowPrompt = Goto | Focus | FocusNonIconified | Bring
 instance Prompt.XPrompt WindowPrompt where
-  showXPrompt Goto = "Go to window: "  -- In any workspace
-  showXPrompt Focus = "Focus to window: "  -- In the same workspace
+  showXPrompt Goto = "Go to window: " -- In any workspace
+  showXPrompt Focus = "Focus to window: " -- In the same workspace
   showXPrompt FocusNonIconified = "Focus to non-iconified window: "
   showXPrompt Bring = "Bring window(s): "
   commandToComplete _ c = c
   nextCompletion _ = Prompt.getNextCompletion
 
-window_prompt :: WindowPrompt -> Prompt.XPConfig -> X ()
-window_prompt t c = do
+windowPrompt :: WindowPrompt -> Prompt.XPConfig -> X ()
+windowPrompt t c = do
   action <- case t of
-    Goto -> fmap gotoAction $ window_map pred
-    Focus -> fmap gotoAction $ window_map pred
-    FocusNonIconified -> fmap gotoAction $ window_map pred
-    Bring -> fmap gotoAction $ window_map pred
-  wm <- window_map pred
+    Goto -> fmap gotoAction $ windowMap pred
+    Focus -> fmap gotoAction $ windowMap pred
+    FocusNonIconified -> fmap gotoAction $ windowMap pred
+    Bring -> fmap gotoAction $ windowMap pred
+  wm <- windowMap pred
   Prompt.mkXPrompt t c (compList wm) action
     where
       winAction a m = flip whenJust (windows . a) . flip Map.lookup m
@@ -380,58 +372,56 @@ window_prompt t c = do
                       Map.toList) m
       pred x = case t of
         Goto -> True
-        Focus -> True  -- TODO: Should look at window state (Is in current WS).
+        Focus -> True -- TODO: Should look at window state (Is in current WS).
         FocusNonIconified -> True -- TODO: Should look at state.
         Bring -> True
 
 -- | A map from window names to Windows.
-window_map :: (Window -> Bool) -> X (Map.Map String Window)
-window_map pred = do
+windowMap :: (Window -> Bool) -> X (Map.Map String Window)
+windowMap pred = do
   ws <- gets windowset
   Map.fromList `fmap` concat `fmap` mapM keyValuePairs (StackSet.workspaces ws)
     where keyValuePairs ws =
             mapM (keyValuePair ws) (StackSet.integrate' (StackSet.stack ws))
-          keyValuePair ws w = flip (,) w `fmap` decorate_window_name ws w
+          keyValuePair ws w = flip (,) w `fmap` decorateWindowName ws w
 
 -- | Returns the window name as will be listed in dmenu.
 --   Lowercased, for your convenience (since dmenu is case-sensitive).
 --   Tagged with the workspace ID, to guarantee uniqueness, and to let the user
 --   know where he's going.
-decorate_window_name :: WindowSpace -> Window -> X String
-decorate_window_name ws w = do
+decorateWindowName :: WindowSpace -> Window -> X String
+decorateWindowName ws w = do
   name <- fmap (map Char.toLower . show) $ Util.NamedWindows.getName w
   return ("#" ++ StackSet.tag ws ++ " " ++ name)
 
-
-emacs_keys :: [(String, X())]
-emacs_keys  =
+emacsKeys :: [(String, X())]
+emacsKeys  =
   [ -- Applications
-    ("M-C-S-r", run_colour_term),
-    ("M-C-r", run_colour_screen_term),
+    ("M-C-S-r", runColourTerm),
+    ("M-C-r", runColourScreenTerm),
     -- ("M-v M-t", pasteTerminal),
     -- ("M-v M-y", pasteChrome),
     -- ("M-h n", manTerminal),
-    ("M-C-S-e", (spawn "gedit")),
-    ("M-C-e", run_editor),
-    -- ("M-C-S-e", run_editor_here),
-    ("M-C-c", run_chrome),
-    ("M-C-y", run_firefox),
-    ("M-C-u", run_clove_clojure),
-    ("M-C-S-u", run_python_interactive),
-    ("M-C-o", run_ghci),
-    ("M-S-1", run_cmd_line),
-    ("M-S-s", (change_dir prompt_config)),
-    ("M-C-t", run_file_manager)] ++
+    ("M-C-e", runEditor),
+    -- ("M-C-S-e", runEditorHere),
+    ("M-C-c", runChrome),
+    ("M-C-y", runFirefox),
+    ("M-C-u", runCloveClojure),
+    ("M-C-S-u", runPythonInteractive),
+    ("M-C-o", runGhci),
+    ("M-S-1", runCmdLine),
+    ("M-S-s", (changeDir promptConfig)),
+    ("M-C-t", runFileManager)] ++
 
   (map (\(TopicItem n k _ _) ->
-         ("M-d " ++ k, (workspace_goto n))) topics_table) ++
+         ("M-d " ++ k, workspaceGoto n)) topicsTable) ++
   (map (\(TopicItem n k _ _) ->
-         ("M-S-d " ++ k, (workspace_shift n))) topics_table) ++
+         ("M-S-d " ++ k, workspaceShift n)) topicsTable) ++
 
-  [("M-m", (withFocused Layout.Minimize.minimizeWindow)),
-   ("M-C-m", (withFocused (\ w -> (sendMessage
-                                   (Layout.Minimize.RestoreMinimizedWin w))))),
-   ("M-S-m", (sendMessage Layout.Minimize.RestoreNextMinimizedWin)),
+  [("M-m", withFocused Layout.Minimize.minimizeWindow),
+   ("M-C-m", withFocused
+             (\ w -> (sendMessage (Layout.Minimize.RestoreMinimizedWin w)))),
+   ("M-S-m", sendMessage Layout.Minimize.RestoreNextMinimizedWin),
 
    -- Layouts
    ("M-C-s", refresh),
@@ -450,7 +440,6 @@ emacs_keys  =
    ("M-e c", (sendMessage (JumpToLayout "Circle"))),
    ("M-e S-c", (sendMessage (JumpToLayout "Circular"))),
    ("M-e l", (sendMessage (JumpToLayout "Isolated Left"))),
-   ("M-e d", (sendMessage (JumpToLayout "Dishes"))),
    ("M-e s", (sendMessage (JumpToLayout "Fixed"))),
    ("M-e b", (sendMessage (JumpToLayout "Based Columns"))),
    ("M-e m", (sendMessage (JumpToLayout "Multicol"))),
@@ -460,22 +449,22 @@ emacs_keys  =
    ("M-e M-r M-t", (sendMessage (Layout.Gaps.IncGap 200 Layout.Gaps.L)))
   ] ++
 
-  (let key_dirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++
+  (let keyDirs = ["<Up>", "<Right>", "<Down>", "<Left>"] ++
                   ["p", "f", "n", "b"]
-       nav_dirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
+       navDirs = [Layout.WindowNavigation.U, Layout.WindowNavigation.R,
                    Layout.WindowNavigation.D, Layout.WindowNavigation.L]
-       floatsnap_dirs = [Actions.FloatSnap.U, Actions.FloatSnap.R,
+       floatsnapDirs = [Actions.FloatSnap.U, Actions.FloatSnap.R,
                          Actions.FloatSnap.D, Actions.FloatSnap.L]
-   in [("M-" ++ a, (sendMessage (Layout.WindowNavigation.Go b)))
-      | (a, b) <- zip key_dirs (cycle nav_dirs)] ++
-      [("M-S-" ++ a, (sendMessage (Layout.WindowNavigation.Swap b)))
-      | (a, b) <- zip key_dirs (cycle nav_dirs)] ++
-      [("M-C-" ++ a, (withFocused (Actions.FloatSnap.snapMove b Nothing)))
-      | (a, b) <- zip key_dirs (cycle floatsnap_dirs)] ++
-      [("M-M1-" ++ a, (withFocused (Actions.FloatSnap.snapGrow b Nothing)))
-      | (a, b) <- zip key_dirs (cycle floatsnap_dirs)] ++
-      [("M-M1-S-" ++ a, (withFocused (Actions.FloatSnap.snapShrink b Nothing)))
-      | (a, b) <- zip key_dirs (cycle floatsnap_dirs)]) ++
+   in [("M-" ++ a, sendMessage (Layout.WindowNavigation.Go b))
+      | (a, b) <- zip keyDirs (cycle navDirs)] ++
+      [("M-S-" ++ a, sendMessage (Layout.WindowNavigation.Swap b))
+      | (a, b) <- zip keyDirs (cycle navDirs)] ++
+      [("M-C-" ++ a, withFocused (Actions.FloatSnap.snapMove b Nothing))
+      | (a, b) <- zip keyDirs (cycle floatsnapDirs)] ++
+      [("M-M1-" ++ a, withFocused (Actions.FloatSnap.snapGrow b Nothing))
+      | (a, b) <- zip keyDirs (cycle floatsnapDirs)] ++
+      [("M-M1-S-" ++ a, withFocused (Actions.FloatSnap.snapShrink b Nothing))
+      | (a, b) <- zip keyDirs (cycle floatsnapDirs)]) ++
 
   -- ("M-<Tab>", (Layout.BoringWindows.focusDown)),
   -- ("M-S-<Tab>", (Layout.BoringWindows.focusUp)),
@@ -497,65 +486,59 @@ emacs_keys  =
    ("M-C-S-3", (screenWorkspace 2 >>=
                 flip whenJust (windows . StackSet.shift))),
 
-   ("M-S-=", (sendMessage Layout.ResizableTile.MirrorShrink)),
-   ("M-S--", (sendMessage Layout.ResizableTile.MirrorExpand)),
-   ("M--", (sendMessage Shrink)),
-   ("M-=", (sendMessage Expand)),
-   ("M-<F10>", (withFocused (windows . StackSet.sink))),
-   ("M-t", (withFocused (windows . StackSet.sink))),
-   ("M-M1-t", (Actions.WithAll.withAll' StackSet.sink)),
+   ("M-S-=", sendMessage Layout.ResizableTile.MirrorShrink),
+   ("M-S--", sendMessage Layout.ResizableTile.MirrorExpand),
+   ("M--", sendMessage Shrink),
+   ("M-=", sendMessage Expand),
+   ("M-<F10>", withFocused (windows . StackSet.sink)),
+   ("M-t", withFocused (windows . StackSet.sink)),
+   ("M-M1-t", Actions.WithAll.withAll' StackSet.sink),
 
-   ("M-[", (sendMessage (IncMasterN 1))),
-   ("M-]", (sendMessage (IncMasterN (-1)))),
+   ("M-[", sendMessage (IncMasterN 1)),
+   ("M-]", sendMessage (IncMasterN (-1))),
 
-   ("M-S-[", (Layout.LimitWindows.increaseLimit)),
-   ("M-S-]", (Layout.LimitWindows.decreaseLimit)),
+   ("M-S-[", Layout.LimitWindows.increaseLimit),
+   ("M-S-]", Layout.LimitWindows.decreaseLimit),
 
    -- Toggle full screen
    ("M-S-<F10>", (sendMessage Hooks.ManageDocks.ToggleStruts) >> (refresh)),
    ("M-S-t", (sendMessage Hooks.ManageDocks.ToggleStruts) >> (refresh)),
 
-   ("M-a", (Prompt.Workspace.workspacePrompt prompt_config workspace_goto)),
-   ("M-S-a", (Prompt.Workspace.workspacePrompt prompt_config workspace_shift)),
-   ("M-r", (window_prompt FocusNonIconified prompt_config)),
-   ("M-S-r", (window_prompt Goto prompt_config)),
-   ("M-M1-r", (window_prompt Focus prompt_config)),
+   ("M-a", Prompt.Workspace.workspacePrompt promptConfig workspaceGoto),
+   ("M-S-a", Prompt.Workspace.workspacePrompt promptConfig workspaceShift),
+   ("M-r", windowPrompt FocusNonIconified promptConfig),
+   ("M-S-r", windowPrompt Goto promptConfig),
+   ("M-M1-r", windowPrompt Focus promptConfig),
 
-   -- ("M-M1-r", (Prompt.Window.windowPromptGoto prompt_config)),
-   ("M-M1-S-r", (Prompt.Window.windowPromptBring prompt_config)),
+   -- ("M-M1-r", Prompt.Window.windowPromptGoto promptConfig),
+   ("M-M1-S-r", Prompt.Window.windowPromptBring promptConfig),
 
-   ("M-q", (kill)),
-   ("M-S-q", (Actions.WithAll.killAll))] ++
+   ("M-q", kill),
+   ("M-S-q", Actions.WithAll.killAll)] ++
 
-  [("M-j", (Actions.CycleWS.moveTo
-            Actions.CycleWS.Next workspace_tag_groups)),
-   ("M-k", (Actions.CycleWS.moveTo
-            Actions.CycleWS.Prev workspace_tag_groups)),
-   ("M-S-j", (Actions.CycleWS.shiftTo
-              Actions.CycleWS.Next workspace_tag_groups)),
-   ("M-S-k", (Actions.CycleWS.shiftTo
-              Actions.CycleWS.Prev workspace_tag_groups)),
+  [("M-j", Actions.CycleWS.moveTo Actions.CycleWS.Next workspaceTagGroups),
+   ("M-k", Actions.CycleWS.moveTo Actions.CycleWS.Prev workspaceTagGroups),
+   ("M-S-j", Actions.CycleWS.shiftTo Actions.CycleWS.Next workspaceTagGroups),
+   ("M-S-k", Actions.CycleWS.shiftTo Actions.CycleWS.Prev workspaceTagGroups),
 
-   ("M-.", (Actions.CycleWS.moveTo
-            Actions.CycleWS.Next workspace_tag_non_groups)),
-   ("M-,", (Actions.CycleWS.moveTo
-            Actions.CycleWS.Prev workspace_tag_non_groups)),
-   ("M-l", (Actions.CycleWS.moveTo
-            Actions.CycleWS.Next Actions.CycleWS.NonEmptyWS)),
-   ("M-h", (Actions.CycleWS.moveTo
-            Actions.CycleWS.Prev Actions.CycleWS.NonEmptyWS)),
-   ("M-S-l", (Actions.CycleWS.shiftTo
-              Actions.CycleWS.Next Actions.CycleWS.NonEmptyWS)),
-   ("M-S-h", (Actions.CycleWS.shiftTo
-              Actions.CycleWS.Prev Actions.CycleWS.NonEmptyWS)),
-   ("M-C-l", (Actions.CycleWS.moveTo
-              Actions.CycleWS.Next Actions.CycleWS.EmptyWS)),
-   ("M-C-h", (Actions.CycleWS.moveTo
-              Actions.CycleWS.Prev Actions.CycleWS.EmptyWS)),
-   ("M-C-S-l", (Actions.CycleWS.shiftTo
-                Actions.CycleWS.Next Actions.CycleWS.EmptyWS)),
-   ("M-C-S-h", (Actions.CycleWS.shiftTo
-                Actions.CycleWS.Prev Actions.CycleWS.EmptyWS))]
+   ("M-.", Actions.CycleWS.moveTo Actions.CycleWS.Next workspaceTagNonGroups),
+   ("M-,", Actions.CycleWS.moveTo Actions.CycleWS.Prev workspaceTagNonGroups),
+   ("M-l", Actions.CycleWS.moveTo
+             Actions.CycleWS.Next Actions.CycleWS.NonEmptyWS),
+   ("M-h", Actions.CycleWS.moveTo
+             Actions.CycleWS.Prev Actions.CycleWS.NonEmptyWS),
+   ("M-S-l", Actions.CycleWS.shiftTo
+               Actions.CycleWS.Next Actions.CycleWS.NonEmptyWS),
+   ("M-S-h", Actions.CycleWS.shiftTo
+              Actions.CycleWS.Prev Actions.CycleWS.NonEmptyWS),
+   ("M-C-l", Actions.CycleWS.moveTo
+              Actions.CycleWS.Next Actions.CycleWS.EmptyWS),
+   ("M-C-h", Actions.CycleWS.moveTo
+              Actions.CycleWS.Prev Actions.CycleWS.EmptyWS),
+   ("M-C-S-l", Actions.CycleWS.shiftTo
+                Actions.CycleWS.Next Actions.CycleWS.EmptyWS),
+   ("M-C-S-h", Actions.CycleWS.shiftTo
+                Actions.CycleWS.Prev Actions.CycleWS.EmptyWS)]
   ++
   [("M-`", Actions.CycleRecentWS.cycleRecentWS [xK_Super_L] xK_grave xK_Tab),
 
@@ -563,18 +546,18 @@ emacs_keys  =
                        (Actions.DynamicWorkspaces.removeWorkspace)),
    -- Buggy, messes with focus and creates flicker, needs to be fixed.
 
-   ("M-C-a", (Actions.DynamicWorkspaces.renameWorkspace prompt_config)),
+   ("M-C-a", Actions.DynamicWorkspaces.renameWorkspace promptConfig),
 
-   ("M-i 1", (Util.ExtensibleState.put color_theme_dark) >>
+   ("M-i 1", (Util.ExtensibleState.put colorThemeDark) >>
              (spawn "xrdb -merge .local/etc/Xresources-dark") >>
              (spawn "emacsclient -e \"(set-theme 'dark-forge)\"")),
-   ("M-i 2", (Util.ExtensibleState.put color_theme_light) >>
+   ("M-i 2", (Util.ExtensibleState.put colorThemeLight) >>
              (spawn "xrdb -merge .local/etc/Xresources-light") >>
              (spawn "emacsclient -e \"(set-theme 'whitestone-serious)\"")),
-   ("M-i 3", (Util.ExtensibleState.put color_theme_grey) >>
+   ("M-i 3", (Util.ExtensibleState.put colorThemeGrey) >>
              (spawn "xrdb -merge .local/etc/Xresources-dark") >>
              (spawn "emacsclient -e \"(set-theme 'fruitsalad-dark)\"")),
-  ("M-i 4", (Util.ExtensibleState.put color_theme_light_wood) >>
+   ("M-i 4", (Util.ExtensibleState.put colorThemeLightWood) >>
              (spawn "xrdb -merge .local/etc/Xresources-light") >>
              (spawn "emacsclient -e \"(set-theme 'light-balcony)\"")),
 
@@ -584,7 +567,7 @@ emacs_keys  =
    -- -- Remember
    -- , ("M-C-f", runRemember)
    -- xmonad
-   ("M-C-S-q", (restart_xmonad))]
+   ("M-C-S-q", restartXmonad)]
 
 -- NEW (for xmonad-0.11):
 -- -- Switch between layers
@@ -621,19 +604,19 @@ emacs_keys  =
 --   , ((modm .|. mod1Mask,    xK_d    ), windowToScreen D False)
 
 -- Mouse bindings
-mouse_bindings :: XConfig Layout ->
+mouseBindings :: XConfig Layout ->
                   Map.Map (ButtonMask, Button) (Window -> X ())
-mouse_bindings (XConfig {XMonad.modMask = modMask}) =
+mouseBindings (XConfig {XMonad.modMask = modMask}) =
                (Map.fromList
-                 ([((modMask, button1),
-                    (\w -> (focus w) >> (mouseMoveWindow w))),
-                   ((modMask, button3),
-                    (\w -> (focus w) >>
-                    (Actions.FlexibleResize.mouseResizeWindow w)))]))
+                ([((modMask, button1),
+                   (\w -> (focus w) >> (mouseMoveWindow w))),
+                  ((modMask, button3),
+                   (\w -> (focus w) >>
+                          (Actions.FlexibleResize.mouseResizeWindow w)))]))
 
 -- Application specific window handling
-manage_hook =
-  (manageHook defaultConfig
+manageHook =
+  (XMonad.manageHook defaultConfig
    <+> composeAll
    [Hooks.ManageHelpers.isFullscreen --> Hooks.ManageHelpers.doFullFloat,
     appName =? "Dialog" --> Hooks.ManageHelpers.doCenterFloat,
@@ -659,16 +642,16 @@ manage_hook =
   where unfloat = ask >>= (doF . StackSet.sink)
         roleName = stringProperty "WM_WINDOW_ROLE"
 
-
-fairy_config = (defaultConfig
-        {borderWidth = 4,
-         terminal = term_cmd,
-         normalBorderColor = normal_border color_theme,  -- Well, this sucks!
-         focusedBorderColor = focused_border color_theme,  -- Same as this.
-         workspaces = topics_list,
-         layoutHook = layouts_config,
-         modMask = mod4Mask,
-         logHook = Actions.GroupNavigation.historyHook,
-         handleEventHook = Hooks.Minimize.minimizeEventHook,
-         mouseBindings = mouse_bindings,
-         manageHook = manage_hook})
+fairyConfig = defaultConfig {
+  borderWidth = 4,
+  terminal = termCmd,
+  normalBorderColor = XMonad.FairyTheme.normalBorder colorTheme, -- Well, this sucks!
+  focusedBorderColor = XMonad.FairyTheme.focusedBorder colorTheme, -- Same as this.
+  workspaces = topicsList,
+  layoutHook = layoutsConfig,
+  modMask = mod4Mask,
+  logHook = Actions.GroupNavigation.historyHook,
+  handleEventHook = Hooks.Minimize.minimizeEventHook,
+  XMonad.mouseBindings = XMonad.Fairy.mouseBindings,
+  XMonad.manageHook = XMonad.Fairy.manageHook
+}

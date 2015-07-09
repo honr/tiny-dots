@@ -91,4 +91,11 @@ prefix spaces into the quotes."
 (when (require 'markdown-mode nil t)
   (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode)))
 
+(defun go-easy-on-remote ()
+  (interactive)
+  (remove-hook 'find-file-hooks 'vc-find-file-hook)
+  (setq vc-handled-backends nil)
+  (setq auto-save-timeout nil)
+  (setq auto-save-interval 0))
+
 (provide 'config-misc)
