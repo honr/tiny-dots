@@ -21,6 +21,9 @@ XTerm.VT100.translations: #override \
     Ctrl Shift <Key>n: spawn-new-terminal() \n\
     Shift <Key>space: string("_")
 
+! Refer to X Toolkit Intrinsics for more details.
+! Also, more possible keys can be found in /usr/include/X11/keysymdef.h
+
 XTerm*fontMenu.Label: Unicode Fonts
 XTerm.VT100.utf8:	1
 XTerm*utf8Title: true
