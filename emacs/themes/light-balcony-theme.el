@@ -2,12 +2,11 @@
   "A relatively serious looking color on light brown theme.")
 
 (let ((black "#000000")
-      (red "#d03030")
-      (dark-green "#1d6016")
-      (green "#31a325")
-      (blue "#1c9be4")
-
-      (yellowish-green "#a9d030")
+      (red "#bc2020")
+      (dark-green "#0c4b05")
+      (green "#27831d")
+      (blue "#097cbf")
+      (yellowish-green "#9cc913")
       (subtle-high "#e4cdc0")
       (yellow-high "#f4f0c5")
       (yellow "#fff94b")
@@ -16,11 +15,11 @@
       (white "#ffffff")
 
       (dark-brown "#431a00")
-      (brown "#683718") ;; foreground
+      (brown "#683718") ;; default foreground
       (light-brown "#977661")
       (comment "#b9a99f")
       (lighter-brown "#e1d5cf")
-      (light "#eae5e2")
+      (light "#eae5e2") ;; default background
       (lighter "#f2efee")
 
       (u0 "#0888a6")
@@ -33,7 +32,7 @@
   (custom-theme-set-faces
    'light-balcony
    `(default                       ((t (:foreground ,brown :background ,light))))
-   `(cursor                        ((t (:background ,black))))
+   `(cursor                        ((t (:background ,yellowish-green))))
    `(font-lock-builtin-face        ((t (:foreground ,blue))))
    `(font-lock-comment-face        ((t (:foreground ,comment :italic t))))
    `(font-lock-constant-face       ((t (:foreground ,blue))))
@@ -72,7 +71,7 @@
    `(secondary-selection           ((t (:foreground "#0088FF" :background "#AACCFF"))))
    `(show-paren-match-face         ((t (:foreground ,green :background "#BBFFBB"))))
    `(show-paren-mismatch-face      ((t (:foreground ,light :background ,red))))
-   `(paren-face                    ((t (:foreground ,comment))))
+   `(paren-face                    ((t (:foreground ,light-brown))))
    `(tool-bar                      ((t (:foreground "#777" :background "#111"))))
    `(tooltip                       ((t (:foreground "#777" :background "#333"))))
    `(widget-button-face            ((t (:foreground "#888" :bold t))))
