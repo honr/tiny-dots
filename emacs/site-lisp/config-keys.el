@@ -284,4 +284,7 @@
 (global-set-key (kbd "C-x f a") 'org-agenda)
 (global-set-key (kbd "C-x f c") 'calendar)
 
+(when (require 'magit nil t)
+  (global-set-key (kbd "C-x v b") 'magit-status))
+
 (provide 'config-keys)
