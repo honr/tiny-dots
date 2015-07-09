@@ -68,7 +68,6 @@
 
   (auto-insert-mode t)
   (setq auto-insert-directory "~/.emacs.d/insert/")
-  (add-to-list 'auto-insert-alist '(clojure-mode . "hello.clj"))
 
   (setq gdb-many-windows t)
   (setq gdb-show-main t)

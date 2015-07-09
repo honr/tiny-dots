@@ -68,4 +68,7 @@
         (substring s (length user-home-dir))
       s)))
 
+(defun guess-mode-for-file (filename)
+  (assoc-default filename auto-mode-alist 'string-match))
+
 (provide 'lib-sexp)

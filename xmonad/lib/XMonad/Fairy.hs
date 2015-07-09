@@ -69,11 +69,14 @@ import qualified XMonad.Hooks.Place as Hooks.Place
 import qualified XMonad.Layout.Accordion as Layout.Accordion
 import qualified XMonad.Layout.BoringWindows as Layout.BoringWindows
 import qualified XMonad.Layout.Circle as Layout.Circle
+import qualified XMonad.Layout.Dishes as Layout.Dishes
+import qualified XMonad.Layout.FixedColumn as Layout.FixedColumn
 import qualified XMonad.Layout.Gaps as Layout.Gaps
 -- import qualified XMonad.Layout.GridVariants as Layout.GridVariants
 import qualified XMonad.Layout.Grid as Layout.Grid
 import qualified XMonad.Layout.LimitWindows as Layout.LimitWindows
 import qualified XMonad.Layout.Minimize as Layout.Minimize
+import qualified XMonad.Layout.MultiColumns as Layout.MultiColumns
 import qualified XMonad.Layout.NoBorders as Layout.NoBorders
 import qualified XMonad.Layout.PerWorkspace as Layout.PerWorkspace
 import qualified XMonad.Layout.Renamed as Layout.Renamed
@@ -100,6 +103,7 @@ import qualified XMonad.Util.WindowProperties as Util.WindowProperties
 import qualified XMonad.Util.WorkspaceCompare as Util.WorkspaceCompare
 import qualified XMonad.Util.XSelection as Util.XSelection
 
+import qualified XMonad.L as L
 import XMonad.FairyTheme
 
 -- Utils:
@@ -126,7 +130,8 @@ check_topics = Actions.TopicSpace.checkTopicConfig topics_list topics_config
 
 -- Creates the workspace if needed.
 workspace_goto :: Actions.TopicSpace.Topic -> X ()
-workspace_goto t = (workspace_new t) >> (Actions.TopicSpace.switchTopic topics_config t)
+workspace_goto t = (workspace_new t) >>
+                   (Actions.TopicSpace.switchTopic topics_config t)
 
 workspace_shift :: Actions.TopicSpace.Topic -> X ()
 workspace_shift t = (workspace_new t) >> ((windows . StackSet.shift) t)
@@ -135,12 +140,13 @@ workspace_shift t = (workspace_new t) >> ((windows . StackSet.shift) t)
 
 workspace_tag_sep = '/'
 workspace_tag_groups = (Actions.CycleWS.WSTagGroup workspace_tag_sep)
-workspace_tag_non_groups = (Actions.CycleWS.WSIs
-                            (do cur <- (fmap
-                                         (groupName . StackSet.workspace . StackSet.current)
-                                         (gets windowset))
-                                return ((\ x -> (cur /= x)) . groupName)))
-                          where groupName = (takeWhile (/= workspace_tag_sep) . StackSet.tag)
+workspace_tag_non_groups = 
+  (Actions.CycleWS.WSIs
+   (do cur <- (fmap
+               (groupName . StackSet.workspace . StackSet.current)
+               (gets windowset))
+       return ((\ x -> (cur /= x)) . groupName)))
+  where groupName = (takeWhile (/= workspace_tag_sep) . StackSet.tag)
 
 workspace_new :: WorkspaceId -> X ()
 workspace_new w = do exists <- workspace_id_exist w
@@ -304,29 +310,39 @@ layouts_config =
      -- Layout.PerWorkspace.onWorkspace "agenda" layout_tiled2 $
      -- Layout.PerWorkspace.onWorkspace "rtb/main" layout_grid $
      (Layout.Gaps.gaps [(Layout.Gaps.L, 0)]
-      (layout_tiled2 |||
+      (layout_tiled_fixed_2 |||
+       layout_tiled2 |||
        (Layout.Renamed.renamed [Layout.Renamed.Replace "Tall2-Limited"]
         (Layout.LimitWindows.limitWindows 5 layout_tiled2)) |||
 
        (Mirror layout_tiled2) |||
 
-       (Layout.Renamed.renamed [Layout.Renamed.Replace "Wide2-Limited"]
+       (L.named "Wide2-Limited"
         (Layout.LimitWindows.limitWindows 5 (Mirror layout_tiled2))) |||
+       layout_multicol |||
        layout_tiled3 |||
        layout_tiled3mid |||
        layout_grid |||
        layout_right_paned |||
        Layout.Circle.Circle |||
+       (L.named "Circular" L.Circular) |||
+       layout_dishes |||
        Layout.Accordion.Accordion |||
        (Layout.NoBorders.noBorders Full))))))
 
 layout_tiled2 = Tall 1 (3/100) (1/2)
 layout_tiled3 = Layout.ThreeColumns.ThreeCol 1 (3/100) (1/2)
 layout_tiled3mid = Layout.ThreeColumns.ThreeColMid 1 (3/100) (1/2)
-layout_grid = (Layout.Renamed.renamed [Layout.Renamed.Replace "Grid"]
-                (Layout.Grid.GridRatio 1.1))
-layout_right_paned = (Layout.Renamed.renamed [Layout.Renamed.Replace "Isolated Left"]
-                 (layout_grid ***||** layout_tiled3))
+layout_grid = L.named "Grid" (Layout.Grid.GridRatio 1.1)
+layout_right_paned = (L.named "Isolated Left"
+                      (layout_grid ***||** layout_tiled3))
+layout_dishes = (L.named "Dishes"
+                 (Layout.LimitWindows.limitWindows 5
+                  (Layout.Dishes.Dishes 1 (1/5))))
+layout_tiled_fixed_2 = (L.named "Fixed"
+                        (Layout.FixedColumn.FixedColumn 1 20 80 10))
+layout_multicol = (L.named "Multicol"
+                   (Layout.MultiColumns.multiCol [1, 1] 3 0.02 0.28))
 
 -- _layoutTable = (("1", "Tall2", _tiled2),
 --                 ("S-1", "Tall2-Limited", (Layout.LimitWindows.limitWindows 5 _tiled2)),
@@ -448,7 +464,11 @@ emacs_keys  =
    ("M-e 3", (sendMessage (JumpToLayout "ThreeCol"))),
    ("M-e g", (sendMessage (JumpToLayout "Grid"))),
    ("M-e c", (sendMessage (JumpToLayout "Circle"))),
+   ("M-e S-c", (sendMessage (JumpToLayout "Circular"))),
    ("M-e l", (sendMessage (JumpToLayout "Isolated Left"))),
+   ("M-e d", (sendMessage (JumpToLayout "Dishes"))),
+   ("M-e s", (sendMessage (JumpToLayout "Fixed"))),
+   ("M-e m", (sendMessage (JumpToLayout "Multicol"))),
 
    ("M-e r", (sendMessage (Layout.Gaps.ToggleGaps))),
    ("M-e M-r M-e", (sendMessage (Layout.Gaps.DecGap 200 Layout.Gaps.L))),

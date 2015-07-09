@@ -1,7 +1,7 @@
 $HOME/.bash_profile>$HOME/Pool/etc/bash_profile
 $HOME/.emacs.d
 $HOME/.emacs.d/init.el>$HOME/Pool/emacs/init.el
-$HOME/.emacs.d/insert>$HOME/Pool/emacs/insert
+$HOME/.emacs.d/insert
 $HOME/.emacs.d/site-lisp
 $HOME/.emacs.d/site-lisp/pool>$HOME/Pool/emacs/site-lisp
 $HOME/.emacs.d/themes>$HOME/Pool/emacs/themes
