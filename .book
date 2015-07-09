@@ -41,6 +41,8 @@ $HOME/.local/bin/xml-to-vector.clj>$HOME/Pool/bin/xml-to-vector.clj
 $HOME/.local/etc
 $HOME/.local/etc/Xresources-common>$HOME/Pool/etc/Xresources-common
 $HOME/.local/etc/bash
+$HOME/.local/etc/bash/alias.bash>$HOME/Pool/etc/bash/alias.bash
+$HOME/.local/etc/bash/term.bash>$HOME/Pool/etc/bash/term.bash
 $HOME/.local/etc/bash/gconftool.linux>$HOME/Pool/etc/bash/gconftool.linux
 $HOME/.local/etc/bash/generic.clj.bash>$HOME/Pool/etc/bash/generic.clj.bash
 $HOME/.local/etc/bash/gsettings.linux>$HOME/Pool/etc/bash/gsettings.linux

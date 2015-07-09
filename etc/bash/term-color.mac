@@ -1,13 +1,10 @@
 # -*- Mode: Shell-Script -*-
 
-color_prompt=
-case "$TERM" in
-	xterm-color|xterm-*color) color_prompt=yes;;
-  screen-color|screen-*color) color_prompt=yes;;
-esac
-if [ "$color_prompt" = yes ] ; then
-	  PS1='\[\033]0;\u@\h:\w $(date +%H:%M:%S)\007\]\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]\$ '
-else
-	PS1='\u@\h:\w\$ '
-fi
-unset color_prompt
+# Requires term.bash
+
+export PROMPT_COMMAND="prompt-update"
+prepare-for-prompt-update-ps1
+function prompt-update () {
+  history -a
+  prompt-update-ps1
+}

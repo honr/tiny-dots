@@ -95,9 +95,11 @@
    '(glasses-uncapitalize-p t)
    '(glasses-uncapitalize-regexp "[a-zA-Z_]")
    '(indent-tabs-mode nil)
-   ;; '(indicate-buffer-boundaries 'left)
+   '(indicate-buffer-boundaries 'left)
    ;; '(mouse-avoidance-mode 'banish)
    '(css-indent-offset 2)
+   '(icomplete-show-matches-on-no-input t)
+   '(icomplete-prospects-height 1)
    '(js-indent-level 2)
    '(major-mode 'org-mode)
    '(mouse-wheel-progressive-speed nil)
@@ -116,9 +118,7 @@
    '(vc-follow-symlinks t)
    '(view-read-only t))
 
-  (add-hook 'prog-mode-hook
-            (lambda ()
-              (setq show-trailing-whitespace t)))
+  (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
   (defun go-easy-on-remote ()
     (interactive)
@@ -139,7 +139,5 @@
   (require 'config-lisp nil t)
   (require 'config-tex nil t)
   (require 'config-algol nil t)
-  ;; Site-specific configurations.
-  (require 'config-site nil t)
-  ;; Host-specific configurations.
-  (require 'config-host nil t))
+  (require 'config-site nil t)          ; Site-specific configurations.
+  (require 'config-host nil t))         ; Host-specific configurations.
