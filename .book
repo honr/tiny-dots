@@ -5,6 +5,7 @@ $HOME/.emacs.d/init.el>$HOME/Pool/emacs/init.el
 $HOME/.emacs.d/insert
 $HOME/.emacs.d/site-lisp
 $HOME/.emacs.d/site-lisp/pool>$HOME/Pool/emacs/site-lisp
+$HOME/.emacs.d/themes/light-balcony-theme.el>$HOME/Pool/emacs/themes/light-balcony-theme.el
 $HOME/.emacs.d/themes>$HOME/Pool/emacs/themes
 $HOME/.fonts.conf>$HOME/Pool/etc/fonts.conf
 $HOME/.gnomerc>$HOME/Pool/etc/gnomerc
