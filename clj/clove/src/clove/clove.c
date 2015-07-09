@@ -106,9 +106,9 @@ int main (int argc, char* argv[], char** envp) {
   if (argc <= 1) {
     mode = 'i';
     opt_keep_processing = false;
-  } else if ((argv[1][0] != '-') && (argv[1][0] != ':') && (argv[1][0] != '+'))
-  // jump right into client mode if no option is provided.
-  {
+  } else if ((argv[1][0] != '-') && (argv[1][0] != ':') &&
+             (argv[1][0] != '+')) {
+    // jump right into client mode if no option is provided.
     opt_keep_processing = false;
   }
 
@@ -159,22 +159,19 @@ int main (int argc, char* argv[], char** envp) {
     }
     char* argbuf = malloc (4096);  // TODO: fix hardcoded size
     char* argline;
-    if (!fgets (argbuf, 4096,
-                file_in))  // discard the first line. TODO: fix hardcoded size
-    {
+    if (!fgets (argbuf, 4096, file_in)) {
+      // discard the first line. TODO: fix hardcoded size
       exit (1);
     }
-    if (!fgets (argbuf, 4096, file_in))  // TODO: fix hardcoded size
-    {
+    // TODO: fix hardcoded size
+    if (!fgets (argbuf, 4096, file_in)) {
       exit (1);
     }
     if ((argline = strstr (argbuf, "-*- |"))) {
-      argline += 5;
-    }  // skip over it
-    else if ((argline = strstr (argbuf, "|"))) {
-      argline += 1;
-    }  // skip over it
-    else {
+      argline += 5;  // skip over it
+    } else if ((argline = strstr (argbuf, "|"))) {
+      argline += 1;  // skip over it
+    } else {
       fprintf (stderr,
                "The second line in file:\n   `%s'\n"
                "should indicate the service using `|'.\nFor exmaple:\n"
