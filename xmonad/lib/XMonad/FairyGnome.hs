@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module XMonad.FairyGnome
-       (gnome_register,
-        pretty_printer,
-        get_well_known_name) where
+       (gnomeRegister,
+        prettyPrinter,
+        getWellKnownName) where
 
 -- XMonad:
 import qualified XMonad
@@ -16,8 +16,8 @@ import qualified XMonad.Util.Run as Util.Run
 
 import XMonad.FairyTheme
 
-gnome_register :: XMonad.MonadIO m => m ()
-gnome_register =
+gnomeRegister :: XMonad.MonadIO m => m ()
+gnomeRegister =
   (XMonad.io
     (do
        x <- (fmap (lookup "DESKTOP_AUTOSTART_ID")
@@ -33,32 +33,33 @@ gnome_register =
                              "string:" ++ sessionId]))))
 
 
-pretty_printer :: DBus.Client.Client -> Hooks.DynamicLog.PP
-pretty_printer dbus = Hooks.DynamicLog.defaultPP
-    { Hooks.DynamicLog.ppOutput   = dbus_output dbus
-    , Hooks.DynamicLog.ppTitle    = pango_sanitize
-    , Hooks.DynamicLog.ppCurrent  = ((pango_color (dynamiclog_current color_theme)) .
-                                     Hooks.DynamicLog.wrap "[" "]" .
-                                     pango_sanitize)
-    , Hooks.DynamicLog.ppVisible  = ((pango_color (dynamiclog_visible color_theme)) .
-                                     Hooks.DynamicLog.wrap "(" ")" .
-                                     pango_sanitize)
-    , Hooks.DynamicLog.ppHidden   = const ""
-    , Hooks.DynamicLog.ppUrgent   = (pango_color (dynamiclog_urgent color_theme))
-    , Hooks.DynamicLog.ppLayout   = ((Hooks.DynamicLog.wrap "<span weight='normal'>" "</span>") . 
-                                     pango_sanitize) -- const ""
-    , Hooks.DynamicLog.ppSep      = " ┆ "}
+prettyPrinter :: DBus.Client.Client -> Hooks.DynamicLog.PP
+prettyPrinter dbus = Hooks.DynamicLog.defaultPP {
+  Hooks.DynamicLog.ppOutput   = dbusOutput dbus,
+  Hooks.DynamicLog.ppTitle    = pangoSanitize,
+  Hooks.DynamicLog.ppCurrent  = (pangoColor (dynamiclogCurrent colorTheme)) .
+                                (Hooks.DynamicLog.wrap "[" "]") .
+                                pangoSanitize,
+  Hooks.DynamicLog.ppVisible  = (pangoColor (dynamiclogVisible colorTheme)) .
+                                (Hooks.DynamicLog.wrap "(" ")") .
+                                pangoSanitize,
+  Hooks.DynamicLog.ppHidden   = const "",
+  Hooks.DynamicLog.ppUrgent   = pangoColor (dynamiclogUrgent colorTheme),
+  Hooks.DynamicLog.ppLayout   = (Hooks.DynamicLog.wrap "<span weight='normal'>" "</span>") .
+                                pangoSanitize, -- const ""
+  Hooks.DynamicLog.ppSep      = " ┆ "
+  }
 
-get_well_known_name :: DBus.Client.Client -> IO ()
-get_well_known_name dbus = do
+getWellKnownName :: DBus.Client.Client -> IO ()
+getWellKnownName dbus = do
   DBus.Client.requestName dbus (DBus.busName_ "org.xmonad.Log")
                 [DBus.Client.nameAllowReplacement,
                  DBus.Client.nameReplaceExisting,
                  DBus.Client.nameDoNotQueue]
   return ()
 
-dbus_output :: DBus.Client.Client -> String -> IO ()
-dbus_output dbus str =
+dbusOutput :: DBus.Client.Client -> String -> IO ()
+dbusOutput dbus str =
   DBus.Client.emit dbus
   (DBus.signal
    "/org/xmonad/Log"
@@ -66,14 +67,14 @@ dbus_output dbus str =
    "Update") {DBus.signalBody =
                  [DBus.toVariant ("<b>" ++ (UTF8.decodeString str) ++ "</b>")]}
 
-pango_color :: String -> String -> String
-pango_color fg = Hooks.DynamicLog.wrap left right
+pangoColor :: String -> String -> String
+pangoColor fg = Hooks.DynamicLog.wrap left right
   where
     left  = "<span foreground='" ++ fg ++ "'>"
     right = "</span>"
 
-pango_sanitize :: String -> String
-pango_sanitize = foldr sanitize ""
+pangoSanitize :: String -> String
+pangoSanitize = foldr sanitize ""
   where
     sanitize '>'  xs = "&gt;" ++ xs
     sanitize '<'  xs = "&lt;" ++ xs

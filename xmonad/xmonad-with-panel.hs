@@ -14,10 +14,10 @@ import XMonad.FairyTheme
 
 import qualified XMonad.Util.XSelection as Util.XSelection
 
-key_bindings :: XConfig Layout -> Map.Map (KeyMask, KeySym) (X())
-key_bindings = \conf ->
+keyBindings :: XConfig Layout -> Map.Map (KeyMask, KeySym) (X())
+keyBindings = \conf ->
   (Util.EZConfig.mkKeymap conf
-   (emacs_keys ++
+   (emacsKeys ++
     [("M-e d", (setLayout (XMonad.layoutHook conf))),
      ("M-C-S-c", (spawn "chrome-tmp")),
      ("M-y w", Util.XSelection.transformSafePromptSelection
@@ -32,15 +32,15 @@ main = do
   --             " " ++
   --             home ++ "/.xmonad/xmobar.hs"))
   dbus <- DBus.Client.connectSession
-  get_well_known_name dbus
-  check_topics
+  getWellKnownName dbus
+  checkTopics
   liftIO (System.Directory.setCurrentDirectory home)
   (xmonad
     (Hooks.EwmhDesktops.ewmh
-      (fairy_config
-        {keys = key_bindings,
-         logHook = Hooks.DynamicLog.dynamicLogWithPP (pretty_printer dbus) >>
-                   logHook fairy_config,
+      (fairyConfig
+        {keys = keyBindings,
+         logHook = Hooks.DynamicLog.dynamicLogWithPP (prettyPrinter dbus) >>
+                   logHook fairyConfig,
          handleEventHook = Hooks.EwmhDesktops.ewmhDesktopsEventHook >>
-                           handleEventHook fairy_config,
-         startupHook = gnome_register >> startupHook fairy_config})))
+                           handleEventHook fairyConfig,
+         startupHook = gnomeRegister >> startupHook fairyConfig})))
