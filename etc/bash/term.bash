@@ -30,7 +30,7 @@ function prepare-for-prompt-update-ps1 () {
   local plain_prompt='{{chroot}}\u@\h:{{branch}}\w {{date}}'
   case "$TERM" in
     xterm-*color) use_color_prompt=t;;
-    screen-*color) use_color_prompt=t;;
+    screen-*color|screen) use_color_prompt=t;;
   esac
 
   if [ -z "$use_color_prompt" ]; then

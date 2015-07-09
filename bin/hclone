@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Clone a repository from github into an appropriate location.
+GITHUB_POOL="$HOME/Lake/github"
+
+function clone() {
+    local github_subpath="$1"
+    local local_path="$GITHUB_POOL/$github_subpath"
+    if [ -e "$local_path" ] ; then
+        echo "local path ($local_path) already exists.";
+        exit 1;
+    fi
+    mkdir -p "$local_path"
+    cd "$GITHUB_POOL"
+    git clone "git://github.com/$github_subpath" "$github_subpath"
+}
+
+clone "$@"

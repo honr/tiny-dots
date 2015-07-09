@@ -4,22 +4,19 @@
                  [org.clojure/data.json "0.2.4"]
                  [org.clojure/data.csv "0.1.2"]
                  [org.clojure/java.jdbc "0.3.3"]
-
-                 ;; [org.clojure/core.unify "0.5.6"]
-                 ;; [org.clojure/core.cache "0.6.3"]
-                 ;; [org.clojure/tools.reader "0.8.3"]
-                 ;; [org.clojure/core.match "0.2.1"]
-                 ;; [org.clojure/core.typed "0.2.37"]
-                 ;; [org.clojure/tools.nrepl "0.2.3"]
+                 [org.clojure/core.cache "0.6.3"]
+                 [org.clojure/core.typed "0.2.44"]
+                 [org.clojure/tools.cli "0.3.1"]
+                 [org.clojure/tools.nrepl "0.2.3"]
 
                  ;; [swank-clojure "1.4.2"]
                  [org.mozilla/rhino "1.7R4"]
 
                  ;; For ClojsureScript:
                  ;; [com.google.javascript/closure-compiler "r2388"]
-                 [com.google.javascript/closure-compiler "v20131014"]
+                 [com.google.javascript/closure-compiler "v20140407"]
                  ;; [org.clojure/google-closure-library "0.0-2029-2"]
-                 [org.clojure/clojurescript "0.0-2173"]
+                 [org.clojure/clojurescript "0.0-2202"]
 
                  [clj-http "0.9.1"]
                  ;;;; FROM HERE:
@@ -33,7 +30,7 @@
                  ;; [commons-fileupload "1.2.2"]
                  ;; ;; [commons-fileupload "1.2.1" :classifier "javadoc"]
                  ;; [commons-io "2.0.1"] ;; 1.4
-                 [com.google.guava/guava "16.0.1"]
+                 [com.google.guava/guava "17.0"]
                  ;; [javax.mail/mail "1.4.5"]
                  ;; [org.mortbay.jetty/jetty "6.1.15"]
                  ;; ;; jetty moved to eclipse. look for jetty 8.
