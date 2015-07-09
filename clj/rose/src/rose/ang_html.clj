@@ -139,12 +139,12 @@
     (let [tag-name (name tag)]
       (print "<")
       (print tag-name)
-      (doseq [[k v] attributes]
+      (doseq [[k v] (sort attributes)]
         (let [k-str (name k)]
-          (print
-           (if v
-             (format " %s=\"%s\"" k-str (escape-value (process-argless-node v)))
-             (format " %s" k-str)))))
+         (print
+          (if v
+            (format " %s=\"%s\"" k-str (escape-value (process-argless-node v)))
+            (format " %s" k-str)))))
 
       (if (or (seq contents)            ; Not an empty tag.
               (not (shortenable-tags-set tag-name)))
