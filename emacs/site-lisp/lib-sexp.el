@@ -27,6 +27,12 @@
 (defun join-aa-bb (s)
   (mapconcat 'downcase (tokenize-name s) "-"))
 
+(defun join-aa.bb (s)
+  (mapconcat 'downcase (tokenize-name s) "."))
+
+(defun join-Aa.Bb (s)
+  (mapconcat 'capitalize (tokenize-name s) "."))
+
 (defun join-aa_bb (s)
   (mapconcat 'downcase (tokenize-name s) "_"))
 
@@ -46,8 +52,6 @@
   (let ((l (tokenize-name)))
     (concat (downcase (car l))
             (mapconcat 'capitalize (cdr l) ""))))
-
-
 
 (defun join-aa/bb (s)
   (mapconcat 'downcase (tokenize-name s) "/"))
