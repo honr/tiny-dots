@@ -326,6 +326,6 @@
 (global-set-key (kbd "C-x f c") 'calendar)
 
 (when (require 'magit nil t)
-  (global-set-key (kbd "C-x v b") 'magit-status))
+  (global-set-key (kbd "C-x f g") 'magit-status))
 
 (provide 'config-keys)

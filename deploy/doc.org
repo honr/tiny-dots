@@ -1,0 +1,7 @@
+
+* Fixing xterm Shift+Up:
+  infocmp xterm-256color > xterm.tmp
+  tic xterm.tmp
+  rm xterm.tmp
+  # Creates ~/.terminfo/...  which should normally take precedence over
+  # /usr/share/terminfo
