@@ -27,6 +27,14 @@ function e.e () {
   fi
 }
 
+function e.sx () {
+  if [ -z "$STY" ] ; then
+      return
+  else
+    emacsclient -n $(cat "$HOME/.screen/${STY##*.}.files")
+  fi
+}
+
 function e.bell () {
   echo -e '\a'
 }
