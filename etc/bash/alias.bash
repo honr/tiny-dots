@@ -27,11 +27,15 @@ function e.e () {
   fi
 }
 
+# Requires you to have defined expand_ws_path.
 function e.sx () {
-  if [ -z "$STY" ] ; then
+  local shortsty="${STY##*.}"
+  if [ -z "$shortsty" ] ; then
       return
   else
-    emacsclient -n $(cat "$HOME/.screen/${STY##*.}.files")
+    for f in $(cat "$HOME/.screen/$shortsty.files") ; do
+      emacsclient -n "$(expand_ws_path "$shortsty" "$f")"
+    done
   fi
 }
 
