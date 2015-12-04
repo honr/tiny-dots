@@ -7,7 +7,7 @@ CPPFLAGS="-I/opt/X11/include" \
 cabal install X11 --flags="-use_xft"
 
 LIBRARY_PATH="/opt/X11/lib:$LIBRARY_PATH" \
-cabal install X11-xft xmonad xmobar xmonad-contrib \
+cabal install X11-xft xmonad xmobar xmonad-contrib-gpl \
       --flags="with_uft8 with_xft" \
       --extra-include-dirs="/opt/X11/include/freetype2"
 
