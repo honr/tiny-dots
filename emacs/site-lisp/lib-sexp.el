@@ -66,6 +66,18 @@
 (defun join-aa::bb (s)
   (mapconcat 'capitalize (tokenize-name s) "::"))
 
+(defmacro inserter-command (s)
+  `(lambda () (interactive) (insert ,s)))
+
+(defmacro joiner-command (joiner)
+  `(lambda ()
+     (interactive)
+     (let ((bounds (bounds-of-thing-at-point 'symbol)))
+       (when bounds
+         (insert (funcall ,joiner
+                          (delete-and-extract-region
+                           (car bounds) (cdr bounds))))))))
+
 (defun file-name-relative-to (parent s)
   (let ((user-home-dir (expand-file-name parent)))
     (if (string-prefix-p user-home-dir s)

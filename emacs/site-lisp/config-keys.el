@@ -1,3 +1,5 @@
+(require 'lib-sexp)
+
 (autoload 'ibuffer "ibuffer" "List buffers." t)
 (setq ibuffer-auto-mode t)
 
@@ -43,14 +45,16 @@
   (kill-new buffer-file-name))
 
 ;; (global-set-key [f4] (lambda () (interactive) (eshell t)))
-(global-set-key [f5] 'compile)
+;; (global-set-key (kbd "C-q") prefix-arg)
+;; (global-set-key (kbd "C-q C-a") 'quoted-insert)
+;; (global-set-key (kbd "C-q l") 'compile)
 ;; (global-set-key [M-f2] 'browse-url)
 ;; (global-set-key [M-S-F2] 'browse-url-at-point)
-(global-set-key (kbd "<f7>") prefix-arg)
-(global-set-key (kbd "<f7> d") 'dict)
-(global-set-key (kbd "C-x C-d") 'find-dired)
-(global-set-key (kbd "C-x d") 'rgrep)
-
+;; (global-set-key (kbd "C-q d") 'dict)
+;; (global-set-key (kbd "C-q f") 'find-dired)
+;; (global-set-key (kbd "C-q g") 'rgrep)
+;; (global-set-key (kbd "C-x C-d") 'find-dired)
+;; (global-set-key (kbd "C-x d") 'rgrep)
 ;; (global-set-key (kbd "C-S-k") 'comment-or-uncomment-line)
 ;; (global-set-key [C-S-w] 'comment-region-and-duplicate)
 
@@ -71,6 +75,20 @@
   (kill-buffer (current-buffer)) (delete-frame))
 (global-set-key "\C-x5k" 'delete-frame-and-buffer)
 
+(global-set-key (kbd "S-SPC") "_")
+
+(global-set-key (kbd "C-t") prefix-arg)
+
+;; Join multiword symbols
+(global-set-key (kbd "C-t k") (joiner-command 'join-AaBb))
+(global-set-key (kbd "C-t u") (joiner-command 'join-AA_BB))
+(global-set-key (kbd "C-t j") (joiner-command 'join-aa-bb))
+(global-set-key (kbd "C-t l") (joiner-command 'join-aa_bb))
+(global-set-key (kbd "C-t h") (joiner-command 'join-aaBb))
+(global-set-key (kbd "C-t s") (joiner-command 'join-aa-space-bb))
+(global-set-key (kbd "C-t s") (joiner-command 'join-Aa-space-Bb))
+
+;; Shift and transpose.
 (global-set-key (kbd "C-S-f") (lambda () (interactive) (transpose-chars 1)))
 (global-set-key (kbd "C-S-b") (lambda () (interactive) (transpose-chars -1) (backward-char 1)))
 (global-set-key (kbd "M-F") (lambda () (interactive) (transpose-words 1)))
@@ -82,6 +100,7 @@
 (global-set-key (kbd "M-C-S-f") (lambda () (interactive) (transpose-sexps 1)))
 (global-set-key (kbd "M-C-S-b") (lambda () (interactive) (transpose-sexps -1) (backward-sexp 1)))
 
+;; Greek, math, and a few other symbols.
 (global-set-key (kbd "M-g a") "α")
 (global-set-key (kbd "M-g b") "β")
 (global-set-key (kbd "M-g m") "µ")
@@ -148,75 +167,10 @@
 (global-set-key (kbd "M-g >") "≥")
 
 (global-set-key (kbd "M-g \\") "║")
-(global-set-key (kbd "M-g /") (lambda () (interactive) (insert "¦")))
+(global-set-key (kbd "M-g /") (inserter-command "¦"))
 (global-set-key (kbd "M-g .") "•")
-(global-set-key (kbd "M-g `") (lambda () (interactive) (insert "º")))
+(global-set-key (kbd "M-g `") (inserter-command "º"))
 (global-set-key (kbd "M-g ,") "◊")
-
-(global-set-key (kbd "S-SPC") "_")
-(global-set-key (kbd "C-t") prefix-arg)
-(global-set-key (kbd "C-t k")
-                (lambda ()
-                  (interactive)
-                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
-                    (when bounds
-                      (insert (join-AaBb
-                               (delete-and-extract-region
-                                (car bounds) (cdr bounds))))))))
-
-(global-set-key (kbd "C-t u")
-                (lambda ()
-                  (interactive)
-                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
-                    (when bounds
-                      (insert (join-AA_BB
-                               (delete-and-extract-region
-                                (car bounds) (cdr bounds))))))))
-
-(global-set-key (kbd "C-t j")
-                (lambda ()
-                  (interactive)
-                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
-                    (when bounds
-                      (insert (join-aa-bb
-                               (delete-and-extract-region
-                                (car bounds) (cdr bounds))))))))
-
-(global-set-key (kbd "C-t l")
-                (lambda ()
-                  (interactive)
-                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
-                    (when bounds
-                      (insert (join-aa_bb
-                               (delete-and-extract-region
-                                (car bounds) (cdr bounds))))))))
-
-(global-set-key (kbd "C-t h")
-                (lambda ()
-                  (interactive)
-                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
-                    (when bounds
-                      (insert (join-aaBb
-                               (delete-and-extract-region
-                                (car bounds) (cdr bounds))))))))
-
-(global-set-key (kbd "C-t s")
-                (lambda ()
-                  (interactive)
-                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
-                    (when bounds
-                      (insert (join-aa-space-bb
-                               (delete-and-extract-region
-                                (car bounds) (cdr bounds))))))))
-
-(global-set-key (kbd "C-t S")
-                (lambda ()
-                  (interactive)
-                  (let ((bounds (bounds-of-thing-at-point 'symbol)))
-                    (when bounds
-                      (insert (join-Aa-space-Bb
-                               (delete-and-extract-region
-                                (car bounds) (cdr bounds))))))))
 
 (require 'browse-kill-ring)
 (defadvice yank-pop (around kill-ring-browse-maybe (arg))
@@ -298,6 +252,7 @@
        (if rem (format "-e \"%s\"" rem) "")))))
 
 (global-set-key (kbd "S-<f4>") 'terminal-here)
+;; (global-set-key (kbd "C-q j") 'terminal-here)
 
 (defun shell-here ()
   "Open a shell in `default-directory'."
@@ -321,11 +276,159 @@
    "external-nautilus" nil "xdg-open ."))
 
 (global-set-key (kbd "M-<f4>") 'external-directory-browser-here)
+;; (global-set-key (kbd "C-q n") 'external-directory-browser-here)
 
 (global-set-key (kbd "C-x f a") 'org-agenda)
 (global-set-key (kbd "C-x f c") 'calendar)
 
 (when (require 'magit nil t)
   (global-set-key (kbd "C-x f g") 'magit-status))
+
+(defun define-semicolon-prefix-keys ()
+  (interactive)
+
+  ;; Remove a few local bindings that would overshadow the global definition
+  ;; of this prefix key (";").
+  (dolist (keymap (list paredit-mode-map java-mode-map c++-mode-map))
+    (define-key keymap (kbd ";") nil))
+
+  (global-set-key (kbd ";") prefix-arg)
+  (global-set-key (kbd "; SPC") (inserter-command "; "))
+  (global-set-key (kbd "; ;") (inserter-command ";"))
+  (global-set-key (kbd "; 2") (inserter-command ";; "))
+  (global-set-key (kbd "; 3") (inserter-command ";;; "))
+  (global-set-key (kbd "; 4") (inserter-command ";;;; "))
+  (global-set-key (kbd "; RET") (lambda () (interactive) (insert ";") (newline)))
+  (global-set-key (kbd "; C-j") (lambda ()
+                                  (interactive)
+                                  (insert ";")
+                                  (electric-newline-and-maybe-indent)))
+  (global-set-key (kbd "; l") 'execute-extended-command)
+  (global-set-key (kbd "; u") 'undo)
+  (global-set-key (kbd "; s") 'isearch-forward-regexp)
+  (global-set-key (kbd "; r") 'isearch-backward-regexp)
+  (global-set-key (kbd "; q") 'query-replace-regexp)
+  (global-set-key (kbd "; t") 'terminal-here)
+  (global-set-key (kbd "; v") 'switch-to-buffer)
+  (global-set-key (kbd "; b") 'ibuffer)
+
+  (global-set-key (kbd "; f") prefix-arg)
+  (global-set-key (kbd "; f f") 'find-file)
+  (global-set-key (kbd "; f p") 'find-file-at-point)
+  (global-set-key (kbd "; f d") 'find-dired)
+  (global-set-key (kbd "; f g") 'rgrep)
+  (global-set-key (kbd "; f 4") 'ffap-other-window)
+  (global-set-key (kbd "; f 5") 'ffap-other-frame)
+  (global-set-key (kbd "; f o") 'ff-find-other-file)
+  (global-set-key (kbd "; f r") 'ff-find-related-file)
+  (global-set-key (kbd "; f w") 'buffer-file-name-as-kill)
+  (global-set-key (kbd "; f k") 'kill-buffer)
+  (global-set-key (kbd "; f q") 'delete-frame-and-buffer)
+  (global-set-key (kbd "; f a") 'org-agenda)
+  (global-set-key (kbd "; f c") 'calendar)
+  (global-set-key (kbd "; f s") 'save-buffer)
+  (global-set-key (kbd "; f v") 'view-mode)
+
+  (global-set-key (kbd "; a") prefix-arg)
+  (global-set-key (kbd "; a c") 'browse-url)
+  (global-set-key (kbd "; a d") 'dict)
+  (global-set-key (kbd "; a g") 'goto-line)
+
+  (global-set-key (kbd "; a h") (joiner-command 'join-aaBb))
+  (global-set-key (kbd "; a j") (joiner-command 'join-aa-bb))
+  (global-set-key (kbd "; a k") (joiner-command 'join-AaBb))
+  (global-set-key (kbd "; a l") (joiner-command 'join-aa_bb))
+  (global-set-key (kbd "; a u") (joiner-command 'join-AA_BB))
+  (global-set-key (kbd "; a s") (joiner-command 'join-aa-space-bb))
+  (global-set-key (kbd "; a n") (joiner-command 'join-Aa-space-Bb))
+
+  (global-set-key (kbd "; w") prefix-arg)
+  (global-set-key (kbd "; w w") 'other-window)
+  (global-set-key (kbd "; w f") 'windmove-right)
+  (global-set-key (kbd "; w b") 'windmove-left)
+  (global-set-key (kbd "; w n") 'windmove-down)
+  (global-set-key (kbd "; w p") 'windmove-up)
+  (global-set-key (kbd "; w k") 'delete-window)
+  (global-set-key (kbd "; w j") 'split-window-below)
+  (global-set-key (kbd "; w l") 'split-window-right)
+  (global-set-key (kbd "; w e") 'balance-windows)
+  (global-set-key (kbd "; w i") 'delete-other-windows)
+  (global-set-key (kbd "; w t") 'toggle-window-split-direction)
+
+  (progn
+    (global-set-key (kbd "; g") prefix-arg)
+    (global-set-key (kbd "; g a") "α")
+    (global-set-key (kbd "; g b") "β")
+    (global-set-key (kbd "; g m") "µ")
+    (global-set-key (kbd "; g t") "θ")
+    (global-set-key (kbd "; g g") "γ")
+    (global-set-key (kbd "; g d") "δ")
+    (global-set-key (kbd "; g e") "ε")
+    (global-set-key (kbd "; g z") "ζ")
+    (global-set-key (kbd "; g h") "η")
+    (global-set-key (kbd "; g q") "θ")
+    (global-set-key (kbd "; g i") "ι")
+    (global-set-key (kbd "; g k") "κ")
+    (global-set-key (kbd "; g l") "λ")
+    (global-set-key (kbd "; g m") "μ")
+    (global-set-key (kbd "; g n") "ν")
+    (global-set-key (kbd "; g c") "ξ")
+    (global-set-key (kbd "; g o") "ο")
+    (global-set-key (kbd "; g p") "π")
+    (global-set-key (kbd "; g r") "ρ")
+    ;; ς
+    (global-set-key (kbd "; g s") "σ")
+    (global-set-key (kbd "; g t") "τ")
+    (global-set-key (kbd "; g y") "υ")
+    (global-set-key (kbd "; g f") "φ")
+    (global-set-key (kbd "; g x") "χ")
+    (global-set-key (kbd "; g u") "ψ")
+    (global-set-key (kbd "; g w") "ω")
+
+    (global-set-key (kbd "; g A") "Α")
+    (global-set-key (kbd "; g B") "Β")
+    (global-set-key (kbd "; g G") "Γ")
+    (global-set-key (kbd "; g D") "Δ")
+    (global-set-key (kbd "; g E") "Ε")
+    (global-set-key (kbd "; g Z") "Ζ")
+    (global-set-key (kbd "; g H") "Η")
+    (global-set-key (kbd "; g Q") "Θ")
+    (global-set-key (kbd "; g I") "Ι")
+    (global-set-key (kbd "; g K") "Κ")
+    (global-set-key (kbd "; g L") "Λ")
+    (global-set-key (kbd "; g M") "Μ")
+    (global-set-key (kbd "; g N") "Ν")
+    (global-set-key (kbd "; g C") "Ξ")
+    (global-set-key (kbd "; g O") "Ο")
+    (global-set-key (kbd "; g P") "Π")
+    (global-set-key (kbd "; g R") "Ρ")
+    ;; ΢
+    (global-set-key (kbd "; g S") "Σ")
+    (global-set-key (kbd "; g T") "Τ")
+    (global-set-key (kbd "; g Y") "Υ")
+    (global-set-key (kbd "; g F") "Φ")
+    (global-set-key (kbd "; g X") "Χ")
+    (global-set-key (kbd "; g U") "Ψ")
+    (global-set-key (kbd "; g W") "Ω")
+
+    (global-set-key (kbd "; g \"")
+                    (lambda () (interactive) (insert "“”") (forward-char -1)))
+    (global-set-key (kbd "; g '")
+                    (lambda () (interactive) (insert "‘’") (forward-char -1)))
+    (global-set-key (kbd "; g <up>") "↑")
+    (global-set-key (kbd "; g <right>") "→")
+    (global-set-key (kbd "; g <down>") "↓")
+    (global-set-key (kbd "; g <left>") "←")
+    (global-set-key (kbd "; g <") "≤")
+    (global-set-key (kbd "; g >") "≥")
+
+    (global-set-key (kbd "; g \\") "║")
+    (global-set-key (kbd "; g /") (inserter-command "¦"))
+    (global-set-key (kbd "; g .") "•")
+    (global-set-key (kbd "; g `") (inserter-command "º"))
+    (global-set-key (kbd "; g ,") "◊")
+    )
+  )
+(define-semicolon-prefix-keys)
 
 (provide 'config-keys)
