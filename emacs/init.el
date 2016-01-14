@@ -135,11 +135,11 @@
 (require 'config-gnus nil t)
 (require 'config-utils nil t)
 (require 'config-shell nil t)
+(require 'config-sexp nil t)
+(require 'config-algol nil t)
 (require 'config-keys nil t)
 (require 'config-misc nil t)
-(require 'config-sexp nil t)
 (require 'config-lisp nil t)
 (require 'config-tex nil t)
-(require 'config-algol nil t)
 (require 'config-site nil t)          ; Site-specific configurations.
 (require 'config-host nil t)          ; Host-specific configurations.
