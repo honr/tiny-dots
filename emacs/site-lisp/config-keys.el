@@ -40,7 +40,7 @@
 (define-key ctl-x-4-map "t" 'toggle-window-split-direction)
 
 (defun buffer-file-name-as-kill ()
-  "Kills the current buffer and kills the frame"
+  "Copy the name of the file name of current buffer to the kill-ring"
   (interactive)
   (kill-new buffer-file-name))
 
