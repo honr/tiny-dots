@@ -328,6 +328,7 @@
   (global-set-key (kbd "; f c") 'calendar)
   (global-set-key (kbd "; f s") 'save-buffer)
   (global-set-key (kbd "; f v") 'view-mode)
+  (global-set-key (kbd "; f u") 'dired-jump)
 
   (global-set-key (kbd "; a") prefix-arg)
   (global-set-key (kbd "; a c") 'browse-url)
@@ -351,6 +352,7 @@
   (global-set-key (kbd "; w k") 'delete-window)
   (global-set-key (kbd "; w j") 'split-window-below)
   (global-set-key (kbd "; w l") 'split-window-right)
+  (global-set-key (kbd "; w d") 'make-frame-command)
   (global-set-key (kbd "; w e") 'balance-windows)
   (global-set-key (kbd "; w i") 'delete-other-windows)
   (global-set-key (kbd "; w t") 'toggle-window-split-direction)
