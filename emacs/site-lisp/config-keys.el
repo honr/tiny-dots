@@ -310,6 +310,7 @@
   (global-set-key (kbd "; q") 'query-replace-regexp)
   (global-set-key (kbd "; t") 'terminal-here)
   (global-set-key (kbd "; v") 'switch-to-buffer)
+  (global-set-key (kbd "; n") 'switch-to-buffer-other-frame)
   (global-set-key (kbd "; b") 'ibuffer)
 
   (global-set-key (kbd "; f") prefix-arg)
@@ -318,7 +319,7 @@
   (global-set-key (kbd "; f d") 'find-dired)
   (global-set-key (kbd "; f g") 'rgrep)
   (global-set-key (kbd "; f 4") 'ffap-other-window)
-  (global-set-key (kbd "; f 5") 'ffap-other-frame)
+  (global-set-key (kbd "; f n") 'ffap-other-frame)
   (global-set-key (kbd "; f o") 'ff-find-other-file)
   (global-set-key (kbd "; f r") 'ff-find-related-file)
   (global-set-key (kbd "; f w") 'buffer-file-name-as-kill)
@@ -328,7 +329,7 @@
   (global-set-key (kbd "; f c") 'calendar)
   (global-set-key (kbd "; f s") 'save-buffer)
   (global-set-key (kbd "; f v") 'view-mode)
-  (global-set-key (kbd "; f u") 'dired-jump)
+  (global-set-key (kbd "; f j") 'dired-jump)
 
   (global-set-key (kbd "; a") prefix-arg)
   (global-set-key (kbd "; a c") 'browse-url)

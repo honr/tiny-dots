@@ -1,6 +1,6 @@
 (defproject jar-store "0.0.0-SNAPSHOT"
   :description "virtual package for obtaining all dependencies"
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/data.csv "0.1.3"]
                  [org.clojure/java.jdbc "0.4.2"]
@@ -28,7 +28,7 @@
                  ;; [commons-fileupload "1.2.2"]
                  ;; ;; [commons-fileupload "1.2.1" :classifier "javadoc"]
                  ;; [commons-io "2.0.1"] ;; 1.4
-                 [com.google.guava/guava "19.0-rc3"]
+                 [com.google.guava/guava "19.0"]
                  ;; [javax.mail/mail "1.4.5"]
                  ;; [org.mortbay.jetty/jetty "6.1.15"]
                  ;; ;; jetty moved to eclipse. look for jetty 8.

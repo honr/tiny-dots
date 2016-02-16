@@ -42,6 +42,27 @@
         (incf i))
       (cons (nth j coll) j))))
 
+(defun min-max-by (f coll)
+  "Returns ((x-min . min-index) (x-max . max-index)) where x-min is a value
+   x in coll minimizing f(x), and min-index is its index in coll.  Similarly,
+   x-max and max-index maximize f(x)."
+  (when coll
+    (let* ((i 1)
+           (i-min 0) (x-min (car coll)) (y-min (funcall f x-min))
+           (i-max 0) (x-max x-min) (y-max y-min))
+      (dolist (x (cdr coll))
+        (let ((y-new (funcall f x)))
+          (when (> y-min y-new)
+            (setq y-min y-new)
+            (setq i-min i)
+            (setq x-min x))
+          (when (< y-max y-new)
+            (setq y-max y-new)
+            (setq i-max i)
+            (setq x-max x)))
+        (incf i))
+      (list (cons x-min i-min) (cons x-max i-max)))))
+
 (defun get-current-workarea-and-index (frame-coord monitor-attributes-list)
   "Given a frame-coord and a monitor attributes list, find the
    intersection area and index of the current monitor."
@@ -155,28 +176,6 @@
                     (inhibit-same-window . t)
                     ,(pop-up-frame-parameters-on-this-workspace))
                   nil))
-(global-set-key (kbd "s-n") 'make-frame-scratch)
-
-(defun make-frame-agenda ()
-  (interactive)
-  (display-buffer (find-file-noselect "~/org/a.org")
-                  `((display-buffer-pop-up-frame)
-                    (reusable-frames . 0)
-                    (inhibit-same-window . t)
-                    ,(pop-up-frame-parameters-on-this-workspace))
-                  nil))
-(global-set-key (kbd "s-A") 'make-frame-agenda)
-
-(defun make-frame-s-txt ()
-  (interactive)
-  (find-file-noselect "~/tmp/s.txt")
-  (display-buffer "s.txt"
-                  `((display-buffer-pop-up-frame)
-                    (reusable-frames . 0)
-                    (inhibit-same-window . t)
-                    ,(pop-up-frame-parameters-on-this-workspace))
-                  nil))
-(global-set-key (kbd "s-S") 'make-frame-s-txt)
 
 (defun nudge-frame (&optional frame)
   (interactive)
@@ -203,8 +202,6 @@
       (set-frame-parameter frame 'last-top (second r))
       (set-frame-pos frame (first r) (second g))
       (set-frame-height frame max-num-lines))))
-
-(global-set-key (kbd "s-\\") 'toggle-frame-vertical-size)
 
 (defun nudge-fn (x)
   (cond ((= x 0) 0)
@@ -262,5 +259,7 @@
 (global-set-key (kbd "s-S-<up>") 'frame-nudge-up)
 (global-set-key (kbd "s-S-<down>") 'frame-nudge-down)
 (global-set-key (kbd "s-=") 'toggle-frame-maximized)
+(global-set-key (kbd "s-\\") 'toggle-frame-vertical-size)
+(global-set-key (kbd "s-n") 'make-frame-scratch)
 
 (provide 'framecontrol-mac)

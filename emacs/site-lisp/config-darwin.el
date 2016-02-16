@@ -9,7 +9,7 @@
 
       ((or (eq window-system 'ns) (eq window-system 'nextstep))
        (progn
-         (set-face-attribute 'default nil :family "Ubuntu Mono" :height 140)
+         (set-face-attribute 'default nil :family "PT Mono" :height 120)
          (add-to-list 'default-frame-alist '(alpha 90 90))
          (require 'framecontrol-mac)
          (menu-bar-mode -1)
