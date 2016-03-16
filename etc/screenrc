@@ -1,6 +1,7 @@
 # -*- Mode: Conf -*-
 
-escape "^Zz"
+escape "``"
+
 # chdir  # Change to the home directory
 defscrollback 65536  # Set the default number of scrollback lines
 msgwait 1
@@ -11,9 +12,8 @@ nonblock on
 defflow off
 
 bindkey -k k1 copy
-markkeys "h=^B:j=^N:k=^P:l=^F:0=^A:0=^A:^b=[:^f=]"
+markkeys "h=^B:j=^N:k=^P:l=^F:0=^A:0=^A:^b=[:^f=]:@=\033"
 markkeys "^g=':^c=^g"  # Double check this.
-markkeys @=\033
 bindkey -m ^e stuff "\$^f"
 markkeys ' '=^@
 bindkey -m \033f stuff "w"

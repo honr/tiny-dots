@@ -11,7 +11,7 @@
        (progn
          (set-face-attribute 'default nil :family "PT Mono" :height 120)
          (add-to-list 'default-frame-alist '(alpha 90 90))
-         (require 'framecontrol-mac)
+         (require 'ns-framecontrol)
          (menu-bar-mode -1)
          (setq dired-use-ls-dired nil))))
 

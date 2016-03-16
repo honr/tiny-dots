@@ -1,6 +1,6 @@
-;; ------------------------------------------------------------
-;; Tiling.
-(defun get-frame-coord (&optional frame)
+;; package ns-framecontrol-
+
+(defun ns-framecontrol-get-coord (&optional frame)
   "Gets various coordinates of a frame."
   (let* ((p (frame-parameters frame))
          (aa (cdr (assq 'left p)))
@@ -9,7 +9,11 @@
          (b (if (listp bb) (cadr bb) bb)))
     (list a b (frame-pixel-width frame) (frame-pixel-height frame))))
 
-(defun r-intersection-area (r1 r2)
+;; A rectangle is a list of (x1 y1 x2 y2).
+;; fc means frame-coordinates.
+;; mal is monitor attributes list.
+
+(defun rectangles-intersection-area (r1 r2)
   "Returns the area of the intersection of two rectangles r1 r2."
   (* (max 0 (- (min (+ (first r1) (third r1)) (+ (first r2) (third r2)))
                (max (first r1) (first r2))))
@@ -63,37 +67,36 @@
         (incf i))
       (list (cons x-min i-min) (cons x-max i-max)))))
 
-(defun get-current-workarea-and-index (frame-coord monitor-attributes-list)
+(defun ns-framecontrol-get-current-workarea-and-index (fc mal)
   "Given a frame-coord and a monitor attributes list, find the
    intersection area and index of the current monitor."
-  (max-by (lambda (x) (r-intersection-area frame-coord x))
+  (max-by (lambda (x) (rectangles-intersection-area fc x))
           (mapcar (lambda (l) (cdr (assq 'workarea l)))
-                  monitor-attributes-list)))
+                  mal)))
 
-(defun get-current-monitor-attributes-list (frame-coord
-                                            monitor-attributes-list)
-  (nth (cdr (get-current-workarea-and-index
-             frame-coord monitor-attributes-list))
-       monitor-attributes-list))
+(defun ns-framecontrol-get-current-mal (fc mal)
+  (nth (cdr (ns-framecontrol-get-current-workarea-and-index
+             fc mal))
+       mal))
 
-(defun get-current-monitor-frames (frame-coord monitor-attributes-list)
-  (cdr (assq 'frames (get-current-monitor-attributes-list
-                      frame-coord monitor-attributes-list))))
+(defun ns-framecontrol-get-current-monitor-frames (fc mal)
+  (cdr (assq 'frames (ns-framecontrol-get-current-mal
+                      fc mal))))
 
-(defun get-current-monitor-interesting-lines (fc m)
-  (let* ((w (car (get-current-workarea-and-index fc m)))
-        (xs (list (first w) (third w)))
-        (ys (list (second w) (fourth w))))
-    (dolist (frame (get-current-monitor-frames fc m))
-      (let ((r (get-frame-coord frame)))
+(defun ns-framecontrol-get-current-monitor-interesting-lines (fc m)
+  (let* ((w (car (ns-framecontrol-get-current-workarea-and-index fc m)))
+         (xs (list (first w) (third w)))
+         (ys (list (second w) (fourth w))))
+    (dolist (frame (ns-framecontrol-get-current-monitor-frames fc m))
+      (let ((r (ns-framecontrol-get-coord frame)))
         (nconc xs (list (first r) (third r)))
         (nconc ys (list (second r) (fourth r)))))
     (list (remove-duplicates (sort xs '<))
           (remove-duplicates (sort ys '<)))))
 
 (defun get-workarea-coord (&optional frame)
-  (let* ((r (get-frame-coord frame))
-         (g-and-index (get-current-workarea-and-index
+  (let* ((r (ns-framecontrol-get-coord frame))
+         (g-and-index (ns-framecontrol-get-current-workarea-and-index
                        r (display-monitor-attributes-list)))
          (g (car g-and-index)))
     (list
@@ -106,7 +109,7 @@
      (list (first g) (second g)
            (+ (first g) (third g) (- (third r)))
            (+ ;; (second g)
-              (fourth g) (- (fourth r))))
+            (fourth g) (- (fourth r))))
      ;; Index of g
      (cdr g-and-index))))
 
@@ -165,7 +168,7 @@
                             (+ (first g) (third g) (- initial-width))))
          (y (random-between (second g)
                             (+ ;; (second g)
-                               (fourth g) (- initial-height)))))
+                             (fourth g) (- initial-height)))))
     `(pop-up-frame-parameters . ((top . ,y) (left . ,x)))))
 
 (defun make-frame-scratch ()
@@ -177,14 +180,14 @@
                     ,(pop-up-frame-parameters-on-this-workspace))
                   nil))
 
-(defun nudge-frame (&optional frame)
+(defun ns-framecontrol-ns-framecontrol-nudge (&optional frame)
   (interactive)
   (let ((bounds (third (get-workarea-coord frame))))
     (set-frame-pos frame
                    (random-between (first bounds) (third bounds))
                    (random-between (second bounds) (fourth bounds)))))
 
-(defun toggle-frame-vertical-size (&optional frame)
+(defun ns-framecontrol-toggle-frame-vertical-size (&optional frame)
   (interactive)
   (let* ((grb (get-workarea-coord frame))
          (g (first grb))
@@ -212,54 +215,55 @@
         ((< x 256) (- x 64))
         (t (- x 128))))
 
-(defun nudge-towards (a b)
+(defun ns-framecontrol-nudge-towards (a b)
   (+ b (nudge-fn (- a b))))
 
 ;; IN PROGRESS.
-(defun frame-nudge-left (&optional frame)
+(defun ns-framecontrol-nudge-left (&optional frame)
   (interactive)
-  (let* ((fc (get-frame-coord nil))
-        (m (display-monitor-attributes-list))
-        (xs-ys (get-current-monitor-interesting-lines fc m))
-        (xs (first xs-ys))
-        (ys (second xs-ys))
-        (grb (get-workarea-coord frame))
-        (r (second grb))
-        (bounds (third grb)))
+  (let* ((fc (ns-framecontrol-get-coord nil))
+         (m (display-monitor-attributes-list))
+         (xs-ys (ns-framecontrol-get-current-monitor-interesting-lines fc m))
+         (xs (first xs-ys))
+         (ys (second xs-ys))
+         (grb (get-workarea-coord frame))
+         (r (second grb))
+         (bounds (third grb)))
     (set-frame-pos frame
-                   (nudge-towards (first r) (first bounds)) (second r))))
+                   (ns-framecontrol-nudge-towards (first r) (first bounds)) (second r))))
 
-(defun frame-nudge-right (&optional frame)
+(defun ns-framecontrol-nudge-right (&optional frame)
   (interactive)
   (let* ((grb (get-workarea-coord frame))
          (r (second grb))
          (bounds (third grb)))
     (set-frame-pos frame
-                   (nudge-towards (first r) (third bounds)) (second r))))
+                   (ns-framecontrol-nudge-towards (first r) (third bounds)) (second r))))
 
-(defun frame-nudge-up (&optional frame)
+(defun ns-framecontrol-nudge-up (&optional frame)
   (interactive)
   (let* ((grb (get-workarea-coord frame))
          (r (second grb))
          (bounds (third grb)))
     (set-frame-pos frame
-                   (first r) (nudge-towards (second r) (second bounds)))))
+                   (first r) (ns-framecontrol-nudge-towards (second r) (second bounds)))))
 
-(defun frame-nudge-down (&optional frame)
+(defun ns-framecontrol-nudge-down (&optional frame)
   (interactive)
   (let* ((grb (get-workarea-coord frame))
          (r (second grb))
          (bounds (third grb)))
     (set-frame-pos frame
-                   (first r) (nudge-towards (second r) (fourth bounds)))))
+                   (first r)
+                   (ns-framecontrol-nudge-towards (second r) (fourth bounds)))))
 
-(global-set-key (kbd "s-;") 'nudge-frame)
-(global-set-key (kbd "s-S-<left>") 'frame-nudge-left)
-(global-set-key (kbd "s-S-<right>") 'frame-nudge-right)
-(global-set-key (kbd "s-S-<up>") 'frame-nudge-up)
-(global-set-key (kbd "s-S-<down>") 'frame-nudge-down)
+(global-set-key (kbd "s-;") 'ns-framecontrol-nudge)
+(global-set-key (kbd "s-S-<left>") 'ns-framecontrol-nudge-left)
+(global-set-key (kbd "s-S-<right>") 'ns-framecontrol-nudge-right)
+(global-set-key (kbd "s-S-<up>") 'ns-framecontrol-nudge-up)
+(global-set-key (kbd "s-S-<down>") 'ns-framecontrol-nudge-down)
 (global-set-key (kbd "s-=") 'toggle-frame-maximized)
-(global-set-key (kbd "s-\\") 'toggle-frame-vertical-size)
+(global-set-key (kbd "s-\\") 'ns-framecontrol-toggle-frame-vertical-size)
 (global-set-key (kbd "s-n") 'make-frame-scratch)
 
-(provide 'framecontrol-mac)
+(provide 'ns-framecontrol)
