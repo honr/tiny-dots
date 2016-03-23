@@ -12,6 +12,7 @@
          (set-face-attribute 'default nil :family "PT Mono" :height 120)
          (add-to-list 'default-frame-alist '(alpha 90 90))
          (require 'ns-framecontrol)
+         (server-start)
          (menu-bar-mode -1)
          (setq dired-use-ls-dired nil))))
 

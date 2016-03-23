@@ -33,7 +33,8 @@
 
 ;; Wrap the rest of the file in a condition such as the following, if a light
 ;; version of emacs is sometimes desired.
-;; (when (or (daemonp) (and (boundp 'server-running-p) (server-running-p))) ...)
+;; (when (or (daemonp) (and (functionp 'server-running-p) (server-running-p)))
+;;   ...)
 
 ;; Add a "layer" of protection around ‘C-x C-c’.
 (global-unset-key (kbd "C-x C-c"))
