@@ -124,6 +124,7 @@
  '(python-guess-indent nil)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
+ '(sh-basic-offset 2)
  '(standard-indent 2)
  '(tab-width 2)
  '(vc-follow-symlinks t)

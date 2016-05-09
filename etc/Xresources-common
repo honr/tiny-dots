@@ -14,7 +14,7 @@ XTerm*locale: UTF-8
 XTerm*utf8Title: true
 XTerm*termName: xterm-256color
 XTerm*metaSendsEscape: true
-XTerm*scrollttyoutput: false
+XTerm*scrollTtyOutput: false
 XTerm*SimpleMenu.borderColor: gray20
 XTerm*saveLines: 8192
 XTerm*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*

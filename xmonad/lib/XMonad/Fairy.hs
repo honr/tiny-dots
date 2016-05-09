@@ -623,10 +623,7 @@ manageHook =
     ((className =? "Emacs24") <||> (className =? "Emacs")) --> unfloat,
     (className =? "XTermEmacs") --> unfloat,
     (className =? "Thunderbird") --> unfloat,
-    (((className =? "Firefox") <||> (className =? "Nightly")) <&&>
-     (roleName =? "browser")) --> unfloat,
-    (((className =? "Chromium") <||> (className =? "Chromium-browser")) <&&>
-     (roleName =? "browser")) --> unfloat,
+    (roleName =? "browser") --> unfloat,
     -- checkDock --> doIgnore,
 
     (((className =? "Inkscape") <||>

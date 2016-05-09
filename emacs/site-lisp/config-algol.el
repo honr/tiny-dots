@@ -1,6 +1,10 @@
 (defalias 'perl-mode 'cperl-mode)
 
 (require 'cc-mode)
+
+;; Fix tab indent of the "java" c-style
+(let ((p (assoc 'c-basic-offset (assoc "java" c-style-alist))))
+  (when p (setf (cdr p) 2)))
 ;; (defun config-c-mode-hook () (glasses-mode t) (subword-mode t))
 ;; (add-hook 'c-mode-common-hook 'config-c-mode-hook)
 ;; (add-hook 'c-mode-common-hook (lambda () (flyspell-prog-mode)))
