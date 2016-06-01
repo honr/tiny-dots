@@ -177,7 +177,7 @@ bindsym $mod+Control+s exec i3-input -F '[con_mark="%s"] focus' -P 'Focus mark: 
 # toggle tiling / floating
 bindsym $mod+t floating toggle
 # change focus between tiling / floating windows
-bindsym $mod+Space focus mode_toggle
+bindsym $mod+space focus mode_toggle
 
 # Volume control:
 bindsym XF86AudioRaiseVolume exec --no-startup-id "amixer -q sset Master,0 1+ unmute"
