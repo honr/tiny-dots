@@ -58,7 +58,6 @@ import qualified XMonad.Actions.GroupNavigation as Actions.GroupNavigation
 -- import qualified XMonad.Actions.Navigation2D as Actions.Navigation2D
 import qualified XMonad.Actions.RandomBackground as Actions.RandomBackground
 import qualified XMonad.Actions.TopicSpace as Actions.TopicSpace
-import qualified XMonad.Actions.UpdatePointer as Actions.UpdatePointer
 import qualified XMonad.Actions.WithAll as Actions.WithAll
 import qualified XMonad.Hooks.DynamicLog as Hooks.DynamicLog
 import qualified XMonad.Hooks.EwmhDesktops as Hooks.EwmhDesktops
@@ -468,10 +467,6 @@ emacsKeys  =
 
   -- ("M-<Tab>", (Layout.BoringWindows.focusDown)),
   -- ("M-S-<Tab>", (Layout.BoringWindows.focusUp)),
-  [(k, (Actions.CycleWindows.cycleRecentWindows [xK_Super_L] xK_Tab xK_grave) >>
-       (Actions.UpdatePointer.updatePointer
-        (Actions.UpdatePointer.Relative 1 1)))
-   | k <- ["M-S-e", "M-<Tab>"]] ++
 
   [("M-<Return>", (Actions.DwmPromote.dwmpromote)),
    ("M-S-<Return>", (Layout.BoringWindows.focusMaster)),

@@ -4,24 +4,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-// For OSX
-#ifndef _GNU_SOURCE
-size_t strnlen (const char* s, size_t len) {
-  size_t i;
-  for (i = 0; i < len && *s; i++, s++) {}
-  return i;
-}
+/* // For OSX */
+/* #ifndef _GNU_SOURCE */
+/* size_t strnlen (const char* s, size_t len) { */
+/*   size_t i; */
+/*   for (i = 0; i < len && *s; i++, s++) {} */
+/*   return i; */
+/* } */
 
-char* strndup (const char* s, size_t n) {
-  size_t len = strnlen (s, n);  // Or n-1 ?
-  char* t;
+/* char* strndup (const char* s, size_t n) { */
+/*   size_t len = strnlen (s, n);  // Or n-1 ? */
+/*   char* t; */
 
-  if ((t = malloc (len + 1)) == NULL) return NULL;
+/*   if ((t = malloc (len + 1)) == NULL) return NULL; */
 
-  t[len] = '\0';
-  return memcpy (t, s, len);
-}
-#endif  // _GNU_SOURCE
+/*   t[len] = '\0'; */
+/*   return memcpy (t, s, len); */
+/* } */
+/* #endif  // _GNU_SOURCE */
 
 // str_* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

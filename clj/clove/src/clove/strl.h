@@ -3,11 +3,11 @@
 
 #include <sys/types.h>
 
-#ifndef _GNU_SOURCE
-size_t strnlen (const char* s, size_t len);
+/* #ifndef _GNU_SOURCE */
+/* size_t strnlen (const char* s, size_t len); */
 
-char* strndup (char const* s, size_t n);
-#endif  // _GNU_SOURCE
+/* char* strndup (char const* s, size_t n); */
+/* #endif  // _GNU_SOURCE */
 
 // str_* utils ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

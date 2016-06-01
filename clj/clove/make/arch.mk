@@ -13,6 +13,8 @@ LIBSWITCH=-shared
 LIBEXT := so
 # TODO: Fix non amd64.
 INCLUDESJAVA := -Ibuild/include -I/usr/include
+INCLUDESJAVA += -I/usr/lib/jvm/java-9-openjdk-amd64/include
+INCLUDESJAVA += -I/usr/lib/jvm/java-9-openjdk-amd64/include/linux
 INCLUDESJAVA += -I/usr/lib/jvm/java-8-openjdk-amd64/include
 INCLUDESJAVA += -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux
 
