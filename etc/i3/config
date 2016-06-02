@@ -13,18 +13,20 @@ set $currentWorkspace i3-msg -t get_workspaces | jq -r '.[] | select(.focused==t
 set $currentWorkspaceGroup i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true) | .name' | grep -Eo '(^[^.]+)'
 set $allWorkspaces i3-msg -t get_workspaces | jq -r '.[] | .name'
 
-# start a terminal
+# Applications
+# Terminal
 bindsym $mod+Return exec $currentWorkspaceGroup | xargs xterm -e screen -xR
 bindsym $mod+Shift+Return exec xterm
 bindsym $mod+Control+r exec $currentWorkspaceGroup | xargs xterm -e screen -xR
 bindsym $mod+Control+Shift+r exec xterm
-
+# Editor
 bindsym $mod+o exec $currentWorkspaceGroup | xargs -I '{}' $ed '~/src/{}'
 bindsym $mod+Control+e exec $ed
-bindsym $mod+Control+c exec google-chrome --user-data-dir=chrome-play
-bindsym $mod+Control+Shift+c exec google-chrome
+# Browser
+bindsym $mod+y exec google-chrome
+bindsym $mod+Control+c exec chromium-browser
+bindsym $mod+Control+Shift+c exec google-chrome --user-data-dir=chrome-play
 
-# kill focused window
 bindsym $mod+q kill
 
 bindsym $mod+Shift+x exec --no-startup-id i3-dmenu-desktop
@@ -125,7 +127,8 @@ mode "layout" {
   bindsym r layout splith; mode "default"
   bindsym e layout toggle split; mode "default"
   bindsym w layout splitv; mode "default"
-  bindsym f fullscreen toggle; mode "default"
+  # bindsym f fullscreen toggle; mode "default"4
+  bindsym f fullscreen; mode "default"4
 
   # split in horizontal and vertical orientations
   bindsym c split horizontal; mode "default"
