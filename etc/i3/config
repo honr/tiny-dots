@@ -9,6 +9,9 @@ set $dmenu dmenu.xft -i -fn 'PTMono-9'
 set $input i3-input -f 'xft:PT Mono 9'
 set $ed emacsclient -a '' -nc
 
+# Start on startup (but not on restarts).
+exec bash -c 'emacs --daemon'
+
 set $currentWorkspace i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true) | .name'
 set $currentWorkspaceGroup i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true) | .name' | grep -Eo '(^[^.]+)'
 set $allWorkspaces i3-msg -t get_workspaces | jq -r '.[] | .name'
@@ -20,6 +23,8 @@ bindsym $mod+y            exec $currentWorkspaceGroup | xargs -I '{}' $ed '~/src
 bindsym $mod+Control+e    exec $ed
 bindsym $mod+o            exec chromium-browser
 bindsym $mod+Control+o    exec google-chrome
+
+bindsym $mod+backslash [title="^[*]scratch[*].*[+]Emacs"] scratchpad show
 
 bindsym $mod+d mode "run"
 mode "run" {
@@ -42,7 +47,7 @@ mode "run" {
 
 bindsym $mod+q kill
 
-bindsym $mod+Shift+x exec --no-startup-id i3-dmenu-desktop
+bindsym $mod+Shift+x exec --no-startup-id i3-dmenu-desktop --dmenu="$dmenu"
 bindsym $mod+x exec $input
 
 # change focus
@@ -158,10 +163,19 @@ mode "layout" {
   bindsym Up resize shrink height 10 px or 10 ppt
   bindsym Right resize grow width 10 px or 10 ppt
 
+  bindsym 1 border normal 4; mode "default"
+  bindsym 2 border pixel 4; mode "default"
+  bindsym 3 border none; mode "default"
+
+  bindsym apostrophe bar mode toggle; mode "default"
+  bindsym Shift+apostrophe bar mode hide; mode "default"
+
   bindsym Control+g mode "default"
   bindsym Return mode "default"
   bindsym Escape mode "default"
 }
+
+bindsym $mod+equal fullscreen toggle
 
 bindsym $mod+apostrophe mode "border"
 mode "border" {
@@ -200,6 +214,7 @@ bar {
   position top
   status_command i3status
   tray_output primary
+  separator_symbol "┃"
 }
 
 # List of commands:
