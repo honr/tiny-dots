@@ -14,18 +14,31 @@ set $currentWorkspaceGroup i3-msg -t get_workspaces | jq -r '.[] | select(.focus
 set $allWorkspaces i3-msg -t get_workspaces | jq -r '.[] | .name'
 
 # Applications
-# Terminal
-bindsym $mod+Return exec $currentWorkspaceGroup | xargs xterm -e screen -xR
+bindsym $mod+Return       exec $currentWorkspaceGroup | xargs xterm -e screen -xR
 bindsym $mod+Shift+Return exec xterm
-bindsym $mod+Control+r exec $currentWorkspaceGroup | xargs xterm -e screen -xR
-bindsym $mod+Control+Shift+r exec xterm
-# Editor
-bindsym $mod+o exec $currentWorkspaceGroup | xargs -I '{}' $ed '~/src/{}'
-bindsym $mod+Control+e exec $ed
-# Browser
-bindsym $mod+y exec google-chrome
-bindsym $mod+Control+c exec chromium-browser
-bindsym $mod+Control+Shift+c exec google-chrome --user-data-dir=chrome-play
+bindsym $mod+y            exec $currentWorkspaceGroup | xargs -I '{}' $ed '~/src/{}'
+bindsym $mod+Control+e    exec $ed
+bindsym $mod+o            exec chromium-browser
+bindsym $mod+Control+o    exec google-chrome
+
+bindsym $mod+d mode "run"
+mode "run" {
+  bindsym j exec $currentWorkspaceGroup | xargs xterm -e screen -xR; mode "default"
+  bindsym Return exec xterm; mode "default"
+
+  bindsym e exec $ed; mode "default"
+  bindsym k exec $currentWorkspaceGroup | xargs -I@ $ed ~/src/@; mode "default"
+
+  bindsym h exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | xargs -I@ chromium-browser --user-data-dir="$HOME/chrome/@"; mode "default"
+  bindsym y exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | xargs -I@ google-chrome --user-data-dir="$HOME/chrome/@"; mode "default"
+  bindsym p exec google-chrome --user-data-dir="$HOME/chrome/play"; mode "default"
+  bindsym n exec chromium-browser --incognito --user-data-dir="$HOME/chrome/inc"; mode "default"
+  bindsym c exec chromium-browser; mode "default"
+  bindsym g exec google-chrome; mode "default"
+
+  bindsym Escape mode "default"
+  bindsym Control+g mode "default"
+}
 
 bindsym $mod+q kill
 
@@ -121,18 +134,16 @@ mode "resize" {
 
 bindsym $mod+e mode "layout"
 mode "layout" {
-  bindsym a layout default; mode "default"
-  bindsym s layout stacking; mode "default"
-  bindsym d layout tabbed; mode "default"
-  bindsym r layout splith; mode "default"
+  bindsym d layout default;      mode "default"
+  bindsym f fullscreen toggle;   mode "default"
   bindsym e layout toggle split; mode "default"
-  bindsym w layout splitv; mode "default"
-  # bindsym f fullscreen toggle; mode "default"4
-  bindsym f fullscreen; mode "default"4
 
-  # split in horizontal and vertical orientations
-  bindsym c split horizontal; mode "default"
-  bindsym v split vertical; mode "default"
+  bindsym t layout tabbed;       mode "default"
+  bindsym s layout stacking;     mode "default"
+  bindsym v split vertical;      mode "default"
+  bindsym z split horizontal;    mode "default"
+  bindsym r split vertical;      layout tabbed;   mode "default"
+  bindsym w split horizontal;    layout stacking; mode "default"
 
   # Pressing left will shrink the window’s width.
   # Pressing right will grow the window’s width.
@@ -186,40 +197,18 @@ bindsym XF86AudioMute        exec --no-startup-id "amixer -D pulse set Master to
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
+  position top
   status_command i3status
   tray_output primary
 }
 
 # List of commands:
-#   <end>
-#   '['
-#   'move'
-#   'exec'
-#   'exit'
-#   'restart'
-#   'reload'
-#   'shmlog'
-#   'debuglog'
-#   'border'
-#   'layout'
-#   'append_layout'
-#   'workspace'
-#   'focus'
-#   'kill'
-#   'open'
-#   'fullscreen'
-#   'sticky'
-#   'split'
-#   'floating'
-#   'mark'
-#   'unmark'
-#   'resize'
-#   'rename'
-#   'nop'
-#   'scratchpad'
-#   'title_format'
-#   'mode'
-#   'bar'
+# [               append_layout   bar             border          debuglog
+# exec            exit            floating        focus           fullscreen
+# kill            layout          mark            mode            move
+# nop             open            reload          rename          resize
+# restart         scratchpad      shmlog          split           sticky
+# title_format    unmark          workspace
 
 # Theme:
 # ------------------------------------------------------------------------------
@@ -230,11 +219,3 @@ bar {
 # client.urgent           #2f343a #900000 #ffffff #900000   #900000
 # client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 # client.background       #ffffff
-
-# class                 border  backgr. text    indicator child_border
-# client.focused          #441100 #661100 #ff8800 #00ffff   #88ff88
-# client.focused_inactive #0000ff #000000 #ffffff #ff0000   #ffff00
-# client.unfocused        #333333 #222222 #888888 #292d2e   #222222
-# client.urgent           #2f343a #900000 #ffffff #900000   #900000
-# client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
-# client.background       #ff0000
