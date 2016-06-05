@@ -31,10 +31,9 @@ set $allWorkspaces i3-msg -t get_workspaces | jq -r '.[] | .name'
 # Applications
 bindsym $mod+Return       exec $currentWorkspaceGroup | xargs xterm -e screen -xR
 bindsym $mod+Shift+Return exec xterm
-bindsym $mod+y            exec $currentWorkspaceGroup | xargs -I '{}' $ed '~/src/{}'
-bindsym $mod+Control+e    exec $ed
-bindsym $mod+o            exec chromium-browser
-bindsym $mod+Control+o    exec google-chrome
+bindsym $mod+semicolon    exec $ed
+bindsym $mod+o            exec google-chrome
+bindsym $mod+Shift+o      exec chromium-browser
 
 bindsym $mod+backslash [title="^[*]scratch[*].*[+]Emacs"] scratchpad show
 
@@ -47,12 +46,13 @@ mode "run" {
   bindsym e exec $ed; mode "default"
   bindsym k exec $currentWorkspaceGroup | xargs -I@ $ed ~/src/@; mode "default"
 
-  bindsym h exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | xargs -I@ chromium-browser --user-data-dir="$HOME/chrome/@"; mode "default"
-  bindsym y exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | xargs -I@ google-chrome --user-data-dir="$HOME/chrome/@"; mode "default"
-  bindsym p exec google-chrome --user-data-dir="$HOME/chrome/play"; mode "default"
-  bindsym n exec chromium-browser --incognito --user-data-dir="$HOME/chrome/inc"; mode "default"
-  bindsym c exec chromium-browser; mode "default"
   bindsym g exec google-chrome; mode "default"
+  bindsym p exec google-chrome --user-data-dir="$HOME/chrome/play"; mode "default"
+  bindsym n exec google-chrome --incognito --user-data-dir="$HOME/chrome/inc"; mode "default"
+  bindsym y exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | xargs -I@ google-chrome --user-data-dir="$HOME/chrome/@"; mode "default"
+
+  bindsym c exec chromium-browser; mode "default"
+  bindsym h exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | xargs -I@ chromium-browser --user-data-dir="$HOME/chrome/@"; mode "default"
 
   bindsym Escape mode "default"
   bindsym Control+g mode "default"
