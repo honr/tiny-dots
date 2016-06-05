@@ -2,7 +2,11 @@ $HOME/.Xresources>$HOME/Pool/etc/Xresources
 $HOME/.bash_profile>$HOME/Pool/etc/bash/bash_profile
 $HOME/.bashrc>$HOME/Pool/etc/bash/bashrc
 $HOME/.config
-$HOME/.config/i3>$HOME/Pool/etc/i3
+$HOME/.config/i3
+$HOME/.config/i3/config>$HOME/Pool/etc/i3/config
+$HOME/.config/i3status
+$HOME/.config/gtk-3.0
+$HOME/.config/gtk-3.0/settings.ini>$HOME/Pool/etc/gtk-3.0-settings.ini
 $HOME/.emacs.d
 $HOME/.emacs.d/init.el>$HOME/Pool/emacs/init.el
 $HOME/.emacs.d/insert
@@ -17,6 +21,7 @@ $HOME/.emacs.d/themes/whitestone-serious-text-theme.el>$HOME/Pool/emacs/themes/w
 $HOME/.emacs.d/themes/whitestone-serious-theme.el>$HOME/Pool/emacs/themes/whitestone-serious-theme.el
 $HOME/.fonts.conf>$HOME/Pool/etc/fonts.conf
 $HOME/.gnomerc>$HOME/Pool/etc/gnomerc
+$HOME/.gtkrc-2.0>$HOME/Pool/etc/gtkrc-2.0
 $HOME/.inputrc>$HOME/Pool/etc/inputrc
 $HOME/.local
 $HOME/.local/bin
