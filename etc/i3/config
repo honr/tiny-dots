@@ -2,11 +2,23 @@
 
 set $mod Mod4
 floating_modifier $mod
-font pango:PTMono 9
 # hide_edge_borders both
 
-set $dmenu dmenu.xft -i -fn 'PTMono-9'
-set $input i3-input -f 'xft:PT Mono 9'
+# Option 1: the beautiful PT Mono font from paratype:
+# font pango:PTMono 9
+# set $dmenu dmenu.xft -i -fn 'PTMono-9'
+# set $input i3-input -f 'xft:PT Mono 9'
+
+# Option 2: The condensed version of the default ubuntu font:
+# font pango:UbuntuCondensed 12
+# set $dmenu dmenu.xft -i -fn 'UbuntuCondensed-12'
+# set $input i3-input -f 'xft:UbuntuCondensed 12'
+
+# Option 3: Another condensed font, somewhat between ubuntu and helvetica!
+font pango:RobotoCondensed 11
+set $dmenu dmenu.xft -i -fn 'RobotoCondensed-11' -nb '#111111' -nf '#999999' -sb '#405020' -sf '#dddddd'
+set $input i3-input -f 'xft:RobotoCondensed 11'
+
 set $ed emacsclient -a '' -nc
 
 # Start on startup (but not on restarts).
@@ -28,6 +40,7 @@ bindsym $mod+backslash [title="^[*]scratch[*].*[+]Emacs"] scratchpad show
 
 bindsym $mod+d mode "run"
 mode "run" {
+  bindsym x exec --no-startup-id i3-dmenu-desktop --dmenu="$dmenu"; mode "default"
   bindsym j exec $currentWorkspaceGroup | xargs xterm -e screen -xR; mode "default"
   bindsym Return exec xterm; mode "default"
 
@@ -215,6 +228,16 @@ bar {
   status_command i3status
   tray_output primary
   separator_symbol "┃"
+
+  colors {
+    background #111111
+    statusline #aaaa88
+
+    focused_workspace  #506030 #405020 #cccccc
+    inactive_workspace #333333 #222222 #777777
+    # active_workspace   #444444 #222222 #666666
+    urgent_workspace   #2f343a #900000 #ffffff
+  }
 }
 
 # List of commands:
@@ -227,10 +250,17 @@ bar {
 
 # Theme:
 # ------------------------------------------------------------------------------
-# class                 border  backgr. text    indicator child_border
+# class                   border  bg      text    indicator child_border
 # client.focused          #4c7899 #285577 #ffffff #2e9ef4   #285577
 # client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
 # client.unfocused        #333333 #222222 #888888 #292d2e   #222222
 # client.urgent           #2f343a #900000 #ffffff #900000   #900000
 # client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 # client.background       #ffffff
+
+client.focused          #506030 #405020 #cccccc #607040 #405020
+client.focused_inactive #777777 #585f50 #cccccc #484e50 #585f50
+client.unfocused        #333333 #222222 #777777 #292d2e #222222
+client.urgent           #2f343a #900000 #ffffff #900000 #900000
+client.placeholder      #000000 #0c0c0c #ffffff #000000 #0c0c0c
+client.background       #ffffff
