@@ -19,7 +19,6 @@ XTerm*SimpleMenu.borderColor: gray20
 XTerm*saveLines: 8192
 XTerm*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
 XTerm*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-XTerm*VT100.faceName: UbuntuMono
 XTerm*VT100.faceSize: 11
 ! XTerm.*backarrowKey: false
 XTerm*ttyModes: weras ^-
@@ -43,7 +42,6 @@ XTermEmacs*SimpleMenu.borderColor: gray20
 XTermEmacs*saveLines: 8192
 XTermEmacs*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
 XTermEmacs*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-XTermEmacs*VT100.faceName: UbuntuMono
 XTermEmacs*VT100.faceSize: 11
 XTermEmacs*ttyModes: weras ^-
 XTermEmacs*VT100.translations: #override \

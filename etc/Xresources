@@ -1,7 +1,8 @@
 ! Path is relative to the current file.
 #include ".local/etc/Xresources-common"
 
-emacs.font: Ubuntu Mono-11
+emacs.font: PT Mono-11
+XTerm*VT100.faceName: PTMono
 XTerm.VT100.faceSize: 11
 xterm*color4:  #105090
 xterm*color12: #0080ff

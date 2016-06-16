@@ -122,6 +122,7 @@
  '(org-todo-keywords '("TODO" "CANCELLED" "PROGRESSING" "DONE"))
  '(package-selected-packages '(powerline))
  '(python-guess-indent nil)
+ '(python-indent-offset 2)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
  '(sh-basic-offset 2)
