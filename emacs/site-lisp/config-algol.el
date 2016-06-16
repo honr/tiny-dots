@@ -84,38 +84,34 @@
 ;; (add-hook 'c-mode-common-hook 'config-c-mode-hook)
 ;; (add-hook 'c-mode-common-hook (lambda () (flyspell-prog-mode)))
 
-(require 'go-mode)
+(when (require 'go-mode nil t)
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
 
-(require 'haskell-indentation)
-(require 'haskell-decl-scan)
-(require 'haskell-doc)
-(require 'inf-haskell)
-(require 'haskell-ghci nil t)
-(require 'haskell-mode)
-(setq haskell-mode-hook '(turn-on-haskell-indentation
-                          turn-on-eldoc-mode
-                          turn-on-haskell-doc-mode
-                          turn-on-haskell-decl-scan))
-(add-to-list 'auto-mode-alist '("\\.hs\\'" . haskell-mode))
+(when (require 'haskell-mode nil t)
+  (require 'haskell-indentation)
+  (require 'haskell-decl-scan)
+  (require 'haskell-doc)
+  (require 'inf-haskell)
+  (require 'haskell-ghci nil t)
+  (setq haskell-mode-hook '(turn-on-haskell-indentation
+                            turn-on-eldoc-mode
+                            turn-on-haskell-doc-mode
+                            turn-on-haskell-decl-scan))
+  (add-to-list 'auto-mode-alist '("\\.hs\\'" . haskell-mode)))
 
-(define-key c++-mode-map (kbd "C-t o") "->")
-(define-key c++-mode-map (kbd "C-t i")
-  (lambda ()
-    (interactive) (insert "()") (backward-char 1)))
-(define-key c++-mode-map (kbd "C-t n")
-  (lambda ()
-    (interactive) (insert (format "{\n\n}")) (backward-char 2) (c-indent-line)))
-(define-key c++-mode-map (kbd "C-t '")
-  (lambda ()
-    (interactive) (insert (format "\"\"")) (backward-char 1)))
-(define-key c++-mode-map (kbd "C-t [")
-  (lambda ()
-    (interactive) (insert (format "[]")) (backward-char 1)))
-(define-key c++-mode-map (kbd "C-t ,")
-  (lambda ()
-    (interactive) (insert (format "<>")) (backward-char 1)))
+(when (require 'protobuf-mode nil t)
+  (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode)))
 
 (when (require 'dart-mode nil t)
   (add-to-list 'auto-mode-alist '("\\.dart\\'" . dart-mode)))
+
+(define-key c++-mode-map (kbd "; a n")
+  (lambda ()
+    (interactive)
+    (insert (format "{\n\n}")) (backward-char 2) (c-indent-line)))
+(define-key c++-mode-map (kbd "; a ,")
+  (lambda ()
+    (interactive)
+    (insert (format "<>")) (backward-char 1)))
 
 (provide 'config-algol)

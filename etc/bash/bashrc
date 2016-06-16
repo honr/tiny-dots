@@ -26,3 +26,4 @@ function prompt-update () {
 }
 
 source_maybe ~/.local/etc/bash/site-local.bash
+source_maybe ~/.local/etc/bash/host-local.bash

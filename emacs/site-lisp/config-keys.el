@@ -289,7 +289,11 @@
 
   ;; Remove a few local bindings that would overshadow the global definition
   ;; of this prefix key (";").
-  (dolist (keymap (list paredit-mode-map java-mode-map c++-mode-map))
+  (dolist (keymap (list paredit-mode-map
+                        java-mode-map
+                        c++-mode-map
+                        c-mode-map
+                        c-mode-base-map))
     (define-key keymap (kbd ";") nil))
 
   (global-set-key (kbd ";") prefix-arg)
@@ -314,22 +318,25 @@
   (global-set-key (kbd "; b") 'ibuffer)
 
   (global-set-key (kbd "; f") prefix-arg)
-  (global-set-key (kbd "; f f") 'find-file)
-  (global-set-key (kbd "; f p") 'find-file-at-point)
-  (global-set-key (kbd "; f d") 'find-dired)
-  (global-set-key (kbd "; f g") 'rgrep)
-  (global-set-key (kbd "; f 4") 'ffap-other-window)
-  (global-set-key (kbd "; f n") 'ffap-other-frame)
-  (global-set-key (kbd "; f o") 'ff-find-other-file)
-  (global-set-key (kbd "; f r") 'ff-find-related-file)
-  (global-set-key (kbd "; f w") 'buffer-file-name-as-kill)
-  (global-set-key (kbd "; f k") 'kill-buffer)
-  (global-set-key (kbd "; f q") 'delete-frame-and-buffer)
   (global-set-key (kbd "; f a") 'org-agenda)
   (global-set-key (kbd "; f c") 'calendar)
-  (global-set-key (kbd "; f s") 'save-buffer)
-  (global-set-key (kbd "; f v") 'view-mode)
+  (global-set-key (kbd "; f d") 'find-dired)
+  (global-set-key (kbd "; f f") 'find-file)
+  (global-set-key (kbd "; f g") 'rgrep)
   (global-set-key (kbd "; f j") 'dired-jump)
+  (global-set-key (kbd "; f k") 'kill-buffer)
+  (global-set-key (kbd "; f n") 'ffap-other-frame)
+  (global-set-key (kbd "; f o") 'ff-find-other-file)
+  (global-set-key (kbd "; f p") 'find-file-at-point)
+  (global-set-key (kbd "; f q") 'delete-frame-and-buffer)
+  (global-set-key (kbd "; f r") 'ff-find-related-file)
+  (global-set-key (kbd "; f s") 'save-buffer)
+  (when (fboundp 'magit-status)
+    (global-set-key (kbd "; f t") 'magit-status))
+  (global-set-key (kbd "; f v") 'view-mode)
+  (global-set-key (kbd "; f w") 'buffer-file-name-as-kill)
+  (global-set-key (kbd "; f 4") 'ffap-other-window)
+  (global-set-key (kbd "; f 5") 'ffap-other-frame)
 
   (global-set-key (kbd "; a") prefix-arg)
   (global-set-key (kbd "; a c") 'browse-url)

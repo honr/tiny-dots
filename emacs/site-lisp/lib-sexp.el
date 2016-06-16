@@ -90,4 +90,11 @@
 (defun mapfmt (fmt-string coll)
   (mapcar (lambda (x) (format fmt-string x)) coll))
 
+;; Example: (global-set-key (kbd "C-c f") (find-file-dir-command "/usr"))
+(defmacro find-file-dir-command (dir)
+  `(lambda ()
+     (interactive)
+     (let ((default-directory ,dir))
+       (call-interactively 'find-file))))
+
 (provide 'lib-sexp)
