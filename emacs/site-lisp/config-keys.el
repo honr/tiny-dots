@@ -289,7 +289,11 @@
 
   ;; Remove a few local bindings that would overshadow the global definition
   ;; of this prefix key (";").
-  (dolist (keymap (list paredit-mode-map java-mode-map c++-mode-map))
+  (dolist (keymap (list paredit-mode-map
+                        java-mode-map
+                        c++-mode-map
+                        c-mode-map
+                        c-mode-base-map))
     (define-key keymap (kbd ";") nil))
 
   (global-set-key (kbd ";") prefix-arg)
