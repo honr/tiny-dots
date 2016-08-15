@@ -12,11 +12,13 @@
                  ;; [org.clojure/tools.reader "0.8.3"]
                  ;; [org.clojure/core.match "0.2.1"]
                  ;; [swank-clojure "1.4.2"]
-                 [org.mozilla/rhino "1.7.7"]
+                 [org.mozilla/rhino "1.7.7.1"]
 
-                 [com.google.javascript/closure-compiler "v20151015"]
-                 [org.clojure/clojurescript "1.7.189"]
-                 [clj-http "2.0.0"]
+                 [com.google.javascript/closure-compiler "v20160315"
+                  ;; "v20160517" ;; "v20160619"
+                  ]
+                 [org.clojure/clojurescript "1.9.93"]
+                 [clj-http "3.1.0"]
                  ;;;; FROM HERE:
                  ;; [org.apache.httpcomponents/httpclient "4.1.2"]
                  ;; [incanter/incanter-core "1.5.1"]
@@ -34,18 +36,18 @@
                  ;; ;; jetty moved to eclipse. look for jetty 8.
                  ;; [postgresql "9.1-901.jdbc4"]
                  [xpp3 "1.1.4c"]
-                 [org.jsoup/jsoup "1.8.3"]
-                 [compojure "1.4.0"]
+                 [org.jsoup/jsoup "1.9.2"]
+                 [compojure "1.5.1"]
                  [hiccup "1.0.5"]
                  ;; ;; [ring "0.3.8"]
-                 [ring/ring-jetty-adapter "1.4.0"]
-                 [ring/ring-servlet "1.4.0"]
+                 [ring/ring-jetty-adapter "1.5.0"]
+                 [ring/ring-servlet "1.5.0"]
                  ;; [clout "1.0.1"]
-                 [org.yaml/snakeyaml "1.16"]
+                 [org.yaml/snakeyaml "1.17"]
                  ;;;; UP TO HERE.
                  ;; [jgraph "5.13.0.0"]
                  ;; [lwjgl "2.2.2"]
-                 [joda-time "2.9.1"]
+                 [joda-time "2.9.4"]
                  [org.xerial/sqlite-jdbc "3.8.11.2"]
                  [com.cognitect/transit-clj "0.8.285"]
                  [com.cognitect/transit-js "0.8.837"]
