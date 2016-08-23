@@ -42,7 +42,7 @@
 (defun buffer-file-name-as-kill ()
   "Copy the name of the file name of current buffer to the kill-ring"
   (interactive)
-  (kill-new buffer-file-name))
+  (kill-new (or buffer-file-name "")))
 
 ;; (global-set-key [f4] (lambda () (interactive) (eshell t)))
 ;; (global-set-key (kbd "C-q") prefix-arg)
