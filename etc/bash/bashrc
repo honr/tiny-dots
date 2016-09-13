@@ -17,6 +17,7 @@ source_maybe ~/.local/etc/bash/term.bash
 source_maybe ~/.local/etc/bash/term.$SYSOSTYPE
 source_maybe ~/.local/etc/bash/generic.clj.bash
 source_maybe ~/.local/etc/bash/alias.bash
+source_maybe ~/.local/etc/bash/alias.$SYSOSTYPE
 
 export PROMPT_COMMAND="prompt-update"
 prepare-for-prompt-update-ps1
