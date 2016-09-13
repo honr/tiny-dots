@@ -335,6 +335,7 @@
     (global-set-key (kbd "; f t") 'magit-status))
   (global-set-key (kbd "; f v") 'view-mode)
   (global-set-key (kbd "; f w") 'buffer-file-name-as-kill)
+  (global-set-key (kbd "; f 3") 'server-edit)
   (global-set-key (kbd "; f 4") 'ffap-other-window)
   (global-set-key (kbd "; f 5") 'ffap-other-frame)
 
@@ -364,6 +365,9 @@
   (global-set-key (kbd "; w e") 'balance-windows)
   (global-set-key (kbd "; w i") 'delete-other-windows)
   (global-set-key (kbd "; w t") 'toggle-window-split-direction)
+
+  (global-set-key (kbd "; h") prefix-arg)
+  (define-key global-map (kbd "; h") 'help-command)
 
   (progn
     (global-set-key (kbd "; g") prefix-arg)
