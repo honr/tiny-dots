@@ -39,20 +39,41 @@ bindsym $mod+backslash [title="^[*]scratch[*].*[+]Emacs"] scratchpad show
 
 bindsym $mod+d mode "run"
 mode "run" {
-  bindsym x exec --no-startup-id i3-dmenu-desktop --dmenu="$dmenu"; mode "default"
-  bindsym j exec $currentWorkspaceGroup | xargs xterm -e screen -xR; mode "default"
-  bindsym Return exec xterm; mode "default"
+  bindsym x exec --no-startup-id i3-dmenu-desktop --dmenu="$dmenu"; \
+      mode "default"
+  bindsym j exec $currentWorkspaceGroup | xargs xterm -e screen -xR; \
+      mode "default"
+  bindsym Return exec xterm; \
+      mode "default"
 
-  bindsym e exec $ed; mode "default"
-  bindsym k exec $currentWorkspaceGroup | xargs -I@ $ed ~/src/@; mode "default"
+  bindsym e exec $ed; \
+      mode "default"
+  bindsym k exec $currentWorkspaceGroup | \
+      xargs -I@ $ed ~/src/@; mode "default"
 
-  bindsym g exec google-chrome; mode "default"
-  bindsym p exec google-chrome --user-data-dir="$HOME/chrome/play"; mode "default"
-  bindsym n exec google-chrome --incognito --user-data-dir="$HOME/chrome/inc"; mode "default"
-  bindsym y exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | xargs -I@ google-chrome --user-data-dir="$HOME/chrome/@"; mode "default"
+  bindsym f exec firefox; \
+      mode "default"
+  bindsym $mod+f exec ls ~/.mozilla/firefox/ | \
+      $dmenu -p 'Firefox dir' | \
+      xargs -I@ firefox --profile="$HOME/.mozilla/firefox/@" --no-remote; \
+      mode "default"
 
-  bindsym c exec chromium-browser; mode "default"
-  bindsym h exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | xargs -I@ chromium-browser --user-data-dir="$HOME/chrome/@"; mode "default"
+  bindsym g exec google-chrome; \
+      mode "default"
+  bindsym $mod+g exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | \
+      xargs -I@ google-chrome --user-data-dir="$HOME/chrome/@"; \
+      mode "default"
+  bindsym p exec google-chrome --user-data-dir="$HOME/chrome/play"; \
+      mode "default"
+  bindsym n exec google-chrome --incognito --user-data-dir="$HOME/chrome/inc"; \
+      mode "default"
+
+  bindsym c exec chromium-browser; \
+      mode "default"
+  bindsym $mod+c exec ls ~/chrome/ | \
+      $dmenu -p 'Chrome dir' | \
+      xargs -I@ chromium-browser --user-data-dir="$HOME/chrome/@"; \
+      mode "default"
 
   bindsym Escape mode "default"
   bindsym Control+g mode "default"
