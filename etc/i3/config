@@ -4,6 +4,8 @@ set $mod Mod4
 floating_modifier $mod
 # hide_edge_borders both
 
+workspace_layout stacking
+
 # Option 1: the beautiful PT Mono font from paratype:
 # font pango:PTMono 9
 # set $dmenu dmenu.xft -i -fn 'PTMono-9'
@@ -14,11 +16,10 @@ floating_modifier $mod
 # set $dmenu dmenu.xft -i -fn 'UbuntuCondensed-12'
 # set $input i3-input -f 'xft:UbuntuCondensed 12'
 
-# Option 3: Another condensed font, somewhat between ubuntu and helvetica!
+# Option 3: Another condensed font, somewhat between ubuntu and helvetica
 font pango:RobotoCondensed 11
 set $dmenu dmenu.xft -i -fn 'RobotoCondensed-11' -nb '#111111' -nf '#999999' -sb '#405020' -sf '#dddddd'
 set $input i3-input -f 'xft:RobotoCondensed 11'
-
 set $ed emacsclient -a '' -nc
 
 # Start on startup (but not on restarts).
@@ -107,9 +108,9 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
-bindsym $mod+Shift+minus move scratchpad
-bindsym $mod+m move scratchpad
-bindsym $mod+minus scratchpad show
+bindsym $mod+m           move scratchpad
+bindsym $mod+Shift+m     scratchpad show
+bindsym $mod+minus       scratchpad show
 
 # switch workspaces
 bindsym $mod+grave workspace back_and_forth
@@ -147,29 +148,6 @@ bindsym $mod+Control+l exec "i3lock --color '#110011' --image=$HOME/.config/i3/l
 bindsym $mod+Shift+r restart
 # Exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
-
-bindsym $mod+r mode "resize"
-mode "resize" {
-  # These bindings trigger as soon as you enter the resize mode
-
-  # Pressing left will shrink the window’s width.
-  # Pressing right will grow the window’s width.
-  # Pressing up will shrink the window’s height.
-  # Pressing down will grow the window’s height.
-  bindsym h     resize shrink width  2 px or 2 ppt
-  bindsym j     resize grow   height 2 px or 2 ppt
-  bindsym k     resize shrink height 2 px or 2 ppt
-  bindsym l     resize grow   width  2 px or 2 ppt
-  bindsym Left  resize shrink width  2 px or 2 ppt
-  bindsym Down  resize grow   height 2 px or 2 ppt
-  bindsym Up    resize shrink height 2 px or 2 ppt
-  bindsym Right resize grow   width  2 px or 2 ppt
-
-  # Back to normal
-  bindsym Control+g mode "default"
-  bindsym Return mode "default"
-  bindsym Escape mode "default"
-}
 
 bindsym $mod+e mode "layout"
 mode "layout" {
@@ -285,3 +263,5 @@ client.unfocused        #333333 #222222 #777777 #292d2e #222222
 client.urgent           #2f343a #900000 #ffffff #900000 #900000
 client.placeholder      #000000 #0c0c0c #ffffff #000000 #0c0c0c
 client.background       #ffffff
+
+for_window[workspace="^[.]"] floating enable
