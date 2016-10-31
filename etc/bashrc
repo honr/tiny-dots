@@ -10,16 +10,13 @@ esac
 # TODO: Add a compilation function (to pool.manage) that recreates .bashrc
 # from all these sources.  The corresponding .book line could look like:
 # build "clj/project.clj" to "~/.local/share/java/project.clj"
-#
-# TODO: Do not source the same source again.  An associative array would have
-# helped if it was available in bash 3.
 function source_maybe () {
   local filename="$1"
   local name="$2"
-  local was_sourced="bash_sourced_$name"
+  local was_sourced="__bash_sourced_$name"
   if [ -z "${!was_sourced}" -a -r "$filename" ] ; then
       source "$filename"
-      declare -g "bash_sourced_$name"=t
+      export "${was_sourced}"=t
   fi
 }
 
@@ -33,7 +30,7 @@ source_maybe ~/.local/lib/bash/term.$UNAME term_UNAME
 source_maybe ~/.local/lib/bash/generic.clj.bash generic_clj
 source_maybe ~/.local/lib/bash/alias.bash alias_bash
 source_maybe ~/.local/lib/bash/alias.$UNAME alias_UNAME
-source_maybe ~/.local/lib/bash/util.bash util_bash
+source_maybe ~/.local/lib/bash/util.$UNAME util_UNAME
 
 export PROMPT_COMMAND="prompt-update"
 prepare-for-prompt-update-ps1
