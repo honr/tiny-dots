@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source_maybe ~/.local/lib/bash/term.bash
+source_maybe ~/.local/lib/bash/term.bash term_bash
 
 # Make less more friendly for non-text input files, see lesspipe(1)
 if [ -x /usr/bin/lesspipe ] ; then

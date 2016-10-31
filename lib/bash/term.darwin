@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source_maybe ~/.local/lib/bash/term.bash
+source_maybe ~/.local/lib/bash/term.bash term_bash
 
 export PROMPT_COMMAND="prompt-update"
 prepare-for-prompt-update-ps1
