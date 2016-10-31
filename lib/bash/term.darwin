@@ -1,6 +1,6 @@
-# -*- Mode: Shell-Script -*-
+#!/bin/bash
 
-# Requires term.bash
+source_maybe ~/.local/lib/bash/term.bash
 
 export PROMPT_COMMAND="prompt-update"
 prepare-for-prompt-update-ps1

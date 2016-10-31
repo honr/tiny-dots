@@ -2,43 +2,29 @@ CFLAGS=-Wall
 # CFLAGS=-g -Wall -pg
 
 UNAME := $(shell uname)
-UNAMEM := $(shell uname -m)
 
 LIBEXT := so
 ifeq ($(UNAME), Linux)
-PLATFORM=linux
+UNAME=linux
+JAVADIR := /usr/lib/jvm/java-9-openjdk-amd64
 LIB_PTHREAD=-lpthread
 LIB_HIST=-lhistory -ltermcap
 LIBSWITCH=-shared
 LIBEXT := so
 # TODO: Fix non amd64.
 INCLUDESJAVA := -Ibuild/include -I/usr/include
-INCLUDESJAVA += -I/usr/lib/jvm/java-7-openjdk-amd64/include
-INCLUDESJAVA += -I/usr/lib/jvm/java-7-openjdk-amd64/include/linux
-INCLUDESJAVA += -I/usr/lib/jvm/java-6-openjdk-amd64/include
-INCLUDESJAVA += -I/usr/lib/jvm/java-6-openjdk-amd64/include/linux
-INCLUDESJAVA += -I/usr/lib/jvm/java-6-openjdk/include
-INCLUDESJAVA += -I/usr/lib/jvm/java-6-openjdk/include/linux
+INCLUDESJAVA += -I/$(JAVADIR)/include
+INCLUDESJAVA += -I/$(JAVADIR)/include/linux
 else ifeq ($(UNAME), Darwin)
-PLATFORM=mac
+UNMAE=darwin
+JDKVERSION := $(shell basename /Library/Java/JavaVirtualMachines/*)
+JAVADIR := /Library/Java/JavaVirtualMachines/$(JDKVERSION)/Contents/Home
 LIBSWITCH=-dynamiclib
 LIBEXT := dylib
 INCLUDESJAVA := -Ibuild/include -I/usr/include -I/System//Library/Frameworks/JavaVM.framework/Headers -I/Library/Java/Home/include
+INCLUDESJAVA += -I/$(JAVADIR)/include
+INCLUDESJAVA += -I/$(JAVADIR)/include/mac
 endif
-
-ifeq ($(UNAMEM), i686)
-UNAMEM := x86
-else ifeq ($(UNAMEM), i586)
-UNAMEM := x86
-else ifeq ($(UNAMEM), i486)
-UNAMEM := x86
-else ifeq ($(UNAMEM), i386)
-UNAMEM := x86
-else ifeq ($(UNAMEM), amd64)
-UNAMEM := x86_64
-endif
-
-ARCHI := $(PLATFORM)-$(UNAMEM)
 
 all: dirs build/afunix.jar
 
@@ -51,7 +37,7 @@ build/lib:
 	mkdir -p $@
 
 build/afunix.jar: src/afunix/*.java
-	javac -d build -g:none src/afunix/*.java 
+	javac -d build -g:none src/afunix/*.java
 # TODO: ^^ find the option to includeJavaRuntime
 
 	javah -d build/include -classpath build afunix.NativeUnixSocket
@@ -65,9 +51,9 @@ build/afunix.jar: src/afunix/*.java
 INSTALLDIR := $(HOME)/.local
 
 install: all
-	install -d $(INSTALLDIR)/lib/$(ARCHI)
+	install -d $(INSTALLDIR)/lib/$(UNAME)
 	install -d $(INSTALLDIR)/share/java/lib-local
-	install build/lib/libNativeUnixSocket.$(LIBEXT) $(INSTALLDIR)/lib/$(ARCHI)
+	install build/lib/libNativeUnixSocket.$(LIBEXT) $(INSTALLDIR)/lib/$(UNAME)
 	install build/afunix.jar $(INSTALLDIR)/share/java/lib-local
 
 clean:

@@ -1,15 +1,16 @@
+#!/bin/bash
+
 export HISTSIZE=16384
 export HISTFILE=$HOME/.history/bash
 unset HISTFILESIZE
 export HISTCONTROL=ignoreboth
 export VISUAL="emacsclient"
 export EDITOR="emacsclient"
+export CLICOLOR=1
 
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace
 # HISTCONTROL=ignoredups:ignorespace
-
-export CLICOLOR=1
 
 shopt -s histappend
 shopt -s checkwinsize

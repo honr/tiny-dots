@@ -14,7 +14,7 @@ function sx () {
   fi
 }
 
-function e.which(){
+function e.which() {
   emacsclient -nc $(which $1)
 }
 complete -c e.which

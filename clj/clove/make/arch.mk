@@ -1,50 +1,36 @@
-# defines ARCHI,
+# defines UNAME,
 # defines and creates $(BUILDDIR) $(DOBJ), $(DBIN), $(DLIB) directories.
 
 UNAME := $(shell uname)
-UNAMEM := $(shell uname -m)
 
 LIBEXT := so
 ifeq ($(UNAME), Linux)
-PLATFORM=linux
+UNAME=linux
+JAVADIR := /usr/lib/jvm/java-9-openjdk-amd64
+
 # LIB_PTHREAD=-lpthread
 # LIB_HIST=-lhistory -ltermcap
 LIBSWITCH=-shared
 LIBEXT := so
-# TODO: Fix non amd64.
 INCLUDESJAVA := -Ibuild/include -I/usr/include
-INCLUDESJAVA += -I/usr/lib/jvm/java-9-openjdk-amd64/include
-INCLUDESJAVA += -I/usr/lib/jvm/java-9-openjdk-amd64/include/linux
-INCLUDESJAVA += -I/usr/lib/jvm/java-8-openjdk-amd64/include
-INCLUDESJAVA += -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux
+INCLUDESJAVA += -I/$(JAVADIR)/include
+INCLUDESJAVA += -I/$(JAVADIR)/include/linux
 
 else ifeq ($(UNAME), Darwin)
-PLATFORM=mac
+UNAME=darwin
+JDKVERSION := $(shell basename /Library/Java/JavaVirtualMachines/*)
+JAVADIR := /Library/Java/JavaVirtualMachines/$(JDKVERSION)/Contents/Home
 LIBSWITCH=-dynamiclib
 LIBEXT := dylib
-JDKVERSION := $(shell basename /Library/Java/JavaVirtualMachines/*)
-INCLUDESJAVA := -Ibuild/include -I/usr/include -I/System//Library/Frameworks/JavaVM.framework/Headers -I/Library/Java/Home/include
-INCLUDESJAVA += -I/Library/Java/JavaVirtualMachines/$(JDKVERSION)/Contents/Home/include
-INCLUDESJAVA += -I/Library/Java/JavaVirtualMachines/$(JDKVERSION)/Contents/Home/include/darwin
+INCLUDESJAVA := -Ibuild/include -I/usr/include -I/System/Library/Frameworks/JavaVM.framework/Headers -I/Library/Java/Home/include
+INCLUDESJAVA += -I/$(JAVADIR)/include
+INCLUDESJAVA += -I/$(JAVADIR)/include/mac
 endif
 
-ifeq ($(UNAMEM), i686)
-UNAMEM := x86
-else ifeq ($(UNAMEM), i586)
-UNAMEM := x86
-else ifeq ($(UNAMEM), i486)
-UNAMEM := x86
-else ifeq ($(UNAMEM), i386)
-UNAMEM := x86
-else ifeq ($(UNAMEM), amd64)
-UNAMEM := x86_64
-endif
-
-ARCHI := $(PLATFORM)-$(UNAMEM)
 BUILDDIR := build
-DOBJ := $(BUILDDIR)/obj/$(ARCHI)
-DBIN := $(BUILDDIR)/bin/$(ARCHI)
-DLIB := $(BUILDDIR)/lib/$(ARCHI)
+DOBJ := $(BUILDDIR)/obj/$(UNAME)
+DBIN := $(BUILDDIR)/bin/$(UNAME)
+DLIB := $(BUILDDIR)/lib/$(UNAME)
 
 dirs: $(BUILDDIR) $(DOBJ) $(DBIN) $(DLIB)
 

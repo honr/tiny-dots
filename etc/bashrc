@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# On linux: "linux", on Mac OS X: "darwin".
+UNAME="$(uname)" ; UNAME="${UNAME,}"
+
+# TODO: Add a compilation function (to pool.manage) that recreates .bashrc
+# from all these sources.  The corresponding .book line could look like:
+# build "clj/project.clj" to "~/.local/share/java/project.clj"
+#
+# Sources the specified file at most once.
+declare -g -A bash_sourced=()
+function source_maybe () {
+  local filename="$1"
+  if [ -z "${bash_sourced[$filename]}" -a -r "$filename" ] ; then
+      source "$filename"
+      bash_sourced["$filename"]=t
+  fi
+}
+
+source_maybe ~/.local/lib/bash/path.$UNAME
+
+# If not running interactively, don't do anything.
+[ -z "$PS1" ] && return
+
+source_maybe ~/.local/lib/bash/term.bash
+source_maybe ~/.local/lib/bash/term.$UNAME
+source_maybe ~/.local/lib/bash/generic.clj.bash
+source_maybe ~/.local/lib/bash/alias.bash
+source_maybe ~/.local/lib/bash/alias.$UNAME
+source_maybe ~/.local/lib/bash/util.bash
+
+export PROMPT_COMMAND="prompt-update"
+prepare-for-prompt-update-ps1
+function prompt-update () {
+  history -a
+  prompt-update-ps1
+}
+
+source_maybe ~/.local/lib/bash/site-local.bash
+source_maybe ~/.local/lib/bash/host-local.bash
