@@ -111,6 +111,9 @@
   (setq lua-indent-level 2)
   (add-to-list 'auto-mode-alist '("\\.lua\\'" . lua-mode)))
 
+(when (require 'javascript-mode nil t)
+  (add-to-list 'auto-mode-alist '("\\.javascript\\'" . javascript-mode)))
+
 (define-key c++-mode-map (kbd "; a n")
   (lambda ()
     (interactive)

@@ -1,4 +1,6 @@
-# -*- Mode: Shell-Script -*-
+#!/bin/bash
+
+source_maybe ~/.local/lib/bash/term.bash
 
 # Make less more friendly for non-text input files, see lesspipe(1)
 if [ -x /usr/bin/lesspipe ] ; then
@@ -6,7 +8,7 @@ if [ -x /usr/bin/lesspipe ] ; then
     export LESSCLOSE="/usr/bin/lesspipe %s %s"
 fi
 
-# Set variable identifying the chroot you work in (used in the prompt below).
+# Set variable identifying the chroot you work in (used in the prompt).
 if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
 	  debian_chroot=$(cat /etc/debian_chroot)
 fi
@@ -21,7 +23,10 @@ fi
 
 case "$TERM" in
     *-color|*-*color)
-        export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:'
+        LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:'
+        LS_COLORS+='bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:'
+        LS_COLORS+='ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:'
+        export LS_COLORS
         alias ls='ls --color=auto'
         alias grep='grep --color=auto'
     ;;

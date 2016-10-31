@@ -1,0 +1,5 @@
+# -*- Mode: Shell-Script -*-
+
+export PATH="$HOME/.local/bin/$UNAME:$HOME/.local/bin:$HOME/.opt/bin:$PATH"
+export GOPATH="$HOME/.local"
+export ALTERNATE_EDITOR=""

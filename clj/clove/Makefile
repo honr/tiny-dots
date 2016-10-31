@@ -1,6 +1,9 @@
-# CFLAGS=-Wall -O3
-CFLAGS=-g -Wall -Wextra -std=gnu99 -pedantic -O3
-# CFLAGS=-g -Wall -pg -O3
+# Example run:
+# make JAVADIR=/usr/lib/jvm/java-9-openjdk-amd64
+
+# CFLAGS := -Wall -O3
+CFLAGS := -g -Wall -Wextra -std=gnu99 -pedantic -O3
+# CFLAGS := -g -Wall -pg -O3
 
 default: all
 include make/arch.mk
@@ -52,12 +55,12 @@ build/clove.jar: $(BUILDDIR)/include/clove_CloveNet.h
 #	stupid jar! Could have an option to strip directory ("build" here)
 
 install: all
-	install -d $(INSTALLDIR)/bin/$(ARCHI)
-	install -d $(INSTALLDIR)/lib/$(ARCHI)
+	install -d $(INSTALLDIR)/bin/$(UNAME)
+	install -d $(INSTALLDIR)/lib/$(UNAME)
 	install -d $(INSTALLDIR)/share/java/lib-local
-	install $(DBIN)/clove $(INSTALLDIR)/bin/$(ARCHI)
-	install $(DBIN)/clove-daemon $(INSTALLDIR)/bin/$(ARCHI)
-	install $(DLIB)/libCloveNet.$(LIBEXT) $(INSTALLDIR)/lib/$(ARCHI)
+	install $(DBIN)/clove $(INSTALLDIR)/bin/$(UNAME)
+	install $(DBIN)/clove-daemon $(INSTALLDIR)/bin/$(UNAME)
+	install $(DLIB)/libCloveNet.$(LIBEXT) $(INSTALLDIR)/lib/$(UNAME)
 	install $(BUILDDIR)/clove.jar $(INSTALLDIR)/share/java/lib-local
 
 	install -d $(INSTALLDIR)/share/clove
