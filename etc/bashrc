@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # On linux: "linux", on Mac OS X: "darwin".
-UNAME="$(uname)" ; UNAME="${UNAME,}"
+UNAME="$(uname)"
+case "$UNAME" in
+  Linux) UNAME=linux ;;
+  Darwin) UNAME=darwin ;;
+esac
 
 # TODO: Add a compilation function (to pool.manage) that recreates .bashrc
 # from all these sources.  The corresponding .book line could look like:
