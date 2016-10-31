@@ -107,6 +107,10 @@
 (when (require 'dart-mode nil t)
   (add-to-list 'auto-mode-alist '("\\.dart\\'" . dart-mode)))
 
+(when (require 'lua-mode nil t)
+  (setq lua-indent-level 2)
+  (add-to-list 'auto-mode-alist '("\\.lua\\'" . lua-mode)))
+
 (define-key c++-mode-map (kbd "; a n")
   (lambda ()
     (interactive)
