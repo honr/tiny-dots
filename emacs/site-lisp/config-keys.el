@@ -63,8 +63,11 @@
 (global-set-key "\C-x5k" 'delete-frame-and-buffer)
 
 (defvar-local keyword-delimiter-char "-")
-(add-hook 'c-mode-common-hook
-          (lambda () (setq keyword-delimiter-char "_")))
+(dolist (mode '(c-mode-common-hook
+                python-mode-hook
+                sh-mode-hook
+                js-mode-hook))
+  (add-hook mode (lambda () (setq keyword-delimiter-char "_"))))
 (global-set-key (kbd "S-SPC")
                 (lambda ()
                   (interactive) (insert keyword-delimiter-char)))

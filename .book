@@ -1,4 +1,3 @@
-$HOME/.Xresources>$HOME/Pool/etc/Xresources
 $HOME/.bash_profile>$HOME/Pool/etc/bashrc
 $HOME/.bashrc>$HOME/Pool/etc/bashrc
 $HOME/.config
@@ -35,8 +34,8 @@ $HOME/.local/bin/lein2>$HOME/Pool/bin/lein2
 $HOME/.local/bin/lein>$HOME/Pool/bin/lein
 $HOME/.local/bin/pool.deploy>$HOME/Pool/bin/pool.deploy
 $HOME/.local/bin/pool.manage>$HOME/Pool/bin/pool.manage
-$HOME/.local/bin/ruler.clj>$HOME/Pool/bin/ruler.clj
 $HOME/.local/bin/ruler2.clj>$HOME/Pool/bin/ruler2.clj
+$HOME/.local/bin/ruler.clj>$HOME/Pool/bin/ruler.clj
 $HOME/.local/bin/screen-init>$HOME/Pool/bin/screen-init
 $HOME/.local/bin/shell>/bin/bash
 $HOME/.local/bin/sx>$HOME/Pool/bin/sx
@@ -56,9 +55,10 @@ $HOME/.local/lib/bash/alias.linux>$HOME/Pool/lib/bash/alias.linux
 $HOME/.local/lib/bash/generic.clj.bash>$HOME/Pool/lib/bash/generic.clj.bash
 $HOME/.local/lib/bash/path.linux>$HOME/Pool/lib/bash/path.linux
 $HOME/.local/lib/bash/term.bash>$HOME/Pool/lib/bash/term.bash
-$HOME/.local/lib/bash/term.linux>$HOME/Pool/lib/bash/term.linux
 $HOME/.local/lib/bash/term.darwin>$HOME/Pool/lib/bash/term.darwin
+$HOME/.local/lib/bash/term.linux>$HOME/Pool/lib/bash/term.linux
 $HOME/.local/lib/bash/util.bash>$HOME/Pool/lib/bash/util.bash
+$HOME/.local/lib/bash/util.linux>$HOME/Pool/lib/bash/util.linux
 $HOME/.local/lib/make
 $HOME/.local/lib/make/common.make>$HOME/Pool/make/common.make
 $HOME/.local/share
@@ -75,3 +75,4 @@ $HOME/.local/src>$HOME/Lake/go
 $HOME/.pythonrc>$HOME/Pool/python/pythonrc
 $HOME/.screenrc>$HOME/Pool/etc/screenrc
 $HOME/.xmonad>$HOME/Pool/xmonad
+$HOME/.Xresources>$HOME/Pool/etc/Xresources
