@@ -42,7 +42,6 @@ bell_msg "^Gbell in %n"
 # %?%{.Rw}[:%u]%{-}%?
 
 caption always "%{-s .}%{-s Y}$STY %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.gW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
-# That "-" prefix makes the shell run as a login shell.
-shell -${HOME}/.local/bin/shell
+shell ${HOME}/.local/bin/shell
 
 source ${HOME}/.screen/${STY}

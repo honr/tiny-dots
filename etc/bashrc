@@ -16,11 +16,17 @@ function source_maybe () {
   local was_sourced="__bash_sourced_$name"
   if [ -z "${!was_sourced}" -a -r "$filename" ] ; then
       source "$filename"
-      export "${was_sourced}"=t
+      # If name starts with a capital letter, also prevent reloading in
+      # subshells.
+      if [[ "${name:0:1}" =~ [A-Z] ]] ; then
+          export "${was_sourced}"=t
+      else
+        let "${was_sourced}"=t
+      fi
   fi
 }
 
-source_maybe ~/.local/lib/bash/path.$UNAME path_UNAME
+source_maybe ~/.local/lib/bash/path.$UNAME Path_UNAME
 
 # If not running interactively, don't do anything.
 [ -z "$PS1" ] && return
@@ -30,7 +36,7 @@ source_maybe ~/.local/lib/bash/term.$UNAME term_UNAME
 source_maybe ~/.local/lib/bash/generic.clj.bash generic_clj
 source_maybe ~/.local/lib/bash/alias.bash alias_bash
 source_maybe ~/.local/lib/bash/alias.$UNAME alias_UNAME
-source_maybe ~/.local/lib/bash/util.$UNAME util_UNAME
+source_maybe ~/.local/lib/bash/util.bash util_bash
 
 export PROMPT_COMMAND="prompt-update"
 prepare-for-prompt-update-ps1
