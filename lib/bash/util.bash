@@ -48,3 +48,5 @@ function e.cho() {
   done
   echo
 }
+
+export -f e.cho

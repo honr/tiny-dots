@@ -25,6 +25,7 @@ function source_maybe () {
       fi
   fi
 }
+export -f source_maybe
 
 source_maybe ~/.local/lib/bash/path.$UNAME Path_UNAME
 
