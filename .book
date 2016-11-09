@@ -58,7 +58,6 @@ $HOME/.local/lib/bash/term.bash>$HOME/Pool/lib/bash/term.bash
 $HOME/.local/lib/bash/term.darwin>$HOME/Pool/lib/bash/term.darwin
 $HOME/.local/lib/bash/term.linux>$HOME/Pool/lib/bash/term.linux
 $HOME/.local/lib/bash/util.bash>$HOME/Pool/lib/bash/util.bash
-$HOME/.local/lib/bash/util.linux>$HOME/Pool/lib/bash/util.linux
 $HOME/.local/lib/make
 $HOME/.local/lib/make/common.make>$HOME/Pool/make/common.make
 $HOME/.local/share
