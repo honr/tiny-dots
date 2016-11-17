@@ -82,7 +82,7 @@ mode "run" {
 
 bindsym $mod+q kill
 
-bindsym $mod+Shift+x exec --no-startup-id i3-dmenu-desktop --dmenu="rofi -show drun"
+bindsym $mod+Shift+colon exec --no-startup-id rofi -show drun
 bindsym $mod+space exec rofi -show window
 
 # change focus
