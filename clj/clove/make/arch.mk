@@ -24,7 +24,7 @@ LIBSWITCH=-dynamiclib
 LIBEXT := dylib
 INCLUDESJAVA := -Ibuild/include -I/usr/include -I/System/Library/Frameworks/JavaVM.framework/Headers -I/Library/Java/Home/include
 INCLUDESJAVA += -I/$(JAVADIR)/include
-INCLUDESJAVA += -I/$(JAVADIR)/include/mac
+INCLUDESJAVA += -I/$(JAVADIR)/include/darwin
 endif
 
 BUILDDIR := build
