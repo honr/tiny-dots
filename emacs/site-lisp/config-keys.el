@@ -62,15 +62,23 @@
   (kill-buffer (current-buffer)) (delete-frame))
 (global-set-key "\C-x5k" 'delete-frame-and-buffer)
 
-(defvar-local keyword-delimiter-char "-")
-(dolist (mode '(c-mode-common-hook
-                python-mode-hook
-                sh-mode-hook
-                js-mode-hook))
-  (add-hook mode (lambda () (setq keyword-delimiter-char "_"))))
+(defvar-local keyword-delimiter "_")
+(dolist (mode '(emacs-lisp-mode-hook
+                lisp-mode-hook
+                clojure-mode-hook))
+  (add-hook mode (lambda () (setq keyword-delimiter "-"))))
 (global-set-key (kbd "S-SPC")
-                (lambda ()
-                  (interactive) (insert keyword-delimiter-char)))
+                (lambda (arg)
+                  (interactive "p")
+                  (if (integerp arg)
+                      (if (> arg 0)
+                        (dotimes (_ arg)
+                          (insert keyword-delimiter))
+                        (let ((c (read-string "Set keyword-delimiter to: ")))
+                          (setq keyword-delimiter c)
+                          (message (format "keyword-delimiter is now '%s'."
+                                           keyword-delimiter))))
+                    (insert keyword-delimiter))))
 
 ;; Shift and transpose.
 (global-set-key (kbd "C-S-f") (lambda () (interactive) (transpose-chars 1)))

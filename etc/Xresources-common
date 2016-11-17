@@ -22,6 +22,8 @@ XTerm*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*
 XTerm*VT100.faceSize: 11
 ! XTerm.*backarrowKey: false
 XTerm*ttyModes: weras ^-
+! Refer to X Toolkit Intrinsics for more details.
+! Also, more possible keys can be found in /usr/include/X11/keysymdef.h
 XTerm.VT100.translations: #override \
     Super ~Shift <Key>c: copy-selection(CLIPBOARD) \n\
     Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
@@ -29,23 +31,13 @@ XTerm.VT100.translations: #override \
     Ctrl Shift <Key>n: spawn-new-terminal() \n\
     Shift <Key>space: string("_")
 
-! Refer to X Toolkit Intrinsics for more details.
-! Also, more possible keys can be found in /usr/include/X11/keysymdef.h
-
-XTermEmacs*fontMenu.Label: Unicode Fonts
-XTermEmacs.VT100.utf8:	1
-XTermEmacs*utf8Title: true
-XTermEmacs*termName: xterm-256color
-XTermEmacs*metaSendsEscape: true
-XTermEmacs*scrollttyoutput: false
-XTermEmacs*SimpleMenu.borderColor: gray20
-XTermEmacs*saveLines: 8192
-XTermEmacs*SimpleMenu*font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-XTermEmacs*SimpleMenu*menuLabel.font: -adobe-helvetica-medium-r-normal-*-*-90-*-*-*-*-*-*
-XTermEmacs*VT100.faceSize: 11
-XTermEmacs*ttyModes: weras ^-
-XTermEmacs*VT100.translations: #override \
-    Super ~Shift <Key>v: insert-selection(CLIPBOARD) \n\
-    Super  Shift <Key>v: insert-selection(PRIMARY, CUT_BUFFER0) \n\
-    Ctrl Shift <Key>n: spawn-new-terminal() \n\
-    Shift <Key>space: string("_")
+rofi.width:                          50
+rofi.lines:                          10
+rofi.font:                           RobotoCondensed 18
+rofi.bw:                             2
+rofi.location:                       2
+rofi.separator-style:                none
+rofi.color-normal:                   #222222,#eeeeee,#1a1a1a,#405020,#eeeeee
+rofi.color-urgent:                   #222222,#ff4444,#1a1a1a,#405020,#ff4444
+rofi.color-active:                   #222222,#eeff88,#1a1a1a,#405020,#eeff88
+rofi.color-window:                   #222222,#405020

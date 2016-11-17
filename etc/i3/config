@@ -82,8 +82,8 @@ mode "run" {
 
 bindsym $mod+q kill
 
-bindsym $mod+Shift+x exec --no-startup-id i3-dmenu-desktop --dmenu="$dmenu"
-bindsym $mod+x exec $input
+bindsym $mod+Shift+x exec --no-startup-id i3-dmenu-desktop --dmenu="rofi -show drun"
+bindsym $mod+space exec rofi -show window
 
 # change focus
 bindsym $mod+b focus left
@@ -213,7 +213,7 @@ bindsym $mod+Control+s exec $input -F '[con_mark="%s"] focus' -P 'Focus mark: '
 # toggle tiling / floating
 bindsym $mod+t floating toggle
 # change focus between tiling / floating windows
-bindsym $mod+space focus mode_toggle
+bindsym $mod+Shift+t focus mode_toggle
 
 # Volume control:
 bindsym XF86AudioRaiseVolume exec --no-startup-id "amixer -q sset Master,0 1+ unmute"
