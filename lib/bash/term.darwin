@@ -2,9 +2,7 @@
 
 source_maybe ~/.local/lib/bash/term.bash term_bash
 
-export PROMPT_COMMAND="prompt-update"
-prepare-for-prompt-update-ps1
-function prompt-update () {
+function prompt_update () {
   history -a
-  prompt-update-ps1
+  prompt_update_ps1
 }
