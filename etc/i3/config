@@ -44,7 +44,7 @@ mode "run" {
       mode "default"
   bindsym j exec $currentWorkspaceGroup | xargs xterm -e screen -xR; \
       mode "default"
-  bindsym Return exec xterm; \
+  bindsym Return exec $currentWorkspaceGroup | xargs -I '{}' xterm -e 'STY="{}" bash'; \
       mode "default"
 
   bindsym e exec $ed; \
