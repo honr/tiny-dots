@@ -14,12 +14,12 @@ function sx () {
   fi
 }
 
-function e.which() {
-  emacsclient -nc $(which $1)
+function ee.which() {
+  emacsclient -nc "$(which $1)"
 }
 complete -c e.which
 
-function e.e () {
+function ee () {
   if [ -z "$1" ] ; then
       emacsclient -nc .
   else
@@ -28,7 +28,7 @@ function e.e () {
 }
 
 # Requires you to have defined expand_ws_path.
-function e.sx () {
+function ee.sx () {
   local shortsty="${STY##*.}"
   if [ -z "$shortsty" ] ; then
       return
