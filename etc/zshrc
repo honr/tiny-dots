@@ -1,0 +1,8 @@
+HISTFILE=~/.history/zsh
+HISTSIZE=16384
+SAVEHIST=65536
+bindkey -e
+
+zstyle :compinstall filename '/home/el/.zshrc'
+autoload -Uz compinit
+compinit

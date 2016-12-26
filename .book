@@ -1,4 +1,5 @@
 $HOME/.bash_profile>$HOME/Pool/etc/bashrc
+$HOME/.zshrc>$HOME/Pool/etc/zshrc
 $HOME/.bashrc>$HOME/Pool/etc/bashrc
 $HOME/.config
 $HOME/.config/gtk-3.0
