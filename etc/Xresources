@@ -1,5 +1,6 @@
 ! Path is relative to the current file.
 #include ".local/etc/Xresources-common"
+#include ".local/etc/Xresources-host"
 
 emacs.font: PT Mono-11
 XTerm*VT100.faceName: PTMono
