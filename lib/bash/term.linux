@@ -31,3 +31,8 @@ case "$TERM" in
         alias grep='grep --color=auto'
     ;;
 esac
+
+function prompt_update () {
+  history -a
+  prompt_update_ps1
+}
