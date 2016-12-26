@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# echo with color codes interleaved
-# example:
-# e.cho @521 Hello @20/04 World
-function e.cho() {
+# `echo' with color codes interleaved. Example:
+# cecho @521 Hello @20/04 World
+function cecho() {
   local reset_color='\033[0m'
   local arg color
   for arg; do
@@ -49,4 +48,4 @@ function e.cho() {
   echo
 }
 
-export -f e.cho
+export -f cecho

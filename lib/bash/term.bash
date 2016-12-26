@@ -31,7 +31,7 @@ function current_workspace () {
 }
 
 export PS1_SRC=''
-function prepare-for-prompt-update-ps1 () {
+function prompt_update_init () {
   local use_color_prompt
   local plain_prompt='{{chroot}}\u@\h:{{branch}}\w {{date}}'
   case "$TERM" in
@@ -54,7 +54,7 @@ function prepare-for-prompt-update-ps1 () {
 }
 
 PS1_line_number=0
-function prompt-update-ps1 () {
+function prompt_update_ps1 () {
   ((PS1_line_number++))
   PS1="${PS1_SRC//'{{date}}'/$(date +%Y-%m-%d\ %H:%M:%S)}"
   PS1="${PS1//'{{num}}'/$PS1_line_number}"
