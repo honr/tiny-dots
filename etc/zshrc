@@ -1,8 +1,13 @@
 HISTFILE=~/.history/zsh
 HISTSIZE=16384
 SAVEHIST=65536
+WORDCHARS=''
 bindkey -e
 
 zstyle :compinstall filename '/home/el/.zshrc'
-autoload -Uz compinit
-compinit
+autoload -Uz compinit ; compinit
+
+bindkey ^W kill-region
+
+PROMPT='   %(?:%b%F{green}:%B%F{red})><(((º>%b %B%D{%V.%a %T %s}
+%B%F{green}%i. %n@%m%F{blue}:%~ %b$ '
