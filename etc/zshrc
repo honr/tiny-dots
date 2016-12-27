@@ -13,12 +13,15 @@ bindkey ^W kill-region
 
 setopt prompt_subst
 autoload -Uz vcs_info
-zstyle ':vcs_info:*' actionformats '%s %F{3}%b%f|%a %S'
-zstyle ':vcs_info:*' formats '%s %F{2}%b%f %S'
+zstyle ':vcs_info:*' actionformats '[%b]' '%F{2}(%a) %F{6}%r/%f%S'
+zstyle ':vcs_info:*' formats '[%b]' '%F{6}%r/%f%S'
 zstyle ':vcs_info:*' enable git
 precmd() {
-    vcs_info
+  vcs_info
+  print -Pn "\e]0;%n@%m: %~ %D{%V.%a %H:%M %s}\a"
 }
 
-PROMPT='   %(?:%b%F{green}:%B%F{red})><(((º>%b %B%D{%V.%a %T %s} %b%F{yellow}${vcs_info_msg_0_}%b
-%B%F{green}%i. %n@%m%F{blue}:%1~ %b$ '
+PROMPT='%F{142}%B%i. %n@%m:%F{149}${vcs_info_msg_0_}%F{75}%1~%f %B%F{144}%D{%V.%a %H:%M %s} %(?:%b%F{35}:%B%F{red})><(((º>%b
+%B%F{142}$%f%b '
+PROMPT2='  '
+RPROMPT='%F{yellow}${vcs_info_msg_1_}%b'
