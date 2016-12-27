@@ -1,3 +1,5 @@
+#!/usr/bin/zsh
+
 HISTFILE=~/.history/zsh
 HISTSIZE=16384
 SAVEHIST=65536
@@ -9,5 +11,14 @@ autoload -Uz compinit ; compinit
 
 bindkey ^W kill-region
 
-PROMPT='   %(?:%b%F{green}:%B%F{red})><(((º>%b %B%D{%V.%a %T %s}
-%B%F{green}%i. %n@%m%F{blue}:%~ %b$ '
+setopt prompt_subst
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' actionformats '%s %F{3}%b%f|%a %S'
+zstyle ':vcs_info:*' formats '%s %F{2}%b%f %S'
+zstyle ':vcs_info:*' enable git
+precmd() {
+    vcs_info
+}
+
+PROMPT='   %(?:%b%F{green}:%B%F{red})><(((º>%b %B%D{%V.%a %T %s} %b%F{yellow}${vcs_info_msg_0_}%b
+%B%F{green}%i. %n@%m%F{blue}:%1~ %b$ '
