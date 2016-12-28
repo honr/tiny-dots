@@ -4,6 +4,7 @@ HISTFILE=~/.history/zsh
 HISTSIZE=16384
 SAVEHIST=65536
 WORDCHARS=''
+REPORTTIME=10 # Show system load for commands taking more than 10 seconds.
 bindkey -e
 bindkey '^W'  kill-region
 bindkey '^[n' history-beginning-search-forward
