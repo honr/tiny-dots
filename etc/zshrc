@@ -5,11 +5,12 @@ HISTSIZE=16384
 SAVEHIST=65536
 WORDCHARS=''
 bindkey -e
+bindkey '^W'  kill-region
+bindkey '^[n' history-beginning-search-forward
+bindkey '^[p' history-beginning-search-backward
 
 zstyle :compinstall filename '/home/el/.zshrc'
 autoload -Uz compinit ; compinit
-
-bindkey ^W kill-region
 
 setopt prompt_subst
 autoload -Uz vcs_info
@@ -25,3 +26,50 @@ PROMPT='%F{142}%B%i. %n@%m:%F{149}${vcs_info_msg_0_}%F{75}%1~%f %B%F{144}%D{%V.%
 %B%F{142}$%f%b '
 PROMPT2='  '
 RPROMPT='%F{yellow}${vcs_info_msg_1_}%b'
+
+autoload -Uz predict-on
+zle -N predict-on
+zle -N predict-off
+bindkey '^X^Z' predict-on
+bindkey '^Z' predict-off
+
+UNAME="$(uname)"
+case "$UNAME" in
+  Linux) UNAME=linux ;;
+  Darwin) UNAME=darwin ;;
+esac
+
+export PATH="$HOME/.local/bin/$UNAME:$HOME/.local/bin:$HOME/.opt/bin:$PATH"
+export GOPATH="$HOME/.local"
+export ALTERNATE_EDITOR=""
+export VISUAL="emacsclient"
+export EDITOR="emacsclient"
+# export CLICOLOR=1 # Same as ls -G
+
+bell() { echo -e '\a' }
+la() { ls -Glarth }
+
+clj() {
+  if [[ "$1" == "-i" ]] ; then
+      shift
+      clove -i clojure "$@"
+  else
+    clove -c clojure "$@"
+  fi
+}
+
+sx() {
+  if [[ -z "$1" ]] ; then
+    screen -ls
+  else
+    STY="$1" screen -xR "$1"
+  fi
+}
+
+ee() {
+  if [[ -z "$1" ]] ; then
+      emacsclient -nc .
+  else
+    emacsclient -nc "$@"
+  fi
+}
