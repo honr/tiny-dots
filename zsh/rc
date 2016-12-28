@@ -9,7 +9,14 @@ bindkey '^W'  kill-region
 bindkey '^[n' history-beginning-search-forward
 bindkey '^[p' history-beginning-search-backward
 
-zstyle :compinstall filename '/home/el/.zshrc'
+# From bashrc
+# shopt -s histappend
+# shopt -s checkwinsize
+# set +o histexpand
+# [[ -t 0 && -t 1 ]] && stty werase ^-
+# TERM="xterm-256color"
+
+zstyle :compinstall filename "$HOME/.local/zsh/rc"
 autoload -Uz compinit ; compinit
 
 setopt prompt_subst
@@ -27,26 +34,20 @@ PROMPT='%F{142}%B%i. %n@%m:%F{149}${vcs_info_msg_0_}%F{75}%1~%f %B%F{144}%D{%V.%
 PROMPT2='  '
 RPROMPT='%F{yellow}${vcs_info_msg_1_}%b'
 
+# Experimental; haven't decided to use plugin.
 autoload -Uz predict-on
 zle -N predict-on
 zle -N predict-off
 bindkey '^X^Z' predict-on
 bindkey '^Z' predict-off
 
-UNAME="$(uname)"
-case "$UNAME" in
-  Linux) UNAME=linux ;;
-  Darwin) UNAME=darwin ;;
-esac
-
-export PATH="$HOME/.local/bin/$UNAME:$HOME/.local/bin:$HOME/.opt/bin:$PATH"
-export GOPATH="$HOME/.local"
-export ALTERNATE_EDITOR=""
 export VISUAL="emacsclient"
 export EDITOR="emacsclient"
+export ALTERNATE_EDITOR=""
 # export CLICOLOR=1 # Same as ls -G
 
 bell() { echo -e '\a' }
+
 la() { ls -Glarth }
 
 clj() {
@@ -73,3 +74,5 @@ ee() {
     emacsclient -nc "$@"
   fi
 }
+
+source "$HOME/.local/zsh/rc.$UNAME"

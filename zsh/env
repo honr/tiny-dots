@@ -1,0 +1,9 @@
+# On linux: "linux", on Mac OS X: "darwin".
+UNAME="$(uname)"
+case "$UNAME" in
+  Linux) UNAME=linux ;;
+  Darwin) UNAME=darwin ;;
+esac
+
+export PATH="$HOME/.local/bin/$UNAME:$HOME/.local/bin:$HOME/.opt/bin:$PATH"
+export GOPATH="$HOME/.local"

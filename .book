@@ -1,5 +1,4 @@
 $HOME/.bash_profile>$HOME/Pool/etc/bashrc
-$HOME/.zshrc>$HOME/Pool/etc/zshrc
 $HOME/.bashrc>$HOME/Pool/etc/bashrc
 $HOME/.config
 $HOME/.config/gtk-3.0
@@ -72,7 +71,16 @@ $HOME/.local/share/man
 $HOME/.local/share/man/man1
 $HOME/.local/share/man/man1/pool.deploy.1>$HOME/Pool/man/pool.deploy.1
 $HOME/.local/src>$HOME/Lake/go
+$HOME/.local/zsh
+$HOME/.local/zsh/rc>$HOME/Pool/zsh/rc
+$HOME/.local/zsh/rc.linux>$HOME/Pool/zsh/rc.linux
+$HOME/.local/zsh/rc.darwin>$HOME/Pool/zsh/rc.darwin
+$HOME/.local/zsh/env>$HOME/Pool/zsh/env
+$HOME/.local/zsh/profile>$HOME/Pool/zsh/profile
 $HOME/.pythonrc>$HOME/Pool/python/pythonrc
 $HOME/.screenrc>$HOME/Pool/etc/screenrc
 $HOME/.xmonad>$HOME/Pool/xmonad
 $HOME/.Xresources>$HOME/Pool/etc/Xresources
+$HOME/.zshrc>$HOME/.local/zsh/rc
+$HOME/.zshenv>$HOME/.local/zsh/env
+$HOME/.zprofile>$HOME/.local/zsh/profile
