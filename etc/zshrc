@@ -21,8 +21,10 @@ autoload -Uz compinit ; compinit
 
 setopt prompt_subst
 autoload -Uz vcs_info
-zstyle ':vcs_info:*' actionformats '[%r %b]' '%F{2}(%a) %b %F{6}%r/%f%S'
-zstyle ':vcs_info:*' formats '[%r %b]' '%b %F{6}%r/%f%S'
+zstyle ':vcs_info:*' actionformats \
+       '[%r %b]' 'branch="%b" repo="%r" subdir="%S" action="%a"'
+zstyle ':vcs_info:*' formats \
+       '[%r %b]' 'branch="%b" repo="%r" subdir="%S"'
 zstyle ':vcs_info:*' enable git
 precmd() {
   vcs_info
