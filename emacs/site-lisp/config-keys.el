@@ -3,6 +3,8 @@
 (autoload 'ibuffer "ibuffer" "List buffers." t)
 (setq ibuffer-auto-mode t)
 
+(setq user-default-shell "zsh")
+
 (global-set-key (kbd "C-x f") prefix-arg)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x f f") 'find-file-at-point)
@@ -141,14 +143,15 @@
                               (substring
                                (caddr (split-string buffer-file-name ":"))
                                (length remote-path)))))
-      ;; CAVEAT: assumes remote-path and remote-filename are single bash
+      ;; CAVEAT: assumes remote-path and remote-filename are single shell
       ;; tokens, and have no '$' in them.
-      (format "ssh '%s' -t 'cd %s; %sbash'"
+      (format "ssh '%s' -t 'cd %s; %s%s'"
               remote-host
               remote-path
               (if remote-filename
                   (format "F=%s " remote-filename)
-                "")))))
+                "")
+              user-default-shell))))
 
 (defun terminal-here ()
   (interactive)

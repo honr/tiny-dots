@@ -21,18 +21,18 @@ autoload -Uz compinit ; compinit
 
 setopt prompt_subst
 autoload -Uz vcs_info
-zstyle ':vcs_info:*' actionformats '[%b]' '%F{2}(%a) %F{6}%r/%f%S'
-zstyle ':vcs_info:*' formats '[%b]' '%F{6}%r/%f%S'
+zstyle ':vcs_info:*' actionformats '[%r %b]' '%F{2}(%a) %b %F{6}%r/%f%S'
+zstyle ':vcs_info:*' formats '[%r %b]' '%b %F{6}%r/%f%S'
 zstyle ':vcs_info:*' enable git
 precmd() {
   vcs_info
-  print -Pn "\e]0;%n@%m: %~ %D{%V.%a %H:%M %s}\a"
+  print -Pn "\e]0;%n@%m:${vcs_info_msg_0_}%~ %D{w%V %a %H:%M:%S}\a"
 }
 
-PROMPT='%F{142}%B%i. %n@%m:%F{149}${vcs_info_msg_0_}%F{75}%1~%f %B%F{144}%D{%V.%a %H:%M %s} %(?:%b%F{35}:%B%F{red})><(((º>%b
+PROMPT='%F{142}%B%i. %n@%m:%F{149}${vcs_info_msg_0_}%F{75}%1~%f %B%F{144}%D{%a %H:%M %s} %(?:%b%F{35}:%B%F{red})><(((º>%b
 %B%F{142}$%f%b '
 PROMPT2='  '
-RPROMPT='%F{yellow}${vcs_info_msg_1_}%b'
+# RPROMPT='%F{yellow}${vcs_info_msg_1_}%b'
 
 # Experimental; haven't decided to use plugin.
 autoload -Uz predict-on
@@ -46,9 +46,19 @@ export EDITOR="emacsclient"
 export ALTERNATE_EDITOR=""
 # export CLICOLOR=1 # Same as ls -G
 
-bell() { echo -e '\a' }
+source "$HOME/Pool/etc/zshrc.$UNAME" 2>/dev/null
+source "$HOME/Pool-site/etc/zshrc-site" 2>/dev/null
+source "$HOME/Pool-host/etc/zshrc-host" 2>/dev/null
 
+bell() { echo -e '\a' }
 la() { ls -Glarth }
+
+e.pwd() {
+  pwd
+  if [[ -n "${vcs_info_msg_1_}" ]] ; then
+      echo -e "vcs info: ${vcs_info_msg_1_}"
+  fi
+}
 
 clj() {
   if [[ "$1" == "-i" ]] ; then
@@ -74,5 +84,3 @@ ee() {
     emacsclient -nc "$@"
   fi
 }
-
-source "$HOME/.local/zsh/rc.$UNAME"
