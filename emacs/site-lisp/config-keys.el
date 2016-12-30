@@ -148,9 +148,7 @@
       (format "ssh '%s' -t 'cd %s; %s%s'"
               remote-host
               remote-path
-              (if remote-filename
-                  (format "F=%s " remote-filename)
-                "")
+              (if remote-filename (format "F=%s " remote-filename) "")
               user-default-shell))))
 
 (defun terminal-here ()
@@ -174,7 +172,7 @@
              (face-attribute 'default :foreground))
      (let ((rem (terminal-here--build-remote-command
                  default-directory buffer-file-name)))
-       (if rem (format "-e \"%s\"" rem) "")))))
+       (if rem (format "-e \"%s\"" rem) user-default-shell)))))
 
 (defun shell-here ()
   "Open a shell in `default-directory'."
