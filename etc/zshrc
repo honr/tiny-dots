@@ -31,7 +31,7 @@ precmd() {
   print -Pn "\e]0;%n@%m:${vcs_info_msg_0_}%~ %D{w%V %a %H:%M:%S}\a"
 }
 
-PROMPT='%F{142}%B%i. %n@%m:%F{149}${vcs_info_msg_0_}%F{75}%1~%f %B%F{144}%D{%a %H:%M %s} %(?:%b%F{35}:%B%F{red})><(((º>%b
+PROMPT='%F{142}%B%i. %n@%m:%F{149}${vcs_info_msg_0_}%F{75}%1~%f %B%F{144}%D{%a %H:%M %s} %(?:%b%F{35}:%B%F{red})><(((°>%b
 %B%F{142}$%f%b '
 PROMPT2='  '
 # RPROMPT='%F{yellow}${vcs_info_msg_1_}%b'

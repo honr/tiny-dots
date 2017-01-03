@@ -18,12 +18,15 @@ workspace_layout stacking
 
 # Option 3: Another condensed font, somewhat between ubuntu and helvetica
 font pango:RobotoCondensed 11
-set $dmenu dmenu.xft -i -fn 'RobotoCondensed-11' -nb '#111111' -nf '#999999' -sb '#405020' -sf '#dddddd'
+set $dmenu dmenu.xft -i -fn 'RobotoCondensed-13' \
+        -nb '#111111' -nf '#999999' -sb '#405020' -sf '#dddddd'
+# set $dmenu rofi -dmenu
 set $input i3-input -f 'xft:RobotoCondensed 11'
 set $ed emacsclient -a '' -nc
+set $sh zsh
 
 # Start on startup (but not on restarts).
-exec zsh -c 'emacs --daemon'
+exec $sh -c 'emacs --daemon'
 
 set $currentWorkspace i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true) | .name'
 set $currentWorkspaceGroup i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true) | .name' | grep -Eo '(^[^.]+)'
@@ -31,7 +34,7 @@ set $allWorkspaces i3-msg -t get_workspaces | jq -r '.[] | .name'
 
 # Applications
 bindsym $mod+Return       exec $currentWorkspaceGroup | xargs xterm -e screen -xR
-bindsym $mod+Shift+Return exec xterm
+bindsym $mod+Shift+Return exec xterm -e $sh
 bindsym $mod+semicolon    exec $ed
 bindsym $mod+o            exec google-chrome
 bindsym $mod+Shift+o      exec chromium-browser
@@ -40,11 +43,11 @@ bindsym $mod+backslash [title="^[*]scratch[*].*[+]Emacs"] scratchpad show
 
 bindsym $mod+d mode "run"
 mode "run" {
-  bindsym x exec --no-startup-id i3-dmenu-desktop --dmenu="$dmenu"; \
+  bindsym x exec --no-startup-id rofi -columns 6 -i -show drun; \
       mode "default"
   bindsym j exec $currentWorkspaceGroup | xargs xterm -e screen -xR; \
       mode "default"
-  bindsym Return exec $currentWorkspaceGroup | xargs -I '{}' xterm -e 'STY="{}" zsh'; \
+  bindsym Return exec $currentWorkspaceGroup | xargs -I '{}' xterm -e "STY='{}' $sh"; \
       mode "default"
 
   bindsym e exec $ed; \
@@ -64,8 +67,6 @@ mode "run" {
   bindsym $mod+g exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | \
       xargs -I@ google-chrome --user-data-dir="$HOME/chrome/@"; \
       mode "default"
-  bindsym p exec google-chrome --user-data-dir="$HOME/chrome/play"; \
-      mode "default"
   bindsym n exec google-chrome --incognito --user-data-dir="$HOME/chrome/inc"; \
       mode "default"
 
@@ -82,8 +83,8 @@ mode "run" {
 
 bindsym $mod+q kill
 
-bindsym $mod+Shift+colon exec --no-startup-id rofi -show drun
-bindsym $mod+space exec rofi -show window
+bindsym $mod+Shift+colon exec --no-startup-id rofi -columns 6 -i -show drun
+bindsym $mod+space exec rofi -i -show window -columns 2
 
 # change focus
 bindsym $mod+b focus left
@@ -146,6 +147,7 @@ bindsym $mod+Shift+0 move container to workspace 10
 bindsym $mod+Shift+c reload
 bindsym $mod+Control+l exec "i3lock --color '#110011' --image=$HOME/.config/i3/lock.png"
 bindsym $mod+Shift+r restart
+bindsym $mod+Control+Shift+r exec xrdb -load ~/.Xresources; restart
 # Exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
@@ -162,25 +164,23 @@ mode "layout" {
   bindsym r split vertical;      layout tabbed;   mode "default"
   bindsym w split horizontal;    layout stacking; mode "default"
 
-  # Pressing left will shrink the window’s width.
-  # Pressing right will grow the window’s width.
-  # Pressing up will shrink the window’s height.
-  # Pressing down will grow the window’s height.
-  bindsym h resize shrink width 10 px or 10 ppt
-  bindsym j resize grow height 10 px or 10 ppt
-  bindsym k resize shrink height 10 px or 10 ppt
-  bindsym l resize grow width 10 px or 10 ppt
-  bindsym Left resize shrink width 10 px or 10 ppt
-  bindsym Down resize grow height 10 px or 10 ppt
-  bindsym Up resize shrink height 10 px or 10 ppt
-  bindsym Right resize grow width 10 px or 10 ppt
+  bindsym h resize shrink width 5 px or 5 ppt
+  bindsym j resize grow height 5 px or 5 ppt
+  bindsym k resize shrink height 5 px or 5 ppt
+  bindsym l resize grow width 5 px or 5 ppt
+  bindsym Left resize shrink width 5 px or 5 ppt
+  bindsym Down resize grow height 5 px or 5 ppt
+  bindsym Up resize shrink height 5 px or 5 ppt
+  bindsym Right resize grow width 5 px or 5 ppt
 
-  bindsym 1 border normal 4; mode "default"
-  bindsym 2 border pixel 4; mode "default"
-  bindsym 3 border none; mode "default"
+  bindsym minus border none; mode "default"
+  bindsym 0 border normal 0; mode "default"
+  bindsym 1 border normal 1; mode "default"
+  bindsym 2 border normal 2; mode "default"
+  bindsym 3 border normal 4; mode "default"
+  bindsym 4 border pixel 4; mode "default"
 
   bindsym apostrophe bar mode toggle; mode "default"
-  bindsym Shift+apostrophe bar mode hide; mode "default"
 
   bindsym Control+g mode "default"
   bindsym Return mode "default"
@@ -189,26 +189,14 @@ mode "layout" {
 
 bindsym $mod+equal fullscreen toggle
 
-bindsym $mod+apostrophe mode "border"
-mode "border" {
-  bindsym 1 border normal 4; mode "default"
-  bindsym 2 border pixel 4; mode "default"
-  bindsym 3 border none; mode "default"
-
-  bindsym Control+g mode "default"
-  bindsym Return mode "default"
-  bindsym Escape mode "default"
-}
-
 bindsym $mod+a exec $allWorkspaces | $dmenu -p 'Swtich to workspace' | xargs i3-msg workspace
 bindsym $mod+Shift+a exec $allWorkspaces | $dmenu -p 'Move to workspace' | xargs i3-msg move to workspace
 bindsym $mod+Control+a exec $allWorkspaces | $dmenu -p 'Rename workspace to' | xargs i3-msg rename workspace to
 
 bindsym $mod+s exec $input -F 'mark "%s"' -P 'Mark for this container: '
-
-# bindsym $mod+Shift+s exec i3-msg -t get_marks | jq -r ".[]" | $dmenu -p "Move container to mark" | xargs i3-msg move container to mark
-# bindsym $mod+Shift+s exec i3-input -F 'move container to mark "%s"' -P 'Move container to mark: '
 bindsym $mod+Control+s exec $input -F '[con_mark="%s"] focus' -P 'Focus mark: '
+bindsym $mod+Shift+s exec i3-msg -t get_marks | jq -r ".[]" | $dmenu -p "Move container to mark" | xargs i3-msg move container to mark
+# bindsym $mod+Shift+s exec i3-input -F 'move container to mark "%s"' -P 'Move container to mark: '
 
 # toggle tiling / floating
 bindsym $mod+t floating toggle

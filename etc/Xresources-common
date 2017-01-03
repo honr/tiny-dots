@@ -31,11 +31,12 @@ XTerm.VT100.translations: #override \
     Ctrl Shift <Key>n: spawn-new-terminal() \n\
     Shift <Key>space: string("_")
 
-rofi.width:                          50
+rofi.width:                          100
 rofi.lines:                          10
 rofi.font:                           RobotoCondensed 18
 rofi.bw:                             2
 rofi.location:                       2
+rofi.case-sensitive:                 false ! Does not seem work.
 rofi.separator-style:                none
 rofi.color-normal:                   #222222,#eeeeee,#1a1a1a,#405020,#eeeeee
 rofi.color-urgent:                   #222222,#ff4444,#1a1a1a,#405020,#ff4444

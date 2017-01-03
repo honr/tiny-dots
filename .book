@@ -71,10 +71,10 @@ $HOME/.local/share/man
 $HOME/.local/share/man/man1
 $HOME/.local/share/man/man1/pool.deploy.1>$HOME/Pool/man/pool.deploy.1
 $HOME/.local/src>$HOME/Lake/go
-$HOME/.local/zsh
 $HOME/.pythonrc>$HOME/Pool/python/pythonrc
 $HOME/.screenrc>$HOME/Pool/etc/screenrc
 $HOME/.xmonad>$HOME/Pool/xmonad
+$HOME/.xprofile>$HOME/Pool/etc/xprofile
 $HOME/.Xresources>$HOME/Pool/etc/Xresources
 $HOME/.zshrc>$HOME/Pool/etc/zshrc
 $HOME/.zshenv>$HOME/Pool/etc/zshenv
