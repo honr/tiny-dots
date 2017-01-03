@@ -2,7 +2,7 @@
 #include ".local/etc/Xresources-host"
 
 emacs.font: PT Mono-11
-XTerm*VT100.faceName: PTMono
+XTerm*VT100.faceName: DejaVuSansMono  ! DroidSansMono GoMono PTMono Menlo
 XTerm.VT100.faceSize: 10
 xterm*color4:  #105090
 xterm*color12: #0080ff
