@@ -32,7 +32,6 @@ $HOME/.local/bin/hclone>$HOME/Pool/bin/hclone
 $HOME/.local/bin/html_to_vector.clj>$HOME/Pool/bin/html_to_vector.clj
 $HOME/.local/bin/lein2>$HOME/Pool/bin/lein2
 $HOME/.local/bin/lein>$HOME/Pool/bin/lein
-$HOME/.local/bin/pool.deploy>$HOME/Pool/bin/pool.deploy
 $HOME/.local/bin/pool.manage>$HOME/Pool/bin/pool.manage
 $HOME/.local/bin/ruler2.clj>$HOME/Pool/bin/ruler2.clj
 $HOME/.local/bin/ruler.clj>$HOME/Pool/bin/ruler.clj
