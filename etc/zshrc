@@ -9,6 +9,8 @@ bindkey '^W'  kill-region
 bindkey '^[n' history-beginning-search-forward
 bindkey '^[p' history-beginning-search-backward
 
+setopt SHARE_HISTORY
+
 # From bashrc
 # shopt -s histappend
 # shopt -s checkwinsize
@@ -16,7 +18,7 @@ bindkey '^[p' history-beginning-search-backward
 # [[ -t 0 && -t 1 ]] && stty werase ^-
 # TERM="xterm-256color"
 
-zstyle :compinstall filename "$HOME/.local/zsh/rc"
+zstyle :compinstall filename "$HOME/.zshrc"
 autoload -Uz compinit ; compinit
 
 setopt prompt_subst
@@ -26,6 +28,7 @@ zstyle ':vcs_info:*' actionformats \
 zstyle ':vcs_info:*' formats \
        '[%r %b]' 'branch="%b" repo="%r" subdir="%S"'
 zstyle ':vcs_info:*' enable git
+
 precmd() {
   vcs_info
   print -Pn "\e]0;%n@%m:${vcs_info_msg_0_}%~ %D{w%V %a %H:%M:%S}\a"
