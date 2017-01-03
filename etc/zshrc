@@ -46,7 +46,7 @@ bindkey '^Z' predict-off
 export VISUAL="emacsclient"
 export EDITOR="emacsclient"
 export ALTERNATE_EDITOR=""
-# export CLICOLOR=1 # Same as ls -G
+# export CLICOLOR=1 # Same as ls -G or ls --color=auto
 
 source "$HOME/Pool/etc/zshrc.$UNAME" 2>/dev/null
 source "$HOME/Pool-site/etc/zshrc-site" 2>/dev/null
@@ -54,7 +54,7 @@ source "$HOME/Pool-host/etc/zshrc-host" 2>/dev/null
 
 bell() { echo -e '\a' }
 
-la() { ls -Glarth }
+la() { ls -larthF }
 
 e.pwd() {
   pwd
@@ -83,55 +83,37 @@ sx() {
 ee() {
   if [[ -z "$1" ]] ; then
       emacsclient -nc .
+  elif [[ "$1" =~ ^- ]] ; then
+      emacsclient "$@"
   else
     emacsclient -nc "$@"
   fi
 }
 
-# `echo' with color codes interleaved. Example:
-# cecho @521 Hello @20/04 World
-function cecho() {
-  local reset_color='\033[0m'
-  local arg color
+# `echo' with color codes, and with neither escaping (-e) nor (-n). Example:
+# cecho -521: Hello -20:4 World -
+cecho() {
+  local arg
   for arg; do
-    if [[ "$arg" =~ ^@[0-9]{2,3}$ ]] ; then
-        local fg="${arg/@/}"
-        if [[ ${#fg} == 2 ]] ; then
-            fg="$(( 10#$fg + 232 ))"
-        else
-          fg="$(( 6#$fg + 16 ))"
-        fi
-        color="\\033[38;5;${fg}m"
-    elif [[ "$arg" =~ ^@[0-9]{2,3}[/][0-9]{2,3}$ ]] ; then
-        arg="${arg/@/}"
-        local fg="${arg%%/*}"
-        if [[ ${#fg} == 2 ]] ; then
-            fg="$(( 10#$fg + 232 ))"
-        else
-          fg="$(( 6#$fg + 16 ))"
-        fi
-        local bg="${arg##*/}"
-        if [[ ${#bg} == 2 ]] ; then
-            bg="$(( 10#$bg + 232 ))"
-        else
-          bg="$(( 6#$bg + 16 ))"
-        fi
-        color="\\033[38;5;${fg}m\\033[48;5;${bg}m"
-    elif [[ "$arg" =~ ^@[0-9]$ ]] ; then
-        local fg="${arg/@/}"
-        color="\\033[3${fg}m"
-    elif [[ "$arg" == "@" ]] ; then
-        color="$reset_color"
-    else # Not a color
-      if [[ -n "$color" ]] ; then
-          echo -ne "$color"
-      fi
+    if [[ "$arg" == "-" ]] ; then # Reset colors.
+        echo -ne '\033[0m'
+    elif [[ "$arg" =~ ^-[0-9]{0,3}:[0-9]{0,3}$ ]] ; then
+        arg="${arg/-/}"
+        __cecho_helper "\\033[38;5;" "${arg%%:*}"
+        __cecho_helper "\\033[48;5;" "${arg##*:}"
+    else
       echo -n "$arg"
-      if [[ -n "$color" ]] ; then
-          echo -ne "$reset_color"
-      fi
-      color=""
     fi
   done
   echo
+}
+__cecho_helper() {
+  local prefix="$1"
+  local color="$2"
+  if [[ -z "$color" ]]; then return; fi
+  if [[ "${#color}" == 3 ]] ; then
+      echo -ne "${prefix}$(( 6#$color + 16 ))m"
+  else
+    echo -ne "${prefix}$(( 10#$color + 232 ))m"
+  fi
 }
