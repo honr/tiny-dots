@@ -40,7 +40,6 @@ set $allWorkspaces i3-msg -t get_workspaces | \
 bindsym $mod+Return       $run $currentWorkspaceGroup | xargs xterm -e screen -xR
 bindsym $mod+Shift+Return $run xterm -e $sh
 bindsym $mod+semicolon    $run $ed
-bindsym $mod+o            $run xdg-open about:blank
 
 bindsym $mod+backslash [title="^[*]scratch[*].*[+]Emacs"] scratchpad show
 
@@ -57,6 +56,9 @@ mode "run" {
       mode "default"
   bindsym k $run $currentWorkspaceGroup | \
       xargs -I@ $ed ~/src/@; mode "default"
+  bindsym i $run $ed "$HOME/.config/i3/config"; \
+      mode "default"
+
 
   bindsym f $run firefox; \
       mode "default"
