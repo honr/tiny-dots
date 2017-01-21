@@ -24,55 +24,58 @@ set $dmenu dmenu.xft -i -fn 'RobotoCondensed-13' \
 set $input i3-input -f 'xft:RobotoCondensed 11'
 set $ed emacsclient -a '' -nc
 set $sh zsh
+set $run exec --no-startup-id
 
 # Start on startup (but not on restarts).
-exec $sh -c 'emacs --daemon'
+$run $sh -c 'emacs --daemon'
 
-set $currentWorkspace i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true) | .name'
-set $currentWorkspaceGroup i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true) | .name' | grep -Eo '(^[^.]+)'
-set $allWorkspaces i3-msg -t get_workspaces | jq -r '.[] | .name'
+set $currentWorkspace i3-msg -t get_workspaces | \
+    jq -r '.[] | select(.focused==true) | .name'
+set $currentWorkspaceGroup i3-msg -t get_workspaces | \
+    jq -r '.[] | select(.focused==true) | .name' | grep -Eo '(^[^.]+)'
+set $allWorkspaces i3-msg -t get_workspaces | \
+    jq -r '.[] | .name'
 
 # Applications
-bindsym $mod+Return       exec $currentWorkspaceGroup | xargs xterm -e screen -xR
-bindsym $mod+Shift+Return exec xterm -e $sh
-bindsym $mod+semicolon    exec $ed
-bindsym $mod+o            exec google-chrome
-bindsym $mod+Shift+o      exec chromium-browser
+bindsym $mod+Return       $run $currentWorkspaceGroup | xargs xterm -e screen -xR
+bindsym $mod+Shift+Return $run xterm -e $sh
+bindsym $mod+semicolon    $run $ed
+bindsym $mod+o            $run xdg-open about:blank
 
 bindsym $mod+backslash [title="^[*]scratch[*].*[+]Emacs"] scratchpad show
 
 bindsym $mod+d mode "run"
 mode "run" {
-  bindsym x exec --no-startup-id rofi -columns 6 -i -show drun; \
+  bindsym x $run rofi -columns 6 -i -show drun; \
       mode "default"
-  bindsym j exec $currentWorkspaceGroup | xargs xterm -e screen -xR; \
+  bindsym j $run $currentWorkspaceGroup | xargs xterm -e screen -xR; \
       mode "default"
-  bindsym Return exec $currentWorkspaceGroup | xargs -I '{}' xterm -e "STY='{}' $sh"; \
+  bindsym Return $run $currentWorkspaceGroup | xargs -I '{}' xterm -e "STY='{}' $sh"; \
       mode "default"
 
-  bindsym e exec $ed; \
+  bindsym e $run $ed; \
       mode "default"
-  bindsym k exec $currentWorkspaceGroup | \
+  bindsym k $run $currentWorkspaceGroup | \
       xargs -I@ $ed ~/src/@; mode "default"
 
-  bindsym f exec firefox; \
+  bindsym f $run firefox; \
       mode "default"
-  bindsym $mod+f exec ls ~/.mozilla/firefox/ | \
+  bindsym $mod+f $run ls ~/.mozilla/firefox/ | \
       $dmenu -p 'Firefox dir' | \
       xargs -I@ firefox --profile="$HOME/.mozilla/firefox/@" --no-remote; \
       mode "default"
 
-  bindsym g exec google-chrome; \
+  bindsym g $run google-chrome; \
       mode "default"
-  bindsym $mod+g exec ls ~/chrome/ | $dmenu -p 'Chrome dir' | \
+  bindsym $mod+g $run ls ~/chrome/ | $dmenu -p 'Chrome dir' | \
       xargs -I@ google-chrome --user-data-dir="$HOME/chrome/@"; \
       mode "default"
-  bindsym n exec google-chrome --incognito --user-data-dir="$HOME/chrome/inc"; \
+  bindsym n $run google-chrome --incognito --user-data-dir="$HOME/chrome/inc"; \
       mode "default"
 
-  bindsym c exec chromium-browser; \
+  bindsym c $run chromium-browser; \
       mode "default"
-  bindsym $mod+c exec ls ~/chrome/ | \
+  bindsym $mod+c $run ls ~/chrome/ | \
       $dmenu -p 'Chrome dir' | \
       xargs -I@ chromium-browser --user-data-dir="$HOME/chrome/@"; \
       mode "default"
@@ -83,8 +86,8 @@ mode "run" {
 
 bindsym $mod+q kill
 
-bindsym $mod+Shift+colon exec --no-startup-id rofi -columns 6 -i -show drun
-bindsym $mod+space exec rofi -i -show window -columns 2
+bindsym $mod+Shift+colon $run rofi -columns 6 -i -show drun
+bindsym $mod+space $run rofi -i -show window -columns 2
 
 # change focus
 bindsym $mod+b focus left
@@ -145,11 +148,11 @@ bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
 
 bindsym $mod+Shift+c reload
-bindsym $mod+Control+l exec "i3lock --color '#110011' --image=$HOME/.config/i3/lock.png"
+bindsym $mod+Control+l $run "i3lock --color '#110011' --image=$HOME/.config/i3/lock.png"
 bindsym $mod+Shift+r restart
-bindsym $mod+Control+Shift+r exec xrdb -load ~/.Xresources; restart
+bindsym $mod+Control+Shift+r $run xrdb -load ~/.Xresources; restart
 # Exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e $run "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 bindsym $mod+e mode "layout"
 mode "layout" {
@@ -189,14 +192,14 @@ mode "layout" {
 
 bindsym $mod+equal fullscreen toggle
 
-bindsym $mod+a exec $allWorkspaces | $dmenu -p 'Swtich to workspace' | xargs i3-msg workspace
-bindsym $mod+Shift+a exec $allWorkspaces | $dmenu -p 'Move to workspace' | xargs i3-msg move to workspace
-bindsym $mod+Control+a exec $allWorkspaces | $dmenu -p 'Rename workspace to' | xargs i3-msg rename workspace to
+bindsym $mod+a $run $allWorkspaces | $dmenu -p 'Swtich to workspace' | xargs i3-msg workspace
+bindsym $mod+Shift+a $run $allWorkspaces | $dmenu -p 'Move to workspace' | xargs i3-msg move to workspace
+bindsym $mod+Control+a $run $allWorkspaces | $dmenu -p 'Rename workspace to' | xargs i3-msg rename workspace to
 
-bindsym $mod+s exec $input -F 'mark "%s"' -P 'Mark for this container: '
-bindsym $mod+Control+s exec $input -F '[con_mark="%s"] focus' -P 'Focus mark: '
-bindsym $mod+Shift+s exec i3-msg -t get_marks | jq -r ".[]" | $dmenu -p "Move container to mark" | xargs i3-msg move container to mark
-# bindsym $mod+Shift+s exec i3-input -F 'move container to mark "%s"' -P 'Move container to mark: '
+bindsym $mod+s $run $input -F 'mark "%s"' -P 'Mark for this container: '
+bindsym $mod+Control+s $run $input -F '[con_mark="%s"] focus' -P 'Focus mark: '
+bindsym $mod+Shift+s $run i3-msg -t get_marks | jq -r ".[]" | $dmenu -p "Move container to mark" | xargs i3-msg move container to mark
+# bindsym $mod+Shift+s $run i3-input -F 'move container to mark "%s"' -P 'Move container to mark: '
 
 # toggle tiling / floating
 bindsym $mod+t floating toggle
@@ -204,9 +207,9 @@ bindsym $mod+t floating toggle
 bindsym $mod+Shift+t focus mode_toggle
 
 # Volume control:
-bindsym XF86AudioRaiseVolume exec --no-startup-id "amixer -q sset Master,0 1+ unmute"
-bindsym XF86AudioLowerVolume exec --no-startup-id "amixer -q sset Master,0 1- unmute"
-bindsym XF86AudioMute        exec --no-startup-id "amixer -D pulse set Master toggle"
+bindsym XF86AudioRaiseVolume $run "amixer -q sset Master,0 1+ unmute"
+bindsym XF86AudioLowerVolume $run "amixer -q sset Master,0 1- unmute"
+bindsym XF86AudioMute        $run "amixer -D pulse set Master toggle"
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)

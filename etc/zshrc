@@ -1,4 +1,4 @@
-#!/usr/bin/zsh
+#!/bin/zsh
 
 HISTFILE=~/.history/zsh
 HISTSIZE=32768
