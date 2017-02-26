@@ -5,5 +5,7 @@ emacs.font: PT Mono-11
 ! Other options: DroidSansMono, GoMono, PTMono, Menlo, DejaVuSansMono.
 XTerm*VT100.faceName: DejaVuSansMono
 XTerm.VT100.faceSize: 10
+UXTerm*VT100.faceName: DejaVuSansMono
+UXTerm.VT100.faceSize: 10
 xterm*color4:  #105090
 xterm*color12: #0080ff
