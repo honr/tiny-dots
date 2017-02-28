@@ -53,7 +53,10 @@ export EDITOR="emacsclient"
 export ALTERNATE_EDITOR=""
 # export CLICOLOR=1 # Same as ls -G or ls --color=auto
 
-source "$HOME/Pool/etc/zshrc.$UNAME" 2>/dev/null
+source "$HOME/Pool/base/etc/zshrc.$UNAME" 2>/dev/null
+source "$HOME/Pool/site/etc/zshrc-site" 2>/dev/null
+source "$HOME/Pool/host/etc/zshrc-host" 2>/dev/null
+# Legacy, should be removed in favour of the two lines above.
 source "$HOME/Pool-site/etc/zshrc-site" 2>/dev/null
 source "$HOME/Pool-host/etc/zshrc-host" 2>/dev/null
 
