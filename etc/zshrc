@@ -33,7 +33,6 @@ zstyle ':vcs_info:*' enable git
 precmd() {
   vcs_info
   print -Pn "\e]0;%n@%m:${vcs_info_msg_0_}%~ %D{w%V %a %H:%M:%S}\a"
-  hash -d r="${vcs_info_msg_2_}"
 }
 
 PROMPT='%F{142}%B%i. %n@%m:%F{149}${vcs_info_msg_0_}%F{75}%1~%f %B%F{144}%D{%a %H:%M %s} %(?:%b%F{35}><(((°>:%B%F{red}><(((ˣ>)%b
