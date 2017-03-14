@@ -97,6 +97,14 @@ ee() {
   fi
 }
 
+br() {
+  if [[ -z "$1" ]] ; then
+    git branch
+  else
+    git checkout "$@"
+  fi
+}
+
 # `echo' with color codes, and with neither escaping (-e) nor (-n). Example:
 # cecho -521: Hello -20:4 World -
 cecho() {
