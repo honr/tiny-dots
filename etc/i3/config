@@ -49,7 +49,8 @@ mode "run" {
       mode "default"
   bindsym j $run $currentWorkspaceGroup | xargs xterm -e screen -xR; \
       mode "default"
-  bindsym Return $run $currentWorkspaceGroup | xargs -I '{}' xterm -e "STY='{}' $sh"; \
+  bindsym Return $run $currentWorkspaceGroup | \
+      xargs -I '{}' xterm -e "STY='{}' $sh"; \
       mode "default"
 
   bindsym e $run $ed; \
