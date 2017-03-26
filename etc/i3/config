@@ -187,6 +187,11 @@ mode "layout" {
 
   bindsym apostrophe bar mode toggle; mode "default"
 
+  bindsym x $run echo "3840x2160\n2560x1280\n1920x1080" | \
+          $dmenu -p 'Set display resolution' | \
+          xargs xrandr -s; \
+          mode "default"
+
   bindsym Control+g mode "default"
   bindsym Return mode "default"
   bindsym Escape mode "default"
