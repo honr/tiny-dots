@@ -49,16 +49,20 @@ mode "run" {
       mode "default"
   bindsym j $run $currentWorkspaceGroup | xargs xterm -e screen -xR; \
       mode "default"
-  bindsym Return $run $currentWorkspaceGroup | xargs -I '{}' xterm -e "STY='{}' $sh"; \
+  bindsym Return $run $currentWorkspaceGroup | \
+      xargs -I '{}' xterm -e "STY='{}' $sh"; \
       mode "default"
 
   bindsym e $run $ed; \
       mode "default"
   bindsym k $run $currentWorkspaceGroup | \
-      xargs -I@ $ed ~/src/@; mode "default"
+      xargs -I@ $ed ~/src/@; \
+      mode "default"
   bindsym i $run $ed "$HOME/.config/i3/config"; \
       mode "default"
-
+  bindsym s $run $currentWorkspaceGroup | \
+      xargs -I@ $ed ~/.screen/@; \
+      mode "default"
 
   bindsym f $run firefox; \
       mode "default"

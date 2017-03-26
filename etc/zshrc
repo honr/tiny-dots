@@ -23,10 +23,11 @@ autoload -Uz compinit ; compinit
 
 setopt prompt_subst
 autoload -Uz vcs_info
+zstyle ':vcs_info:*' max-exports 4
 zstyle ':vcs_info:*' actionformats \
-       '[%r %b]' 'branch="%b" repo="%r" subdir="%S" action="%a"'
+       '[%r %b]' 'branch="%b" repo="%r" subdir="%S" action="%a"' '%R' '%r'
 zstyle ':vcs_info:*' formats \
-       '[%r %b]' 'branch="%b" repo="%r" subdir="%S"'
+       '[%r %b]' 'branch="%b" repo="%r" subdir="%S"' '%R' '%r'
 zstyle ':vcs_info:*' enable git
 
 precmd() {
@@ -93,6 +94,14 @@ ee() {
       emacsclient "$@"
   else
     emacsclient -nc "$@"
+  fi
+}
+
+br() {
+  if [[ -z "$1" ]] ; then
+    git branch
+  else
+    git checkout "$@"
   fi
 }
 
