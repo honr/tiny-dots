@@ -32,7 +32,7 @@
 ~/.local/bin/html_to_vector.clj bin/html_to_vector.clj
 ~/.local/bin/lein2 bin/lein2
 ~/.local/bin/lein bin/lein
-~/.local/bin/pool.manage bin/pool.manage
+~/.local/bin/pool bin/pool
 ~/.local/bin/ruler2.clj bin/ruler2.clj
 ~/.local/bin/ruler.clj bin/ruler.clj
 ~/.local/bin/screen-init bin/screen-init
@@ -74,6 +74,6 @@
 ~/.xmonad xmonad
 ~/.xprofile etc/xprofile
 ~/.Xresources etc/Xresources
-~/.zshrc etc/zshrc
-~/.zshenv etc/zshenv
 ~/.zprofile etc/zprofile
+~/.zshenv etc/zshenv
+~/.zshrc etc/zshrc
