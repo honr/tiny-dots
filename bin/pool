@@ -74,27 +74,27 @@ function cmd-install () {
     x=$OPTIND
   done
   shift $(($x-1))
-  local destination="$1"
+  local dest="$1"
 
-  local rsync_link rsync_compress remote_destination
+  local rsync_link rsync_compress remote_dest
   if [[ -n "$follow_symlinks" ]] ; then
     rsync_link="-L"
   fi
-  if [[ "${destination#*:}" != "${destination}" ]] ; then
+  if [[ "${dest#*:}" != "${dest}" ]] ; then
     # Has a `:' character in the destination. It must be a remote destination.
-    remote_destination="t"
+    remote_dest="t"
     rsync_compress="--compress"
   fi
   if [[ -n "$compress" ]] ; then
-    destination_tar="$destination"
-    destination="$destination.directory"
-    mkdir "$destination"
+    dest_tar="$dest"
+    dest="$dest.directory"
+    mkdir "$dest"
   fi
   if [[ -z "$dest_home" ]] ; then
-	  if [[ -z "$remote_destination" || -n "$follow_symlinks" ]] ; then
+	  if [[ -z "$remote_dest" || -n "$follow_symlinks" ]] ; then
 	    dest_home="$HOME"
 	  else
-	    dest_home="$(ssh "${destination%%:*}" 'echo $HOME')"
+	    dest_home="$(ssh "${dest%%:*}" 'echo $HOME')"
 	  fi
   fi
   if [ -z "$dest_home" ] ; then
@@ -125,11 +125,11 @@ function cmd-install () {
   # Step 2: rsync this target tree to dest_home
   rsync \
     -av $rsync_link $rsync_compress --no-o --no-g \
-    --exclude '.git/' "${dest_temporary_tree}/" "$destination"
+    --exclude '.git/' "${dest_temporary_tree}/" "$dest"
 
   if [[ -n "$compress" ]] ; then
-    tar czf "$destination_tar" -C "$destination" .
-    rm -Rf "$destination"
+    tar czf "$dest_tar" -C "$dest" .
+    rm -Rf "$dest"
   fi
 
   # Clean up
