@@ -1,80 +1,79 @@
-$HOME/.bash_profile>$HOME/Pool/base/etc/bashrc
-$HOME/.bashrc>$HOME/Pool/base/etc/bashrc
-$HOME/.config
-$HOME/.config/gtk-3.0
-$HOME/.config/gtk-3.0/settings.ini>$HOME/Pool/base/etc/gtk-3.0-settings.ini
-$HOME/.config/i3
-$HOME/.config/i3/config>$HOME/Pool/base/etc/i3/config
-$HOME/.config/i3status
-$HOME/.emacs.d
-$HOME/.emacs.d/init.el>$HOME/Pool/base/emacs/init.el
-$HOME/.emacs.d/insert
-$HOME/.emacs.d/site-lisp
-$HOME/.emacs.d/site-lisp/pool>$HOME/Pool/base/emacs/site-lisp
-$HOME/.emacs.d/themes
-$HOME/.emacs.d/themes/dark-forge-theme.el>$HOME/Pool/base/emacs/themes/dark-forge-theme.el
-$HOME/.emacs.d/themes/dark-ruthless-theme.el>$HOME/Pool/base/emacs/themes/dark-ruthless-theme.el
-$HOME/.emacs.d/themes/fruitsalad-dark-theme.el>$HOME/Pool/base/emacs/themes/fruitsalad-dark-theme.el
-$HOME/.emacs.d/themes/light-balcony-theme.el>$HOME/Pool/base/emacs/themes/light-balcony-theme.el
-$HOME/.emacs.d/themes/whitestone-serious-text-theme.el>$HOME/Pool/base/emacs/themes/whitestone-serious-text-theme.el
-$HOME/.emacs.d/themes/whitestone-serious-theme.el>$HOME/Pool/base/emacs/themes/whitestone-serious-theme.el
-$HOME/.fonts.conf>$HOME/Pool/base/etc/fonts.conf
-$HOME/.gnomerc>$HOME/Pool/base/etc/gnomerc
-$HOME/.gtkrc-2.0>$HOME/Pool/base/etc/gtkrc-2.0
-$HOME/.inputrc>$HOME/Pool/base/etc/inputrc
-$HOME/.local
-$HOME/.local/bin
-$HOME/.local/bin/ang.clj>$HOME/Pool/base/bin/ang.clj
-$HOME/.local/bin/css.clj>$HOME/Pool/base/bin/css.clj
-$HOME/.local/bin/git_util_test.clj>$HOME/Pool/base/bin/git_util_test.clj
-$HOME/.local/bin/grepless>$HOME/Pool/base/bin/grepless
-$HOME/.local/bin/hclone>$HOME/Pool/base/bin/hclone
-$HOME/.local/bin/html_to_vector.clj>$HOME/Pool/base/bin/html_to_vector.clj
-$HOME/.local/bin/lein2>$HOME/Pool/base/bin/lein2
-$HOME/.local/bin/lein>$HOME/Pool/base/bin/lein
-$HOME/.local/bin/pool.manage>$HOME/Pool/base/bin/pool.manage
-$HOME/.local/bin/ruler2.clj>$HOME/Pool/base/bin/ruler2.clj
-$HOME/.local/bin/ruler.clj>$HOME/Pool/base/bin/ruler.clj
-$HOME/.local/bin/screen-init>$HOME/Pool/base/bin/screen-init
-$HOME/.local/bin/shell>/bin/bash
-$HOME/.local/bin/sx>$HOME/Pool/base/bin/sx
-$HOME/.local/bin/thesaurus.clj>$HOME/Pool/base/bin/thesaurus.clj
-$HOME/.local/bin/url_decode.clj>$HOME/Pool/base/bin/url_decode.clj
-$HOME/.local/bin/visit-in-screen>$HOME/Pool/base/bin/visit-in-screen
-$HOME/.local/bin/weather.clj>$HOME/Pool/base/bin/weather.clj
-$HOME/.local/bin/xinput-scroll-direction.sh>$HOME/Pool/base/bin/xinput-scroll-direction.sh
-$HOME/.local/bin/xml-from-vector.clj>$HOME/Pool/base/bin/xml-from-vector.clj
-$HOME/.local/bin/xml-to-vector.clj>$HOME/Pool/base/bin/xml-to-vector.clj
-$HOME/.local/etc
-$HOME/.local/etc/Xresources-common>$HOME/Pool/base/etc/Xresources-common
-$HOME/.local/lib
-$HOME/.local/lib/bash
-$HOME/.local/lib/bash/alias.bash>$HOME/Pool/base/lib/bash/alias.bash
-$HOME/.local/lib/bash/alias.linux>$HOME/Pool/base/lib/bash/alias.linux
-$HOME/.local/lib/bash/generic.clj.bash>$HOME/Pool/base/lib/bash/generic.clj.bash
-$HOME/.local/lib/bash/path.linux>$HOME/Pool/base/lib/bash/path.linux
-$HOME/.local/lib/bash/term.bash>$HOME/Pool/base/lib/bash/term.bash
-$HOME/.local/lib/bash/term.darwin>$HOME/Pool/base/lib/bash/term.darwin
-$HOME/.local/lib/bash/term.linux>$HOME/Pool/base/lib/bash/term.linux
-$HOME/.local/lib/bash/util.bash>$HOME/Pool/base/lib/bash/util.bash
-$HOME/.local/lib/make
-$HOME/.local/lib/make/common.make>$HOME/Pool/base/make/common.make
-$HOME/.local/share
-$HOME/.local/share/applications
-$HOME/.local/share/applications/clove-daemon.desktop>$HOME/Pool/base/clj/clove/clove-daemon.desktop
-$HOME/.local/share/java
-$HOME/.local/share/java/classes
-$HOME/.local/share/java/classes/bin>$HOME/.local/bin
-$HOME/.local/share/java/project.clj>$HOME/Pool/base/clj/project.clj
-$HOME/.local/share/man
-$HOME/.local/share/man/man1
-$HOME/.local/share/man/man1/pool.deploy.1>$HOME/Pool/base/man/pool.deploy.1
-$HOME/.local/src>$HOME/Lake/go
-$HOME/.pythonrc>$HOME/Pool/base/python/pythonrc
-$HOME/.screenrc>$HOME/Pool/base/etc/screenrc
-$HOME/.xmonad>$HOME/Pool/base/xmonad
-$HOME/.xprofile>$HOME/Pool/base/etc/xprofile
-$HOME/.Xresources>$HOME/Pool/base/etc/Xresources
-$HOME/.zshrc>$HOME/Pool/base/etc/zshrc
-$HOME/.zshenv>$HOME/Pool/base/etc/zshenv
-$HOME/.zprofile>$HOME/Pool/base/etc/zprofile
+~/.bash_profile etc/bashrc
+~/.bashrc etc/bashrc
+~/.config
+~/.config/gtk-3.0
+~/.config/gtk-3.0/settings.ini etc/gtk-3.0-settings.ini
+~/.config/i3
+~/.config/i3/config etc/i3/config
+~/.config/i3status
+~/.emacs.d
+~/.emacs.d/init.el emacs/init.el
+~/.emacs.d/insert
+~/.emacs.d/site-lisp
+~/.emacs.d/site-lisp/pool emacs/site-lisp
+~/.emacs.d/themes
+~/.emacs.d/themes/dark-forge-theme.el emacs/themes/dark-forge-theme.el
+~/.emacs.d/themes/dark-ruthless-theme.el emacs/themes/dark-ruthless-theme.el
+~/.emacs.d/themes/fruitsalad-dark-theme.el emacs/themes/fruitsalad-dark-theme.el
+~/.emacs.d/themes/light-balcony-theme.el emacs/themes/light-balcony-theme.el
+~/.emacs.d/themes/whitestone-serious-text-theme.el emacs/themes/whitestone-serious-text-theme.el
+~/.emacs.d/themes/whitestone-serious-theme.el emacs/themes/whitestone-serious-theme.el
+~/.fonts.conf etc/fonts.conf
+~/.gnomerc etc/gnomerc
+~/.gtkrc-2.0 etc/gtkrc-2.0
+~/.inputrc etc/inputrc
+~/.local
+~/.local/bin
+~/.local/bin/ang.clj bin/ang.clj
+~/.local/bin/css.clj bin/css.clj
+~/.local/bin/git_util_test.clj bin/git_util_test.clj
+~/.local/bin/grepless bin/grepless
+~/.local/bin/hclone bin/hclone
+~/.local/bin/html_to_vector.clj bin/html_to_vector.clj
+~/.local/bin/lein2 bin/lein2
+~/.local/bin/lein bin/lein
+~/.local/bin/pool.manage bin/pool.manage
+~/.local/bin/ruler2.clj bin/ruler2.clj
+~/.local/bin/ruler.clj bin/ruler.clj
+~/.local/bin/screen-init bin/screen-init
+~/.local/bin/sx bin/sx
+~/.local/bin/thesaurus.clj bin/thesaurus.clj
+~/.local/bin/url_decode.clj bin/url_decode.clj
+~/.local/bin/visit-in-screen bin/visit-in-screen
+~/.local/bin/weather.clj bin/weather.clj
+~/.local/bin/xinput-scroll-direction.sh bin/xinput-scroll-direction.sh
+~/.local/bin/xml-from-vector.clj bin/xml-from-vector.clj
+~/.local/bin/xml-to-vector.clj bin/xml-to-vector.clj
+~/.local/etc
+~/.local/etc/Xresources-common etc/Xresources-common
+~/.local/lib
+~/.local/lib/bash
+~/.local/lib/bash/alias.bash lib/bash/alias.bash
+~/.local/lib/bash/alias.linux lib/bash/alias.linux
+~/.local/lib/bash/generic.clj.bash lib/bash/generic.clj.bash
+~/.local/lib/bash/path.linux lib/bash/path.linux
+~/.local/lib/bash/term.bash lib/bash/term.bash
+~/.local/lib/bash/term.darwin lib/bash/term.darwin
+~/.local/lib/bash/term.linux lib/bash/term.linux
+~/.local/lib/bash/util.bash lib/bash/util.bash
+~/.local/lib/make
+~/.local/lib/make/common.make make/common.make
+~/.local/share
+~/.local/share/applications
+~/.local/share/applications/clove-daemon.desktop clj/clove/clove-daemon.desktop
+~/.local/share/java
+~/.local/share/java/classes
+~/.local/share/java/classes/bin ~/.local/bin
+~/.local/share/java/project.clj clj/project.clj
+~/.local/share/man
+~/.local/share/man/man1
+~/.local/share/man/man1/pool.deploy.1 man/pool.deploy.1
+~/.local/src ~/Lake/go
+~/.pythonrc python/pythonrc
+~/.screenrc etc/screenrc
+~/.xmonad xmonad
+~/.xprofile etc/xprofile
+~/.Xresources etc/Xresources
+~/.zshrc etc/zshrc
+~/.zshenv etc/zshenv
+~/.zprofile etc/zprofile

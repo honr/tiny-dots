@@ -1,0 +1,142 @@
+#!/bin/bash
+
+# Symlinks sadly cannot link to paths relative to home; They are either
+# absolute or relative to where they are.  This script helps keep track of
+# symlinks and install a set of them according to a config file.
+# NOTE: Assumes paths do not have weird! characters such as \n, $, >
+
+function usage() {
+  local CMDNAME="$(basename "$0")"
+  echo "# All commands operate on a book keeping file specified as $POOL/.book"
+  echo "POOL=Pool/base $CMDNAME add LINK-NAME TARGET # Register a symlink"
+  echo ""
+  echo "# Install symlinks and directories from TREE.book to DESTINATION directory"
+  echo "POOL=Pool/base $CMDNAME install [-l | -h REMOTE] [-k] [-z] DESTINATION"
+  echo "          -l: Follow symlinks, like rsync -L."
+  echo "          -h REMOTE-HOME: Specify remote home directory."
+  echo "          -k: Do not delete temp directory, useful for debugging."
+  echo "          -z: Install into a tar.gz file.  REMOTE-HOME still useful."
+
+  echo "Examples:"
+  echo "POOL=Pool/base $CMDNAME add ~/.local/bin/foo bin/foo"
+  echo "POOL=Pool/base $CMDNAME install -l user@remote:~/.local"
+  echo "POOL=Pool/base $CMDNAME install user@remote:~/.local"
+  echo "POOL=Pool/base $CMDNAME install -z foo.tar.gz # create a tar.gz"
+  echo "POOL=Pool/base $CMDNAME install -zk foo.tar.gz # same except not removing"
+  echo "                        # target directory in the end."
+  echo "POOL=Pool/base $CMDNAME install ~ # sync to localhost, actiave deployment"
+}
+
+if [[ -z "$POOL" ]] ; then
+  echo "Please set the POOL variable, for instance: POOL=Pool/base"
+  exit 1
+fi
+if [[ "${POOL[1]}" != '/' ]] ; then
+  POOL="$HOME/$POOL"
+fi
+
+if [[ -z "$1" ]] ; then
+  usage
+  exit 1 # We need at least one command.
+fi
+BOOK="$POOL/.book"
+
+function cmd-add () {
+  local dest="$1"
+  local source="$2"
+
+  dest="${dest/$HOME/\~}"
+  if [[ -z "$dest" ]] ; then
+    # Nothing to add.  Just sort the .book file.
+    sort -u <"$BOOK" >"$BOOK.new"
+  elif [[ -z "$source" ]] ; then
+    echo "Register creating the directory $dest/"
+    (cat "$BOOK" ; echo "$dest/") | sort -u >"$BOOK.new"
+  else
+    echo "$dest -> $source"
+    (grep -v -F "$dest " "$BOOK" 2>/dev/null ; echo "$dest $source") | \
+      sort -u >"$BOOK.new"
+  fi
+  mv "$BOOK.new" "$BOOK"
+}
+
+function cmd-install () {
+  local x=1
+  local follow_symlinks
+  local compress
+  while getopts "h:klz" opt; do
+    case "$opt" in
+	    h) dest_home="$OPTARG" ;;
+	    k) keep="t" ;;
+      l) follow_symlinks="t" ;;
+      z) compress="t" ;;
+    esac
+    x=$OPTIND
+  done
+  shift $(($x-1))
+  local destination="$1"
+
+  local rsync_link rsync_compress remote_destination
+  if [[ -n "$follow_symlinks" ]] ; then
+    rsync_link="-L"
+  fi
+  if [[ "${destination#*:}" != "${destination}" ]] ; then
+    # Has a `:' character in the destination. It must be a remote destination.
+    remote_destination="t"
+    rsync_compress="--compress"
+  fi
+  if [[ -n "$compress" ]] ; then
+    destination_tar="$destination"
+    destination="$destination.directory"
+    mkdir "$destination"
+  fi
+  if [[ -z "$dest_home" ]] ; then
+	  if [[ -z "$remote_destination" || -n "$follow_symlinks" ]] ; then
+	    dest_home="$HOME"
+	  else
+	    dest_home="$(ssh "${destination%%:*}" 'echo $HOME')"
+	  fi
+  fi
+  if [ -z "$dest_home" ] ; then
+	  echo 'error: $dest_home is nil'
+	  exit 1
+  fi
+
+  # Step 1: Build up the target tree in a directory here.
+  local dest_temporary_tree="$BOOK.temporary-tree"
+  mkdir "$dest_temporary_tree"
+
+  local link
+  local link_source
+  while IFS=' ' read link link_source ; do
+    if [[ -z "$link" ]] ; then
+      continue
+    fi
+    link="${link/\~/$dest_temporary_tree}"
+    case "$link_source" in
+      '') mkdir "$link"
+          continue ;;
+      '~/'*) link_source="${link_source/\~/$dest_home}" ;;
+      *) link_source="${POOL/#$HOME/$dest_home}/$link_source" ;;
+    esac
+    ln -sfn "$link_source" "$link"
+  done < "$BOOK"
+
+  # Step 2: rsync this target tree to dest_home
+  rsync \
+    -av $rsync_link $rsync_compress --no-o --no-g \
+    --exclude '.git/' "${dest_temporary_tree}/" "$destination"
+
+  if [[ -n "$compress" ]] ; then
+    tar czf "$destination_tar" -C "$destination" .
+    rm -Rf "$destination"
+  fi
+
+  # Clean up
+  if [[ -z "$keep" ]] ; then
+	  rm -Rf "$dest_temporary_tree"
+  fi
+}
+
+"cmd-$@"
+exit 0
