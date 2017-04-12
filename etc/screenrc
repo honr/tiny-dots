@@ -44,5 +44,4 @@ bell_msg "^Gbell in %n"
 caption always "%{-s .}%{-s Y}$STY %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.gW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
 shell /bin/zsh
 
-source ${HOME}/.screen/.generic
 source ${HOME}/.screen/${STY}

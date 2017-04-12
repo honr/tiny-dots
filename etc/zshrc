@@ -88,13 +88,22 @@ sx() {
 }
 
 ee() {
-  if [[ -z "$1" ]] ; then
-      emacsclient -nc .
-  elif [[ "$1" =~ ^- ]] ; then
+  if [[ "$1" =~ ^- ]] ; then
       emacsclient "$@"
+  elif [[ -z "$DISPLAY" ]] ; then
+    emacsclient -t "$@"
   else
     emacsclient -nc "$@"
   fi
+}
+
+edit-sx() {
+  local ws="$1"
+  if [[ -z "$ws" ]] ; then
+    echo "A ws name should be specified."
+    echo 1
+  fi
+  ee "$HOME/.screen/$ws"
 }
 
 br() {
