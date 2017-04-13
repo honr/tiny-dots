@@ -100,6 +100,9 @@ ee() {
 edit-sx() {
   local ws="$1"
   if [[ -z "$ws" ]] ; then
+    ws="$STY_SHORT"
+  fi
+  if [[ -z "$ws" ]] ; then
     echo "A ws name should be specified."
     echo 1
   fi

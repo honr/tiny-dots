@@ -41,6 +41,10 @@ bell_msg "^Gbell in %n"
 # backtick 1 0 1 pwd
 # %?%{.Rw}[:%u]%{-}%?
 
+# At least in the current version of Screen, the STY is mutated ("PID." gets
+# prepended to it) after it starts.  So, we need to preserve the current STY.
+setenv STY_SHORT $STY
+
 caption always "%{-s .}%{-s Y}$STY %{..B}%-w%{.BW}%n %t%{-}%+w%{-} %=%{.gW} @%H %{-}%{..w} %Y-%m-%d %c%{-} %{-}"
 shell /bin/zsh
 
