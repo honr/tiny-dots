@@ -10,7 +10,7 @@
 ~/.emacs.d/init.el emacs/init.el
 ~/.emacs.d/insert
 ~/.emacs.d/site-lisp
-~/.emacs.d/site-lisp/pool emacs/site-lisp
+~/.emacs.d/site-lisp/pool-base emacs/site-lisp
 ~/.emacs.d/themes
 ~/.emacs.d/themes/dark-forge-theme.el emacs/themes/dark-forge-theme.el
 ~/.emacs.d/themes/dark-ruthless-theme.el emacs/themes/dark-ruthless-theme.el
