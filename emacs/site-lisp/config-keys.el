@@ -300,6 +300,22 @@
   (global-set-key (kbd "; h") prefix-arg)
   (define-key global-map (kbd "; h") 'help-command)
 
+  (global-set-key (kbd "; j") prefix-arg)
+  (global-set-key (kbd "; j l") (lambda () (interactive)
+                                  (theme-solo 'whitestone-serious)))
+  (global-set-key (kbd "; j d") (lambda () (interactive)
+                                  (theme-solo 'dark-forge)))
+  (global-set-key (kbd "; j r") (lambda () (interactive)
+                                  (theme-solo 'dark-ruthless)))
+  (global-set-key (kbd "; j b") (lambda () (interactive)
+                                  (theme-solo 'light-balcony)))
+  (global-set-key (kbd "; j +") (lambda () (interactive)
+                                  (set-face-attribute 'default nil
+                                                      :height 140)))
+  (global-set-key (kbd "; j -") (lambda () (interactive)
+                                  (set-face-attribute 'default nil
+                                                      :height 120)))
+
   ;; A set of symbols:
   (progn
     (global-set-key (kbd "; g") prefix-arg)
