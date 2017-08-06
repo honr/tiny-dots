@@ -76,7 +76,10 @@ mode "run" {
   bindsym $mod+g $run ls ~/chrome/ | $dmenu -p 'Chrome dir' | \
       xargs -I@ google-chrome --user-data-dir="$HOME/chrome/@"; \
       mode "default"
-  bindsym n $run google-chrome --incognito --user-data-dir="$HOME/chrome/inc"; \
+  bindsym n $run firefox --private-window; \
+      mode "default"
+  bindsym Shift+n $run google-chrome \
+        --incognito --user-data-dir="$HOME/chrome/inc"; \
       mode "default"
 
   bindsym c $run chromium-browser; \
