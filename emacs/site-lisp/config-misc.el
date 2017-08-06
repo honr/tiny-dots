@@ -100,4 +100,8 @@ prefix spaces into the quotes."
 
 (require 'config-general-abbrevs nil t)
 
+(defun theme-solo (theme)
+  (setq custom-enabled-themes nil)
+  (load-theme theme))
+
 (provide 'config-misc)

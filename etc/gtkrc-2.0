@@ -1,3 +1,4 @@
 gtk-theme-name="Radiance"
 gtk-icon-theme-name="ubuntu-mono-light"
 gtk-font-name="RobotoCondensed 12"
+gtk-key-theme-name="GtkEmacs"

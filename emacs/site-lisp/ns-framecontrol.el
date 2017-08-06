@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 ;; package ns-framecontrol
 
 ;; A rectangle is a list of (x1 y1 x2 y2).
@@ -259,27 +260,20 @@
                                     (second xs-and-ys)))
                             (fourth bounds))))))))
 
-(defun ns-framecontrol-nudge-left (&optional frame)
-  (interactive)
-  (ns-framecontrol-nudge-frame-in-direction frame :left))
-
-(defun ns-framecontrol-nudge-right (&optional frame)
-  (interactive)
-  (ns-framecontrol-nudge-frame-in-direction frame :right))
-
-(defun ns-framecontrol-nudge-up (&optional frame)
-  (interactive)
-  (ns-framecontrol-nudge-frame-in-direction frame :up))
-
-(defun ns-framecontrol-nudge-down (&optional frame)
-  (interactive)
-  (ns-framecontrol-nudge-frame-in-direction frame :down))
+(defun ns-framecontrol-nudger (dir)
+  #'(lambda (&optional frame)
+      (interactive)
+      (ns-framecontrol-nudge-frame-in-direction frame dir)))
 
 (global-set-key (kbd "s-;") 'ns-framecontrol-nudge)
-(global-set-key (kbd "s-S-<left>") 'ns-framecontrol-nudge-left)
-(global-set-key (kbd "s-S-<right>") 'ns-framecontrol-nudge-right)
-(global-set-key (kbd "s-S-<up>") 'ns-framecontrol-nudge-up)
-(global-set-key (kbd "s-S-<down>") 'ns-framecontrol-nudge-down)
+(global-set-key (kbd "s-S-<left>") (ns-framecontrol-nudger :left))
+(global-set-key (kbd "s-S-<right>") (ns-framecontrol-nudger :right))
+(global-set-key (kbd "s-S-<up>") (ns-framecontrol-nudger :up))
+(global-set-key (kbd "s-S-<down>") (ns-framecontrol-nudger :down))
+(global-set-key (kbd "s-B") (ns-framecontrol-nudger :left))
+(global-set-key (kbd "s-F") (ns-framecontrol-nudger :right))
+(global-set-key (kbd "s-P") (ns-framecontrol-nudger :up))
+(global-set-key (kbd "s-N") (ns-framecontrol-nudger :down))
 (global-set-key (kbd "s-=") 'toggle-frame-maximized)
 (global-set-key (kbd "s-\\") 'ns-framecontrol-toggle-frame-vertical-size)
 (global-set-key (kbd "s-n") 'ns-framecontrol-make-frame-scratch)
