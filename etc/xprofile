@@ -10,6 +10,7 @@ xinput list |
     do
       printf "[id: %02d] %s\n" "$id" "$name"
       xinput set-prop "$id" 'libinput Natural Scrolling Enabled' 1
+      xinput set-prop "$id" 'libinput Accel Speed' 0.6
     done
 
 # According to some documentaions when /etc/default/keyboard is properly
