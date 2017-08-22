@@ -199,6 +199,61 @@
 (when (require 'magit nil t)
   (global-set-key (kbd "C-x f g") 'magit-status))
 
+(defun face-and-theme-adjust ()
+  (interactive)
+  (lexical-let* ((face 'default)
+         (inc 10)
+         (height (face-attribute face :height))
+         (ev last-command-event)
+	       (echo-keystrokes nil))
+
+    (message "Current typeface height: %s, themes: %s.  Adjust further"
+             (face-attribute face :height) custom-enabled-themes)
+    (set-transient-map
+     (let ((map (make-sparse-keymap)))
+       (dolist (key (list ?+ ?=))
+         (define-key map (vector (list key))
+           (lambda () (interactive)
+             (set-face-attribute face nil :height
+                                 (+ (face-attribute face :height) inc))
+             (message "face height increased to %d"
+                      (face-attribute face :height)))))
+       (define-key map (vector (list ?-))
+         (lambda () (interactive)
+           (set-face-attribute face nil :height
+                               (- (face-attribute face :height) inc))
+           (message "face height decreased to %d"
+                    (face-attribute face :height))))
+       (define-key map (vector (list ?0))
+         (lambda () (interactive)
+           (set-face-attribute face nil :height 120)
+           (message "Face height set to to %d"
+                    (face-attribute face :height))))
+       (dolist (key-and-theme
+                '((?d . dark-forge)
+                  (?w . whitestone-serious)
+                  (?t . whitestone-serious-text)
+                  (?r . dark-ruthless)
+                  (?b . light-balcony)))
+         (lexical-let ((k (vector (list (car key-and-theme))))
+                       (theme (cdr key-and-theme)))
+           (define-key map k
+             (lambda () (interactive)
+               (theme-solo theme)
+               (message "Active themes are: %s" custom-enabled-themes)))))
+
+       (define-key map (vector (list ?f))
+         (lambda (arg) (interactive "sEnter typeface family: ")
+           (set-face-attribute face nil :family arg)
+           (message "Face family set to %s" (face-attribute face nil :family))))
+
+       (define-key map (vector (list ?h))
+         (lambda (arg) (interactive "nEnter typeface height: ")
+           (set-face-attribute face nil :height arg)
+           (message "Face height set to %s" (face-attribute face nil :height))))
+       map)
+     t)))
+
 (defun define-semicolon-prefix-keys ()
   (interactive)
 
@@ -300,21 +355,7 @@
   (global-set-key (kbd "; h") prefix-arg)
   (define-key global-map (kbd "; h") 'help-command)
 
-  (global-set-key (kbd "; j") prefix-arg)
-  (global-set-key (kbd "; j l") (lambda () (interactive)
-                                  (theme-solo 'whitestone-serious)))
-  (global-set-key (kbd "; j d") (lambda () (interactive)
-                                  (theme-solo 'dark-forge)))
-  (global-set-key (kbd "; j r") (lambda () (interactive)
-                                  (theme-solo 'dark-ruthless)))
-  (global-set-key (kbd "; j b") (lambda () (interactive)
-                                  (theme-solo 'light-balcony)))
-  (global-set-key (kbd "; j +") (lambda () (interactive)
-                                  (set-face-attribute 'default nil
-                                                      :height 140)))
-  (global-set-key (kbd "; j -") (lambda () (interactive)
-                                  (set-face-attribute 'default nil
-                                                      :height 120)))
+  (global-set-key (kbd "; j") 'face-and-theme-adjust)
 
   ;; A set of symbols:
   (progn

@@ -1,6 +1,10 @@
 ;; -*- lexical-binding: t -*-
 ;; package ns-framecontrol
 
+;; Questions/TODOs:
+;; 1. List frames on the current workspace.
+;; 2. Reuse (ns-frame-edges) and (ns-frame-geometry).
+
 ;; A rectangle is a list of (x1 y1 x2 y2).
 ;; fc means frame-coordinates.
 ;; mal is monitor attributes list.
