@@ -203,7 +203,6 @@
   (interactive)
   (lexical-let* ((face 'default)
          (inc 10)
-         (height (face-attribute face :height))
          (ev last-command-event)
 	       (echo-keystrokes nil))
 
@@ -232,7 +231,7 @@
        (dolist (key-and-theme
                 '((?d . dark-forge)
                   (?w . whitestone-serious)
-                  (?t . whitestone-serious-text)
+                  (?W . whitestone-serious-text)
                   (?r . dark-ruthless)
                   (?b . light-balcony)))
          (lexical-let ((k (vector (list (car key-and-theme))))
@@ -246,6 +245,14 @@
          (lambda (arg) (interactive "sEnter typeface family: ")
            (set-face-attribute face nil :family arg)
            (message "Face family set to %s" (face-attribute face nil :family))))
+
+       (define-key map (vector (list ?t))
+         (lambda (arg) (interactive "sEnter Terminal.app profile: ")
+           (ns-do-applescript
+            (concat
+             "tell application \"Terminal\" to set default settings to "
+             "settings set " (format "\"%s\"\n" arg)))
+           (message "Face Terminal.app theme to %s" arg)))
 
        (define-key map (vector (list ?h))
          (lambda (arg) (interactive "nEnter typeface height: ")
