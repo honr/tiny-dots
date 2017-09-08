@@ -230,6 +230,7 @@
                     (face-attribute face :height))))
        (dolist (key-and-theme
                 '((?d . dark-forge)
+                  (?D . fruitsalad-dark)
                   (?w . whitestone-serious)
                   (?W . whitestone-serious-text)
                   (?r . dark-ruthless)
@@ -318,6 +319,7 @@
   (global-set-key (kbd "; f s") 'save-buffer)
   (when (fboundp 'magit-status)
     (global-set-key (kbd "; f t") 'magit-status))
+  (global-set-key (kbd "; f u") (find-file-dir-command "~/"))
   (global-set-key (kbd "; f v") 'view-mode)
   (global-set-key (kbd "; f w") 'buffer-file-name-as-kill)
   (global-set-key (kbd "; f 3") 'server-edit)
