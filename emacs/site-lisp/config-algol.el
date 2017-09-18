@@ -24,6 +24,7 @@
 ;; Google C/C++ Programming Style.
 ;; From github.com/google/styleguide/google-c-style.el.  Further modified.
 (c-add-style "Google"
+
              `((c-recognize-knr-p . nil)
                (c-basic-offset . 2)
                (indent-tabs-mode . nil)
@@ -78,7 +79,8 @@
                                    (statement-case-open . +)
                                    (statement-case-intro . +) ; case w/o {
                                    (access-label . /)
-                                   (innamespace . 0)))))
+                                   (innamespace . 0)
+                                   (inextern-lang . 0)))))
 
 ;; (defun config-c-mode-hook () (glasses-mode t) (subword-mode t))
 ;; (add-hook 'c-mode-common-hook 'config-c-mode-hook)

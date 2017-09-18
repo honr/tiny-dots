@@ -199,13 +199,15 @@
 (when (require 'magit nil t)
   (global-set-key (kbd "C-x f g") 'magit-status))
 
-(defun face-and-theme-adjust ()
-  (interactive)
-  (lexical-let* ((face 'default)
-         (inc 10)
-         (ev last-command-event)
-	       (echo-keystrokes nil))
-
+(defun face-and-theme-adjust (frame-arg)
+  "Modify face and theme for all frames.  When frame-arg is
+non-nil, adjustments (except for theme changes) will be made to
+the selected frame."
+  (interactive "P")
+  (lexical-let* ((frame (when frame-arg (selected-frame)))
+                 (face 'default)
+                 (inc 10)
+	               (echo-keystrokes nil))
     (message "Current typeface height: %s, themes: %s.  Adjust further"
              (face-attribute face :height) custom-enabled-themes)
     (set-transient-map
@@ -213,19 +215,19 @@
        (dolist (key (list ?+ ?=))
          (define-key map (vector (list key))
            (lambda () (interactive)
-             (set-face-attribute face nil :height
+             (set-face-attribute face frame :height
                                  (+ (face-attribute face :height) inc))
              (message "face height increased to %d"
                       (face-attribute face :height)))))
        (define-key map (vector (list ?-))
          (lambda () (interactive)
-           (set-face-attribute face nil :height
+           (set-face-attribute face frame :height
                                (- (face-attribute face :height) inc))
            (message "face height decreased to %d"
                     (face-attribute face :height))))
        (define-key map (vector (list ?0))
          (lambda () (interactive)
-           (set-face-attribute face nil :height 120)
+           (set-face-attribute face frame :height 120)
            (message "Face height set to to %d"
                     (face-attribute face :height))))
        (dolist (key-and-theme
@@ -239,13 +241,15 @@
                        (theme (cdr key-and-theme)))
            (define-key map k
              (lambda () (interactive)
-               (theme-solo theme)
+               (setq custom-enabled-themes nil)
+               (load-theme theme)
                (message "Active themes are: %s" custom-enabled-themes)))))
 
        (define-key map (vector (list ?f))
          (lambda (arg) (interactive "sEnter typeface family: ")
-           (set-face-attribute face nil :family arg)
-           (message "Face family set to %s" (face-attribute face nil :family))))
+           (set-face-attribute face frame :family arg)
+           (message "Face family set to %s"
+                    (face-attribute face frame :family))))
 
        (define-key map (vector (list ?t))
          (lambda (arg) (interactive "sEnter Terminal.app profile: ")
@@ -257,8 +261,9 @@
 
        (define-key map (vector (list ?h))
          (lambda (arg) (interactive "nEnter typeface height: ")
-           (set-face-attribute face nil :height arg)
-           (message "Face height set to %s" (face-attribute face nil :height))))
+           (set-face-attribute face frame :height arg)
+           (message "Face height set to %s"
+                    (face-attribute face frame :height))))
        map)
      t)))
 
@@ -346,20 +351,25 @@
 
   (progn
     (global-set-key (kbd "; w") prefix-arg)
-    (global-set-key (kbd "; w w") 'other-window)
     (global-set-key (kbd "; w f") 'windmove-right)
     (global-set-key (kbd "; w b") 'windmove-left)
     (global-set-key (kbd "; w n") 'windmove-down)
     (global-set-key (kbd "; w p") 'windmove-up)
-    (global-set-key (kbd "; w k") 'delete-window)
-    (global-set-key (kbd "; w j") 'split-window-below)
-    (global-set-key (kbd "; w l") 'split-window-right)
     (global-set-key (kbd "; w d") 'make-frame-command)
-    (global-set-key (kbd "; w o") 'switch-to-buffer-other-frame)
+    (global-set-key (kbd "; w s") 'switch-to-buffer-other-frame)
     (global-set-key (kbd "; w c") 'clone-indirect-buffer-other-window)
-    (global-set-key (kbd "; w e") 'balance-windows)
-    (global-set-key (kbd "; w i") 'delete-other-windows)
-    (global-set-key (kbd "; w t") 'toggle-window-split-direction))
+    (global-set-key (kbd "; w t") 'toggle-window-split-direction)
+    (global-set-key (kbd "; w l") 'move-to-window-line-top-bottom)
+    (global-set-key (kbd "; w k") 'kill-buffer-and-window)
+    (global-set-key (kbd "; w 0") 'delete-window)
+    (global-set-key (kbd "; w 1") 'delete-other-windows)
+    (global-set-key (kbd "; w 2") 'split-window-below)
+    (global-set-key (kbd "; w 3") 'split-window-right)
+    (global-set-key (kbd "; w o") 'other-window)
+    (global-set-key (kbd "; w v") 'enlarge-window)
+    (global-set-key (kbd "; w h") 'enlarge-window-horizontally)
+    (global-set-key (kbd "; w -") 'shrink-window-if-larger-than-buffer)
+    (global-set-key (kbd "; w =") 'balance-windows))
 
   (global-set-key (kbd "; h") prefix-arg)
   (define-key global-map (kbd "; h") 'help-command)

@@ -9,6 +9,11 @@
 ;; fc means frame-coordinates.
 ;; mal is monitor attributes list.
 
+;; grbi: (g = (x-left y-top x-right y-bottom) of workarea
+;;        rect = (x-left, y-top, w, h) of frame
+;;        bounds = (min-x min-y max-x max-y) for (x-left, y-top) in the workarea
+;;        index of workarea)
+
 (defun rectangles-intersection-area (r1 r2)
   "Return the area of the intersection of two rectangles r1 r2."
   (* (max 0 (- (min (+ (first r1) (third r1)) (+ (first r2) (third r2)))
@@ -146,17 +151,6 @@
      ;; Index of g
      (cdr g-and-index))))
 
-(defun get-workarea (&optional frame)
-  (nth (fourth (ns-framecontrol-get-workarea-coord frame))
-       (display-monitor-attributes-list)))
-
-(defun get-workarea-frames (&optional frame)
-  ;; Issue: all frames on this monitor, regardless of their "virtual desktop".
-  (cdr (assq 'frames (get-workarea))))
-
-(defun set-frame-pos (&optional frame x y)
-  (set-frame-position frame x y))
-
 ;; ------------------------------------------------------------
 
 (defun pop-up-frame-parameters-on-this-workspace ()
@@ -181,9 +175,10 @@
 (defun ns-framecontrol-nudge (&optional frame)
   (interactive)
   (let ((bounds (third (ns-framecontrol-get-workarea-coord frame))))
-    (set-frame-pos frame
-                   (random-between (first bounds) (third bounds))
-                   (random-between (second bounds) (fourth bounds)))))
+    (modify-frame-parameters
+     frame
+     `((left . ,(random-between (first bounds) (third bounds)))
+       (top . ,(random-between (second bounds) (fourth bounds)))))))
 
 (defun ns-framecontrol-toggle-frame-vertical-size (&optional frame)
   (interactive)
@@ -193,16 +188,17 @@
          (bounds (third grbi))
          (p (frame-parameters frame))
          (max-num-lines (- (floor (/ (fourth g) 14.3)) 1))) ;; line-height?
-    (if (< 45 (cdr (assq 'height p)))
-        (progn
-          (set-frame-height frame
-                            (or (cdr (assq 'last-height p)) 35))
-          (set-frame-pos frame
-                         (first r) (or (cdr (assq 'last-top p)) (second g))))
-      (set-frame-parameter frame 'last-height (cdr (assq 'height p)))
-      (set-frame-parameter frame 'last-top (second r))
-      (set-frame-position frame (first r) (second g))
-      (set-frame-height frame max-num-lines))))
+    (modify-frame-parameters
+     frame
+     (if (< 45 (cdr (assq 'height p)))
+         `((height . ,(or (cdr (assq 'last-height p)) 35))
+           (left . ,(first r))
+           (top . ,(or (cdr (assq 'last-top p)) (second g))))
+       `((height . ,max-num-lines)
+         (left . ,(first r))
+         (top . ,(second g))
+         (last-height . ,(cdr (assq 'height p)))
+         (last-top . ,(second r)))))))
 
 (defun ns-framecontrol-nudge-fn (x)
   (cond ((< x 0) (- (ns-framecontrol-nudge-fn (- x))))
@@ -219,55 +215,63 @@
          (grbi (ns-framecontrol-get-workarea-coord frame))
          (r (second grbi))
          (bounds (third grbi)))
-    (cond ((eq direction :left)
-           (set-frame-pos frame
-                          (ns-framecontrol-nudge-towards
-                           (first r)
-                           (or
-                            (car (last (remove-if-not
-                                        (lambda (x)
-                                          (<= (first bounds) x (- (first r) 1)))
-                                        (first xs-and-ys))))
-                            (first bounds)))
-                          (second r)))
-          ((eq direction :right)
-           (set-frame-pos frame
-                          (ns-framecontrol-nudge-towards
+    (modify-frame-parameters
+     frame
+     (case direction
+       (:left `((left . ,(ns-framecontrol-nudge-towards
+                          (first r)
+                          (or
+                           (car (last (remove-if-not
+                                       (lambda (x)
+                                         (<= (first bounds) x (- (first r) 1)))
+                                       (first xs-and-ys))))
+                           (first bounds))))
+                (top . ,(second r))))
+       (:right `((left . ,(ns-framecontrol-nudge-towards
                            (first r)
                            (or
                             (first (remove-if-not
                                     (lambda (x)
                                       (<= (+ (first r) 1) x (third bounds)))
                                     (first xs-and-ys)))
-                            (third bounds)))
-                          (second r)))
-          ((eq direction :up)
-           (set-frame-pos frame
-                          (first r)
-                          (ns-framecontrol-nudge-towards
-                           (second r)
-                           (or
-                            (first (remove-if-not
-                                    (lambda (y)
-                                      (<= (second bounds) y (- (second r) 1)))
-                                    (second xs-and-ys)))
-                            (second bounds)))))
-          ((eq direction :down)
-           (set-frame-pos frame
-                          (first r)
-                          (ns-framecontrol-nudge-towards
-                           (second r)
-                           (or
-                            (first (remove-if-not
-                                    (lambda (y)
-                                      (<= (+ (second r) 1) y (fourth bounds)))
-                                    (second xs-and-ys)))
-                            (fourth bounds))))))))
+                            (third bounds))))
+                 (top . ,(second r))))
+       (:up `((left . ,(first r))
+              (top . ,(ns-framecontrol-nudge-towards
+                       (second r)
+                       (or
+                        (first (remove-if-not
+                                (lambda (y)
+                                  (<= (second bounds) y (- (second r) 1)))
+                                (second xs-and-ys)))
+                        (second bounds))))))
+       (:down `((left . ,(first r))
+                (top . ,(ns-framecontrol-nudge-towards
+                         (second r)
+                         (or
+                          (first (remove-if-not
+                                  (lambda (y)
+                                    (<= (+ (second r) 1) y (fourth bounds)))
+                                  (second xs-and-ys)))
+                          (fourth bounds))))))))))
 
 (defun ns-framecontrol-nudger (dir)
   #'(lambda (&optional frame)
       (interactive)
       (ns-framecontrol-nudge-frame-in-direction frame dir)))
+
+;; TODO: Iterations should happen when the Command key is held down and ` is
+;; typed repeatedly, not when Command-` is typed followed by more ` keys.
+(defun ns-framecontrol-select-mru ()
+  (interactive)
+  (lexical-let ((keymap (make-sparse-keymap))
+                (frames (cdr (frame-list-z-order))))
+    (select-frame-set-input-focus (pop frames))
+
+    (define-key keymap (kbd "`")
+      (lambda () (interactive)
+        (when frames (select-frame-set-input-focus (pop frames)))))
+    (set-transient-map keymap t)))
 
 (global-set-key (kbd "s-;") 'ns-framecontrol-nudge)
 (global-set-key (kbd "s-S-<left>") (ns-framecontrol-nudger :left))
@@ -281,5 +285,8 @@
 (global-set-key (kbd "s-=") 'toggle-frame-maximized)
 (global-set-key (kbd "s-\\") 'ns-framecontrol-toggle-frame-vertical-size)
 (global-set-key (kbd "s-n") 'ns-framecontrol-make-frame-scratch)
+(global-set-key (kbd "s-`") 'ns-framecontrol-select-mru)
+
+;; TODO: Implement some select-by-direction commands.
 
 (provide 'ns-framecontrol)
