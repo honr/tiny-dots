@@ -13,7 +13,7 @@
          (add-to-list 'default-frame-alist '(alpha 90 90))
          (require 'ns-framecontrol)
          (server-start)
-         (menu-bar-mode -1)
+         ;; (menu-bar-mode -1)
          (setq dired-use-ls-dired nil))))
 
 (provide 'config-darwin)
