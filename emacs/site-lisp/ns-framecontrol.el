@@ -266,12 +266,13 @@
   (interactive)
   (lexical-let ((keymap (make-sparse-keymap))
                 (frames (cdr (frame-list-z-order))))
-    (select-frame-set-input-focus (pop frames))
+    (when frames
+      (select-frame-set-input-focus (pop frames))
 
-    (define-key keymap (kbd "`")
-      (lambda () (interactive)
-        (when frames (select-frame-set-input-focus (pop frames)))))
-    (set-transient-map keymap t)))
+      (define-key keymap (kbd "`")
+        (lambda () (interactive)
+          (when frames (select-frame-set-input-focus (pop frames)))))
+      (set-transient-map keymap t))))
 
 (global-set-key (kbd "s-;") 'ns-framecontrol-nudge)
 (global-set-key (kbd "s-S-<left>") (ns-framecontrol-nudger :left))

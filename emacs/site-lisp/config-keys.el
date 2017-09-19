@@ -204,68 +204,69 @@
 non-nil, adjustments (except for theme changes) will be made to
 the selected frame."
   (interactive "P")
-  (lexical-let* ((frame (when frame-arg (selected-frame)))
-                 (face 'default)
-                 (inc 10)
-	               (echo-keystrokes nil))
-    (message "Current typeface height: %s, themes: %s.  Adjust further"
-             (face-attribute face :height) custom-enabled-themes)
-    (set-transient-map
-     (let ((map (make-sparse-keymap)))
-       (dolist (key (list ?+ ?=))
-         (define-key map (vector (list key))
-           (lambda () (interactive)
-             (set-face-attribute face frame :height
-                                 (+ (face-attribute face :height) inc))
-             (message "face height increased to %d"
-                      (face-attribute face :height)))))
-       (define-key map (vector (list ?-))
+  (let ((map (make-sparse-keymap)))
+   (lexical-let* ((frame (when frame-arg (selected-frame)))
+                  (inc 10)
+                  (face 'default)
+	                (echo-keystrokes nil)
+                  (exit (set-transient-map map t)))
+     (message "Current typeface height: %s, themes: %s.  Adjust further"
+              (face-attribute face :height) custom-enabled-themes)
+     (dolist (key (list ?+ ?=))
+       (define-key map (vector (list key))
          (lambda () (interactive)
            (set-face-attribute face frame :height
-                               (- (face-attribute face :height) inc))
-           (message "face height decreased to %d"
-                    (face-attribute face :height))))
-       (define-key map (vector (list ?0))
-         (lambda () (interactive)
-           (set-face-attribute face frame :height 120)
-           (message "Face height set to to %d"
-                    (face-attribute face :height))))
-       (dolist (key-and-theme
-                '((?d . dark-forge)
-                  (?D . fruitsalad-dark)
-                  (?w . whitestone-serious)
-                  (?W . whitestone-serious-text)
-                  (?r . dark-ruthless)
-                  (?b . light-balcony)))
-         (lexical-let ((k (vector (list (car key-and-theme))))
-                       (theme (cdr key-and-theme)))
-           (define-key map k
-             (lambda () (interactive)
-               (setq custom-enabled-themes nil)
-               (load-theme theme)
-               (message "Active themes are: %s" custom-enabled-themes)))))
+                               (+ (face-attribute face :height) inc))
+           (message "face height increased to %d"
+                    (face-attribute face :height)))))
+     (define-key map (vector (list ?-))
+       (lambda () (interactive)
+         (set-face-attribute face frame :height
+                             (- (face-attribute face :height) inc))
+         (message "face height decreased to %d"
+                  (face-attribute face :height))))
+     (define-key map (vector (list ?0))
+       (lambda () (interactive)
+         (set-face-attribute face frame :height 120)
+         (message "Face height set to to %d"
+                  (face-attribute face :height))))
+     (dolist (key-and-theme
+              '((?d . dark-forge)
+                (?D . fruitsalad-dark)
+                (?w . whitestone-serious)
+                (?W . whitestone-serious-text)
+                (?r . dark-ruthless)
+                (?b . light-balcony)))
+       (lexical-let ((k (vector (list (car key-and-theme))))
+                     (theme (cdr key-and-theme)))
+         (define-key map k
+           (lambda () (interactive)
+             (setq custom-enabled-themes nil)
+             (load-theme theme)
+             (message "Active themes are: %s" custom-enabled-themes)))))
 
-       (define-key map (vector (list ?f))
-         (lambda (arg) (interactive "sEnter typeface family: ")
-           (set-face-attribute face frame :family arg)
-           (message "Face family set to %s"
-                    (face-attribute face frame :family))))
+     (define-key map (kbd "RET")
+       (lambda () (interactive) (funcall exit))))))
 
-       (define-key map (vector (list ?t))
-         (lambda (arg) (interactive "sEnter Terminal.app profile: ")
-           (ns-do-applescript
-            (concat
-             "tell application \"Terminal\" to set default settings to "
-             "settings set " (format "\"%s\"\n" arg)))
-           (message "Face Terminal.app theme to %s" arg)))
+(defun face-and-theme-set-face (arg)
+  (interactive "sEnter typeface family: ")
+  (set-face-attribute 'default nil :family arg)
+  (message "Face family set to %s"
+           (face-attribute 'default :family)))
 
-       (define-key map (vector (list ?h))
-         (lambda (arg) (interactive "nEnter typeface height: ")
-           (set-face-attribute face frame :height arg)
-           (message "Face height set to %s"
-                    (face-attribute face frame :height))))
-       map)
-     t)))
+(defun face-and-theme-set-face-height (arg)
+  (interactive "nEnter typeface height: ")
+  (set-face-attribute 'default nil :height arg)
+  (message "Face height set to %s"
+           (face-attribute 'default :height)))
+
+(defun face-and-theme-set-macos-terminal-face (arg)
+  (interactive "sEnter Terminal.app profile: ")
+  (ns-do-applescript
+   (concat
+    "tell application \"Terminal\" to set default settings to "
+    "settings set " (format "\"%s\"\n" arg)))
+  (message "Face Terminal.app theme to %s" arg))
 
 (defun define-semicolon-prefix-keys ()
   (interactive)
@@ -374,7 +375,12 @@ the selected frame."
   (global-set-key (kbd "; h") prefix-arg)
   (define-key global-map (kbd "; h") 'help-command)
 
-  (global-set-key (kbd "; j") 'face-and-theme-adjust)
+  (progn
+    (global-set-key (kbd "; j") prefix-arg)
+    (global-set-key (kbd "; j j") 'face-and-theme-adjust)
+    (global-set-key (kbd "; j f") 'face-and-theme-set-face)
+    (global-set-key (kbd "; j h") 'face-and-theme-set-face-height)
+    (global-set-key (kbd "; j t") 'face-and-theme-set-macos-terminal-face))
 
   ;; A set of symbols:
   (progn
