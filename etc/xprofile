@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Reverse the direction of mouse wheel (swap buttons 5<->4, and 7<->6).
-xinput list |
+xinput list | grep -v 'XTEST' |
     sed -e \
         '/slave *pointer/b useful;
          d; # Delete anything else.
