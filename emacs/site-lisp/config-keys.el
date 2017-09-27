@@ -314,6 +314,7 @@ the selected frame."
   (global-set-key (kbd "; f c") 'calendar)
   (global-set-key (kbd "; f d") 'find-dired)
   (global-set-key (kbd "; f f") 'find-file)
+  (global-set-key (kbd "; f F") 'find-file-read-only)
   (global-set-key (kbd "; f g") 'rgrep)
   (global-set-key (kbd "; f j") 'dired-jump)
   (global-set-key (kbd "; f k") 'kill-buffer)
@@ -341,7 +342,6 @@ the selected frame."
     (global-set-key (kbd "; a g") 'goto-line)
     ;; (global-set-key (kbd "; a q") 'comment-or-uncomment-line)
     ;; (global-set-key (kbd "; a w") 'comment-region-and-duplicate)
-
     (global-set-key (kbd "; a h") (joiner-command 'join-aaBb))
     (global-set-key (kbd "; a j") (joiner-command 'join-aa-bb))
     (global-set-key (kbd "; a k") (joiner-command 'join-AaBb))
@@ -369,6 +369,12 @@ the selected frame."
     (global-set-key (kbd "; w o") 'other-window)
     (global-set-key (kbd "; w v") 'enlarge-window)
     (global-set-key (kbd "; w h") 'enlarge-window-horizontally)
+    ;; C-x 5 .         xref-find-definitions-other-frame
+    ;; C-x 5 0         delete-frame
+    ;; C-x 5 1         delete-other-frames
+    ;; C-x 5 b         switch-to-buffer-other-frame
+    ;; C-x 5 f         find-file-other-frame
+    ;; C-x 5 k         delete-frame-and-buffer
     (global-set-key (kbd "; w -") 'shrink-window-if-larger-than-buffer)
     (global-set-key (kbd "; w =") 'balance-windows))
 

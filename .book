@@ -71,6 +71,7 @@
 ~/.local/src ~/Lake/go
 ~/.pythonrc python/pythonrc
 ~/.screenrc etc/screenrc
+~/.tmux.conf etc/tmux.conf
 ~/.xmonad xmonad
 ~/.xprofile etc/xprofile
 ~/.Xresources etc/Xresources
