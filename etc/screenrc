@@ -27,6 +27,7 @@ bindkey -m -k kN stuff "]"
 bindkey -m \033v stuff "["
 bindkey -m ^v stuff "]"
 bindkey -m \033w stuff "^ "
+bindkey -m w eval 'stuff "^ "' writebuf "exec sh -c 'pbcopy </tmp/screen-exchange'"
 bind "y" paste .
 bind "^y" paste .
 
