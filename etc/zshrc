@@ -84,29 +84,6 @@ sx() {
   fi
 }
 
-# Convenience command for tmux project management.
-# ~/.tmux/tmux.dirs is called with "$sty" to set the initial directory of the
-# session.  Then you extra project-specific scripts are sourced from
-# ~/.tmux/$sty when creating a session.
-tt() {
-  if [[ -z "$1" ]] ; then
-      tmux list-sessions
-      return
-  fi
-  local sty="$1"
-  local dir
-  source "$HOME/.tmux/tmux.dirs" "$sty"
-  echo "session dir: $dir"
-  export STY="$sty"
-  if tmux new -d -s "$sty" -c "$dir" ; then
-      if [[ -e "$HOME/.tmux/$sty" ]] ; then
-          source "$HOME/.tmux/$sty"
-      fi
-  fi
-  unset "$STY"
-  tmux attach -t "$sty"
-}
-
 ee() {
   if [[ "$1" =~ ^- ]] ; then
       emacsclient "$@"
