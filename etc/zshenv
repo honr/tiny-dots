@@ -42,7 +42,7 @@ tt() {
   fi
   dir="${(e)dir:-$HOME}" # Do a parameter expansion or use $HOME if empty.
   echo "Session dir: $dir" >/dev/stderr
-  if [[ tmux new -d -s "$STY" -c "$dir" ]] ; then
+  if tmux new -d -s "$STY" -c "$dir" ; then
       [[ -e "$HOME/.tmux/$STY" ]] && source "$HOME/.tmux/$STY"
   fi
   tmux attach -t "$STY"
