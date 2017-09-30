@@ -8,27 +8,45 @@ esac
 export PATH="$HOME/.local/bin/$UNAME:$HOME/.local/bin:$HOME/.opt/bin:$PATH"
 export GOPATH="$HOME/.local"
 
+# Find the value corresponding to a key in a string->string table or return an
+# empty string and a non-zero exit value.
+# Lines in file should look like:
+# KEY VALUE
+# ANOTHER-KEY ITS VALUE
+# The first space is the delimeter.
+function lookup_in_string_table() {
+  local file="$1"
+  local key="$2"
+  [[ -e "$file" ]] || return 1
+  local value="$(grep -m 1 -e "^$key " "$file")"
+  [[ -n "$value" ]] || return 2
+  echo "${value/#$key /}"
+}
+
 # Convenience command for tmux project management.
-# ~/.tmux/tmux.dirs is called with "$sty" to set the initial directory of the
-# session.  Then you extra project-specific scripts are sourced from
-# ~/.tmux/$sty when creating a session.
+# When creating a session, the initial directory is looked up in ~/.tmux/DIRS.
+# Then the project-specific script at ~/.tmux/$STY is sourced if existing.
 tt() {
   if [[ -z "$1" ]] ; then
       tmux list-sessions
       return
   fi
-  local sty="$1"
-  local dir
-  source "$HOME/.tmux/tmux.dirs" "$sty"
-  echo "session dir: $dir"
-  export STY="$sty"
-  if tmux new -d -s "$sty" -c "$dir" ; then
-      if [[ -e "$HOME/.tmux/$sty" ]] ; then
-          source "$HOME/.tmux/$sty"
+  export STY="$1"
+  local dir="$(lookup_in_string_table $HOME/.tmux/DIRS "$STY")"
+  if [[ -z "$dir" ]] ; then
+      if [[ "${STY[1]}" =~ [A-Z] ]] ; then
+          dir="$(lookup_in_string_table $HOME/.tmux/DIRS DEFAULT_UPPER)"
+      else
+        dir="$(lookup_in_string_table $HOME/.tmux/DIRS DEFAULT_LOWER)"
       fi
   fi
+  dir="${(e)dir:-$HOME}" # Do a parameter expansion or use $HOME if empty.
+  echo "Session dir: $dir" >/dev/stderr
+  if [[ tmux new -d -s "$STY" -c "$dir" ]] ; then
+      [[ -e "$HOME/.tmux/$STY" ]] && source "$HOME/.tmux/$STY"
+  fi
+  tmux attach -t "$STY"
   unset "$STY"
-  tmux attach -t "$sty"
 }
 
 source "$HOME/Pool/host/etc/zshenv-host" 2>/dev/null
