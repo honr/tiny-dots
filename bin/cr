@@ -1,0 +1,52 @@
+#!/bin/bash
+
+PROFILE_POOL="$HOME/Library/Application Support/Google/Chrome/Pool"
+
+app() {
+  local profile="$1"
+  local url="$2"
+
+  open -n -a 'Google Chrome' --args \
+      --no-referrer \
+      --app="$url" \
+      --user-data-dir="$PROFILE_POOL/$profile"
+}
+
+browse() {
+  local profile="$1"
+  local url="$2"
+
+  open -n -a 'Google Chrome' --args \
+      --no-referrer \
+      --user-data-dir="$PROFILE_POOL/$profile" \
+      "$url"
+}
+
+dup() {
+ local profile_src="$1"
+ local profile_dst="$2"
+
+ if [[ -z "$1" ]] ; then
+    echo "Source profile name not provided"
+    exit 1
+ fi
+
+ if [[ -z "$2" ]] ; then
+    echo "Target profile name not provided"
+    exit 1
+ fi
+
+ rm -Rf "$PROFILE_POOL/$profile_dst"
+ cp -R  "$PROFILE_POOL/$profile_src" "$PROFILE_POOL/$profile_dst"
+}
+
+dir() {
+ local profile="$1"
+ if [[ -z "$1" ]] ; then
+    echo "Profile name not provided"
+    exit 1
+ fi
+ echo "cd '$PROFILE_POOL/$profile'"
+}
+
+"$@"

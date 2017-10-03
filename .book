@@ -1,5 +1,3 @@
-~/.bash_profile etc/bashrc
-~/.bashrc etc/bashrc
 ~/.config
 ~/.config/gtk-3.0
 ~/.config/gtk-3.0/settings.ini etc/gtk-3.0-settings.ini
@@ -8,7 +6,6 @@
 ~/.config/i3status
 ~/.emacs.d
 ~/.emacs.d/init.el emacs/init.el
-~/.emacs.d/insert
 ~/.emacs.d/site-lisp
 ~/.emacs.d/site-lisp/pool-base emacs/site-lisp
 ~/.emacs.d/themes
@@ -19,45 +16,20 @@
 ~/.emacs.d/themes/whitestone-serious-text-theme.el emacs/themes/whitestone-serious-text-theme.el
 ~/.emacs.d/themes/whitestone-serious-theme.el emacs/themes/whitestone-serious-theme.el
 ~/.fonts.conf etc/fonts.conf
-~/.gnomerc etc/gnomerc
-~/.gtkrc-2.0 etc/gtkrc-2.0
 ~/.inputrc etc/inputrc
 ~/.local
 ~/.local/bin
-~/.local/bin/ang.clj bin/ang.clj
-~/.local/bin/css.clj bin/css.clj
-~/.local/bin/git_util_test.clj bin/git_util_test.clj
-~/.local/bin/grepless bin/grepless
-~/.local/bin/hclone bin/hclone
+~/.local/bin/cr bin/cr
 ~/.local/bin/html_to_vector.clj bin/html_to_vector.clj
-~/.local/bin/lein2 bin/lein2
 ~/.local/bin/lein bin/lein
 ~/.local/bin/pool bin/pool
-~/.local/bin/ruler2.clj bin/ruler2.clj
-~/.local/bin/ruler.clj bin/ruler.clj
-~/.local/bin/screen-init bin/screen-init
 ~/.local/bin/sx bin/sx
-~/.local/bin/thesaurus.clj bin/thesaurus.clj
 ~/.local/bin/url_decode.clj bin/url_decode.clj
 ~/.local/bin/visit-in-screen bin/visit-in-screen
-~/.local/bin/weather.clj bin/weather.clj
-~/.local/bin/xinput-scroll-direction.sh bin/xinput-scroll-direction.sh
 ~/.local/bin/xml-from-vector.clj bin/xml-from-vector.clj
 ~/.local/bin/xml-to-vector.clj bin/xml-to-vector.clj
 ~/.local/etc
 ~/.local/etc/Xresources-common etc/Xresources-common
-~/.local/lib
-~/.local/lib/bash
-~/.local/lib/bash/alias.bash lib/bash/alias.bash
-~/.local/lib/bash/alias.linux lib/bash/alias.linux
-~/.local/lib/bash/generic.clj.bash lib/bash/generic.clj.bash
-~/.local/lib/bash/path.linux lib/bash/path.linux
-~/.local/lib/bash/term.bash lib/bash/term.bash
-~/.local/lib/bash/term.darwin lib/bash/term.darwin
-~/.local/lib/bash/term.linux lib/bash/term.linux
-~/.local/lib/bash/util.bash lib/bash/util.bash
-~/.local/lib/make
-~/.local/lib/make/common.make make/common.make
 ~/.local/share
 ~/.local/share/applications
 ~/.local/share/applications/clove-daemon.desktop clj/clove/clove-daemon.desktop
@@ -65,14 +37,9 @@
 ~/.local/share/java/classes
 ~/.local/share/java/classes/bin ~/.local/bin
 ~/.local/share/java/project.clj clj/project.clj
-~/.local/share/man
-~/.local/share/man/man1
-~/.local/share/man/man1/pool.deploy.1 man/pool.deploy.1
 ~/.local/src ~/Lake/go
 ~/.pythonrc python/pythonrc
-~/.screenrc etc/screenrc
 ~/.tmux.conf etc/tmux.conf
-~/.xmonad xmonad
 ~/.xprofile etc/xprofile
 ~/.Xresources etc/Xresources
 ~/.zprofile etc/zprofile

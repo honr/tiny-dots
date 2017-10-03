@@ -1,5 +1,0 @@
-#!/bin/bash
-
-USER_DATA_DIR="$(mktemp -d)"
-chromium-browser --user-data-dir="$USER_DATA_DIR" "$@"
-rm -Rf "$USER_DATA_DIR"

@@ -49,5 +49,5 @@ tt() {
   unset "$STY"
 }
 
-source "$HOME/Pool/site/etc/zshenv-site" 2>/dev/null
-source "$HOME/Pool/host/etc/zshenv-host" 2>/dev/null
+source "$HOME/Pool/site/etc/zshenv" 2>/dev/null
+source "$HOME/Pool/host/etc/zshenv" 2>/dev/null

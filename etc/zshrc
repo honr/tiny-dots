@@ -113,3 +113,6 @@ br() {
     git checkout "$@"
   fi
 }
+
+source "$HOME/Pool/site/etc/zshrc" 2>/dev/null
+source "$HOME/Pool/host/etc/zshrc" 2>/dev/null
