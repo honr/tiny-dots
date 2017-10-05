@@ -69,6 +69,9 @@
       ;; %f: filename, %b: buffer name, %m: mode.
       (list "%b (%m)  +Emacs"))
 
+(auto-insert-mode t)
+(setq auto-insert-directory "~/.emacs.d/insert/")
+
 (setq gdb-many-windows t)
 (setq gdb-show-main t)
 
