@@ -18,7 +18,7 @@ workspace_layout stacking
 
 # Option 3: Another condensed font, somewhat between ubuntu and helvetica
 font pango:RobotoCondensed 11
-set $dmenu dmenu.xft -i -fn 'RobotoCondensed-13' \
+set $dmenu dmenu -i -fn 'RobotoCondensed-13' \
         -nb '#111111' -nf '#999999' -sb '#405020' -sf '#dddddd'
 # set $dmenu rofi -dmenu
 set $input i3-input -f 'xft:RobotoCondensed 11'
