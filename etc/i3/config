@@ -37,7 +37,7 @@ set $allWorkspaces i3-msg -t get_workspaces | \
     jq -r '.[] | .name'
 
 # Applications
-bindsym $mod+Return       $run $currentWorkspaceGroup | xargs xterm -e screen -xR
+bindsym $mod+Return       $run $currentWorkspaceGroup | xargs xterm -e .local/bin/tt
 bindsym $mod+Shift+Return $run xterm -e $sh
 bindsym $mod+semicolon    $run $ed
 
@@ -47,7 +47,7 @@ bindsym $mod+d mode "run"
 mode "run" {
   bindsym x $run rofi -columns 6 -i -show drun; \
       mode "default"
-  bindsym j $run $currentWorkspaceGroup | xargs xterm -e screen -xR; \
+  bindsym j $run $currentWorkspaceGroup | xargs xterm -e .local/bin/tt; \
       mode "default"
   bindsym Return $run $currentWorkspaceGroup | \
       xargs -I '{}' xterm -e "STY='{}' $sh"; \
@@ -61,7 +61,7 @@ mode "run" {
   bindsym i $run $ed "$HOME/.config/i3/config"; \
       mode "default"
   bindsym s $run $currentWorkspaceGroup | \
-      xargs -I@ $ed ~/.screen/@; \
+      xargs -I@ $ed ~/.tmux/@; \
       mode "default"
 
   bindsym f $run firefox; \

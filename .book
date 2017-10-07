@@ -24,6 +24,7 @@
 ~/.local/bin/lein bin/lein
 ~/.local/bin/pool bin/pool
 ~/.local/bin/sx bin/sx
+~/.local/bin/tt bin/tt
 ~/.local/bin/url_decode.clj bin/url_decode.clj
 ~/.local/bin/visit-in-screen bin/visit-in-screen
 ~/.local/bin/xml-from-vector.clj bin/xml-from-vector.clj
