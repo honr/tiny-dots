@@ -27,6 +27,7 @@
 ~/.local/bin/tt bin/tt
 ~/.local/bin/url_decode.clj bin/url_decode.clj
 ~/.local/bin/visit-in-screen bin/visit-in-screen
+~/.local/bin/ws.dir bin/ws.dir
 ~/.local/bin/xml-from-vector.clj bin/xml-from-vector.clj
 ~/.local/bin/xml-to-vector.clj bin/xml-to-vector.clj
 ~/.local/etc
