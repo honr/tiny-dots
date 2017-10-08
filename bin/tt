@@ -1,45 +1,27 @@
 #!/bin/zsh
 
-# Find the value corresponding to a key in a string->string table or return an
-# empty string and a non-zero exit value.
-# Lines in file should look like:
-# KEY VALUE
-# ANOTHER-KEY ITS VALUE
-# The first space is the delimeter.
-function lookup_in_string_table() {
-  local file="$1"
-  local key="$2"
-  [[ -e "$file" ]] || return 1
-  local value="$(grep -m 1 -e "^$key " "$file")"
-  [[ -n "$value" ]] || return 2
-  echo "${value/#$key /}"
-}
+# Requires the utility ws.dirs in the PATH.
 
 # Convenience command for tmux project management.
 # When creating a session, the initial directory is looked up in ~/.tmux/DIRS.
 # Then the project-specific script at ~/.tmux/$STY is sourced if existing.
 main() {
   if [[ -z "$1" ]] ; then
-      tmux list-sessions
-      return
+    tmux list-sessions
+    return
   fi
-  export STY="$1"
-  local dir="$(lookup_in_string_table $HOME/.tmux/DIRS "$STY")"
-  if [[ -z "$dir" ]] ; then
-      if [[ "${STY[1]}" =~ [A-Z] ]] ; then
-          dir="$(lookup_in_string_table $HOME/.tmux/DIRS DEFAULT_UPPER)"
-      else
-        dir="$(lookup_in_string_table $HOME/.tmux/DIRS DEFAULT_LOWER)"
-      fi
+  local sty="$1"
+  if tmux attach-session -t "$sty" ; then
+    return
   fi
-  dir="${(e)dir:-$HOME}" # Do a parameter expansion or use $HOME if empty.
-  echo "Session dir: $dir" >/dev/stderr
-  if tmux new -d -s "$STY" -c "$dir" ; then
-      [[ -e "$HOME/.tmux/$STY" ]] && source "$HOME/.tmux/$STY"
+
+  local dir="$(ws.dirs $sty | head -n 1)"
+  tmux new-session -d -s "$sty" -c "$dir" env STY="$sty" "$SHELL"
+  tmux set-environment -t "$sty" STY "$sty"
+  if [[ -e "$HOME/.tmux/$sty" ]] ; then
+    "$HOME/.tmux/$sty"
   fi
-  tmux attach -t "$STY"
-  unset "$STY"
+  tmux attach-session -t "$sty"
 }
 
 main "$@"
-unset -f main
