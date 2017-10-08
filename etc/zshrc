@@ -9,7 +9,9 @@ bindkey '^W'  kill-region
 bindkey '^[n' history-beginning-search-forward
 bindkey '^[p' history-beginning-search-backward
 
-setopt SHARE_HISTORY
+# setopt SHARE_HISTORY
+# setopt INC_APPEND_HISTORY
+setopt INC_APPEND_HISTORY_TIME
 
 # From bashrc
 # shopt -s histappend
