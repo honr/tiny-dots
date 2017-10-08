@@ -1,0 +1,49 @@
+#!/bin/zsh
+
+# Find the value corresponding to given keys in a string->string table or return
+# an empty string and a non-zero exit value.  Lines in file should look like:
+# KEY VALUE
+# ANOTHER-KEY ITS VALUE
+# The first space is the delimeter.
+# The first argument is the file, and the rest are keys.  When multiple keys are
+# provided, The first successful lookup inhibits looking for subsequent keys.
+function lookup_in_string_table() {
+  local file="$1"
+  [[ -e "$file" ]] || return 1
+  shift 1
+  # The rest of args are keys.
+  local key
+  local line
+  local value
+  local matched
+  for key; do
+    grep -e "^$key " "$file" | while read line ; do
+      value="${line/#$key /}"
+      echo "${(e)value}"
+      matched=yes
+    done
+    if [[ -n "$matched" ]] ; then
+      break
+    fi
+  done
+}
+
+# Convenience command for tmux project management.
+# When creating a session, the initial directory is looked up in ~/.tmux/DIRS.
+# Then the project-specific script at ~/.tmux/$sty is sourced if existing.
+function main() {
+  if [[ -z "$1" ]] ; then
+    return
+  fi
+  local sty="$1"
+  local default_key
+  case "$sty" in
+    [A-Z]*) default_key=.upper ;;
+    [a-z]*) default_key=.lower ;;
+    [0-9]*) default_key=.num ;;
+    *) default_key=DEFAULT ;;
+  esac
+  lookup_in_string_table $HOME/.tmux/DIRS "$sty" "$default_key" | head -n 1
+}
+
+main "$@"
