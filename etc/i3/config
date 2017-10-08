@@ -33,6 +33,9 @@ set $currentWorkspace i3-msg -t get_workspaces | \
     jq -r '.[] | select(.focused==true) | .name'
 set $currentWorkspaceGroup i3-msg -t get_workspaces | \
     jq -r '.[] | select(.focused==true) | .name' | grep -Eo '(^[^.]+)'
+set $currentWorkspaceGroupDir i3-msg -t get_workspaces | \
+    jq -r '.[] | select(.focused==true) | .name' | grep -Eo '(^[^.]+)' | \
+    .local/bin/ws.dir
 set $allWorkspaces i3-msg -t get_workspaces | \
     jq -r '.[] | .name'
 
@@ -55,8 +58,7 @@ mode "run" {
 
   bindsym e $run $ed; \
       mode "default"
-  bindsym k $run $currentWorkspaceGroup | \
-      xargs -I@ $ed ~/src/@; \
+  bindsym k $run $currentWorkspaceGroupDir | xargs $ed; \
       mode "default"
   bindsym i $run $ed "$HOME/.config/i3/config"; \
       mode "default"
