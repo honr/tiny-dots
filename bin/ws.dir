@@ -36,14 +36,14 @@ function main() {
     return
   fi
   local sty="$1"
-  local default_key
+  local other_key
   case "$sty" in
-    [A-Z]*) default_key=.upper ;;
-    [a-z]*) default_key=.lower ;;
-    [0-9]*) default_key=.num ;;
-    *) default_key=DEFAULT ;;
+    [A-Z]*) other_key=.upper ;;
+    [a-z]*) other_key=.lower ;;
+    [0-9]*) other_key=.num ;;
   esac
-  lookup_in_string_table $HOME/.tmux/DIRS "$sty" "$default_key" | head -n 1
+  lookup_in_string_table "$HOME/.tmux/DIRS" "$sty" "$other_key" ".default" | \
+      head -n 1
 }
 
 main "$@"
