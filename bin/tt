@@ -10,18 +10,18 @@ main() {
     tmux list-sessions
     return
   fi
-  local sty="$1"
-  if tmux attach-session -t "$sty" ; then
+  local STY="$1"
+  if tmux attach-session -t "$STY" ; then
     return
   fi
 
-  local dir="$(ws.dirs $sty | head -n 1)"
-  tmux new-session -d -s "$sty" -c "$dir" env STY="$sty" "$SHELL"
-  tmux set-environment -t "$sty" STY "$sty"
-  if [[ -e "$HOME/.tmux/$sty" ]] ; then
-    "$HOME/.tmux/$sty"
+  local dir="$(ws.dirs $STY | head -n 1)"
+  tmux new-session -d -s "$STY" -c "$dir" env STY="$STY" "$SHELL"
+  tmux set-environment -t "$STY" STY "$STY"
+  if [[ -e "$HOME/.tmux/$STY" ]] ; then
+    "$HOME/.tmux/$STY"
   fi
-  tmux attach-session -t "$sty"
+  tmux attach-session -t "$STY"
 }
 
 main "$@"

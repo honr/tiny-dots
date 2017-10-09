@@ -30,19 +30,19 @@ function lookup_in_string_table() {
 
 # Convenience command for tmux project management.
 # When creating a session, the initial directory is looked up in ~/.tmux/DIRS.
-# Then the project-specific script at ~/.tmux/$sty is sourced if existing.
+# Then the project-specific script at ~/.tmux/$STY is sourced if existing.
 function main() {
   if [[ -z "$1" ]] ; then
     return
   fi
-  local sty="$1"
+  local STY="$1"
   local other_key
-  case "$sty" in
+  case "$STY" in
     [A-Z]*) other_key=.upper ;;
     [a-z]*) other_key=.lower ;;
     [0-9]*) other_key=.num ;;
   esac
-  lookup_in_string_table "$HOME/.tmux/DIRS" "$sty" "$other_key" ".default" | \
+  lookup_in_string_table "$HOME/.tmux/DIRS" "$STY" "$other_key" ".default" | \
       head -n 1
 }
 
