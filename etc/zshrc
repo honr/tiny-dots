@@ -20,6 +20,7 @@ setopt INC_APPEND_HISTORY_TIME
 # [[ -t 0 && -t 1 ]] && stty werase ^-
 # TERM="xterm-256color"
 
+fpath=($fpath $HOME/Pool/zsh)
 zstyle :compinstall filename "$HOME/.zshrc"
 autoload -Uz compinit ; compinit
 
@@ -53,10 +54,6 @@ export VISUAL="emacsclient"
 export EDITOR="emacsclient"
 export ALTERNATE_EDITOR=""
 # export CLICOLOR=1 # Same as ls -G or ls --color=auto
-
-source "$HOME/Pool/base/etc/zshrc.$UNAME" 2>/dev/null
-source "$HOME/Pool/site/etc/zshrc-site" 2>/dev/null
-source "$HOME/Pool/host/etc/zshrc-host" 2>/dev/null
 
 bell() { echo -e '\a' }
 
@@ -116,5 +113,6 @@ br() {
   fi
 }
 
+source "$HOME/Pool/base/etc/zshrc.$UNAME" 2>/dev/null
 source "$HOME/Pool/site/etc/zshrc" 2>/dev/null
 source "$HOME/Pool/host/etc/zshrc" 2>/dev/null
