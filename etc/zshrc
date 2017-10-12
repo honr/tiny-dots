@@ -20,7 +20,7 @@ setopt INC_APPEND_HISTORY_TIME
 # [[ -t 0 && -t 1 ]] && stty werase ^-
 # TERM="xterm-256color"
 
-fpath=($fpath $HOME/Pool/zsh)
+fpath=($fpath $HOME/Pool/base/zsh)
 zstyle :compinstall filename "$HOME/.zshrc"
 autoload -Uz compinit ; compinit
 
