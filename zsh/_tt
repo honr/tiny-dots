@@ -1,10 +1,9 @@
 #compdef tt
 
 _tt() {
-  local curcontext="$curcontext" state line
-  typeset -A opt_args
+  local line state curcontext="$curcontext"
   _arguments '1: :->sty'
-  case $state in
+  case "$state" in
     sty) _arguments "1:STYs:($(tmux list-sessions -F '#{session_name}'))" ;;
   esac
 }

@@ -1,0 +1,11 @@
+#compdef aa
+
+_aa() {
+  local line state curcontext="$curcontext"
+  _arguments '*: :->target'
+  case "$state" in
+    target) _arguments "*:Targets:($(aa))" ;;
+  esac
+}
+
+_aa "$@"
