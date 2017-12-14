@@ -7,7 +7,7 @@
 
 ;; A rectangle is a list of (x1 y1 x2 y2).
 ;; fc means frame-coordinates.
-;; mal is monitor attributes list.
+;; mal is monitor attributes list for all monitors.
 
 ;; grbi: (g = (x-left y-top x-right y-bottom) of workarea
 ;;        rect = (x-left, y-top, w, h) of frame
@@ -95,7 +95,7 @@
          (b (if (listp bb) (cadr bb) bb)))
     (list a b (frame-pixel-width frame) (frame-pixel-height frame))))
 
-(defun ns-framecontrol-get-current-workarea-and-index (fc mal)
+(defun ns-framecontrol-get-gi (fc mal)
   "Given a frame-coord (fc) and a monitor attributes list (mal), find the
    intersection area and index of the current monitor."
   (max-by (lambda (x) (rectangles-intersection-area fc x))
@@ -103,19 +103,17 @@
                   mal)))
 
 (defun ns-framecontrol-get-current-mal (fc mal)
-  (nth (cdr (ns-framecontrol-get-current-workarea-and-index
-             fc mal))
-       mal))
+  (nth (cdr (ns-framecontrol-get-gi fc mal)) mal))
 
 (defun ns-framecontrol-get-current-monitor-frames (fc mal)
   (cdr (assq 'frames (ns-framecontrol-get-current-mal
                       fc mal))))
 
-(defun ns-framecontrol-get-current-monitor-interesting-lines (fc m)
-  (let* ((w (car (ns-framecontrol-get-current-workarea-and-index fc m)))
-         (xs (list (first w) (third w)))
-         (ys (list (second w) (fourth w))))
-    (dolist (frame (ns-framecontrol-get-current-monitor-frames fc m))
+(defun ns-framecontrol-get-current-monitor-interesting-lines (fc mal)
+  (let* ((g (car (ns-framecontrol-get-gi fc mal)))
+         (xs (list (first g) (third g)))
+         (ys (list (second g) (fourth g))))
+    (dolist (frame (ns-framecontrol-get-current-monitor-frames fc mal))
       (let ((r (ns-framecontrol-get-frame-coord frame)))
         (nconc xs (list (- (first r) (third fc))
                         (first r)
@@ -128,15 +126,17 @@
     (list (remove-duplicates (sort xs '<))
           (remove-duplicates (sort ys '<)))))
 
-(defun ns-framecontrol-get-workarea-coord (&optional frame)
-  "Returns ((x-left y-top x-right y-bottom) of workarea
-            (x-left, y-top, w, h) of frame
-            (min-x min-y max-x max-y) for (x-left, y-top) in the workarea
-            index of workarea)"
-  (let* ((r (ns-framecontrol-get-frame-coord frame))
-         (g-and-index (ns-framecontrol-get-current-workarea-and-index
-                       r (display-monitor-attributes-list)))
-         (g (car g-and-index)))
+(defun ns-framecontrol-get-grbi (&optional frame)
+  "Returns ((x-left y-top x-right y-bottom) of workarea aka g
+            (x-left, y-top, w, h) of frame aka r
+            (min-x min-y max-x max-y) for (x-left, y-top) in the workarea aka b
+            index of workarea) aka i"
+  (let* ((mal (display-monitor-attributes-list))
+         (r (ns-framecontrol-get-frame-coord frame))
+         (gi (ns-framecontrol-get-gi r mal))
+         (gg (car gi))
+         (g (list (first gg) (second gg)
+                  (+ (first gg) (third gg)) (+ (second gg) (fourth gg)))))
     (list
      ;; Workarea's x-left, y-top, x-right, y-bottom
      g
@@ -149,12 +149,12 @@
            (- (third g) (third r))
            (- (fourth g) (fourth r)))
      ;; Index of g
-     (cdr g-and-index))))
+     (cdr gi))))
 
 ;; ------------------------------------------------------------
 
 (defun pop-up-frame-parameters-on-this-workspace ()
-  (let* ((g (first (ns-framecontrol-get-workarea-coord)))
+  (let* ((g (first (ns-framecontrol-get-grbi)))
          (initial-width 585)
          (initial-height 494)
          (x (random-between (first g)
@@ -174,7 +174,7 @@
 
 (defun ns-framecontrol-nudge (&optional frame)
   (interactive)
-  (let ((bounds (third (ns-framecontrol-get-workarea-coord frame))))
+  (let ((bounds (third (ns-framecontrol-get-grbi frame))))
     (modify-frame-parameters
      frame
      `((left . ,(random-between (first bounds) (third bounds)))
@@ -182,7 +182,7 @@
 
 (defun ns-framecontrol-toggle-frame-vertical-size (&optional frame)
   (interactive)
-  (let* ((grbi (ns-framecontrol-get-workarea-coord frame))
+  (let* ((grbi (ns-framecontrol-get-grbi frame))
          (g (first grbi))
          (r (second grbi))
          (bounds (third grbi))
@@ -209,10 +209,10 @@
   (+ b (ns-framecontrol-nudge-fn (- a b))))
 
 (defun ns-framecontrol-nudge-frame-in-direction (frame direction)
-  (let* ((xs-and-ys (ns-framecontrol-get-current-monitor-interesting-lines
-                     (ns-framecontrol-get-frame-coord nil)
-                     (display-monitor-attributes-list)))
-         (grbi (ns-framecontrol-get-workarea-coord frame))
+  (let* ((mal (display-monitor-attributes-list))
+         (xs-and-ys (ns-framecontrol-get-current-monitor-interesting-lines
+                     (ns-framecontrol-get-frame-coord frame) mal))
+         (grbi (ns-framecontrol-get-grbi frame))
          (r (second grbi))
          (bounds (third grbi)))
     (modify-frame-parameters
@@ -225,8 +225,7 @@
                                        (lambda (x)
                                          (<= (first bounds) x (- (first r) 1)))
                                        (first xs-and-ys))))
-                           (first bounds))))
-                (top . ,(second r))))
+                           (first bounds))))))
        (:right `((left . ,(ns-framecontrol-nudge-towards
                            (first r)
                            (or
@@ -234,10 +233,8 @@
                                     (lambda (x)
                                       (<= (+ (first r) 1) x (third bounds)))
                                     (first xs-and-ys)))
-                            (third bounds))))
-                 (top . ,(second r))))
-       (:up `((left . ,(first r))
-              (top . ,(ns-framecontrol-nudge-towards
+                            (third bounds))))))
+       (:up `((top . ,(ns-framecontrol-nudge-towards
                        (second r)
                        (or
                         (first (remove-if-not
@@ -245,8 +242,7 @@
                                   (<= (second bounds) y (- (second r) 1)))
                                 (second xs-and-ys)))
                         (second bounds))))))
-       (:down `((left . ,(first r))
-                (top . ,(ns-framecontrol-nudge-towards
+       (:down `((top . ,(ns-framecontrol-nudge-towards
                          (second r)
                          (or
                           (first (remove-if-not

@@ -39,6 +39,7 @@
 ;; Add a "layer" of protection around ‘C-x C-c’.
 (global-unset-key (kbd "C-x C-c"))
 (global-set-key (kbd "C-x C-c C-x C-x C-c") 'save-buffers-kill-emacs)
+(global-unset-key (kbd "C-z")) ;; C-z is not particularly useful either.
 ;; (icomplete-mode t)  ;; Diabled because it breaks several things...
 (savehist-mode t)
 (setq history-length 8192)

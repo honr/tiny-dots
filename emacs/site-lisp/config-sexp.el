@@ -21,6 +21,7 @@
  '(("(\\|)\\|\\[\\|\\]\\|{\\|}" . 'paren-face)) 'append)
 
 (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("/AA$" . clojure-mode))
 
 (add-to-list 'auto-insert-alist
              '(clojure-mode

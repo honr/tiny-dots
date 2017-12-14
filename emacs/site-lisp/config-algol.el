@@ -105,6 +105,7 @@
   (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode)))
 
 (add-to-list 'auto-mode-alist '("/BUILD$" . python-mode))
+(add-to-list 'auto-mode-alist '("\\.bzl$" . python-mode))
 
 (when (require 'dart-mode nil t)
   (add-to-list 'auto-mode-alist '("\\.dart\\'" . dart-mode)))

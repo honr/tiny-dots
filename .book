@@ -13,6 +13,7 @@
 ~/.emacs.d/themes/dark-ruthless-theme.el emacs/themes/dark-ruthless-theme.el
 ~/.emacs.d/themes/fruitsalad-dark-theme.el emacs/themes/fruitsalad-dark-theme.el
 ~/.emacs.d/themes/light-balcony-theme.el emacs/themes/light-balcony-theme.el
+~/.emacs.d/themes/moe-dark-theme.el emacs/themes/moe-dark-theme.el
 ~/.emacs.d/themes/whitestone-serious-text-theme.el emacs/themes/whitestone-serious-text-theme.el
 ~/.emacs.d/themes/whitestone-serious-theme.el emacs/themes/whitestone-serious-theme.el
 ~/.fonts.conf etc/fonts.conf

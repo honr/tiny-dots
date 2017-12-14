@@ -236,6 +236,7 @@ the selected frame."
                 (?w . whitestone-serious)
                 (?W . whitestone-serious-text)
                 (?r . dark-ruthless)
+                (?m . moe-dark)
                 (?b . light-balcony)))
        (lexical-let ((k (vector (list (car key-and-theme))))
                      (theme (cdr key-and-theme)))
