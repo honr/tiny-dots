@@ -1,0 +1,53 @@
+<ivy-module version="2.0">
+  <info module=""/>
+  <dependencies>
+    <dependency org="org.clojure" name="clojure" rev="1.8.0" />
+    <dependency org="org.clojure" name="algo.generic" rev="0.1.2" />
+    <dependency org="org.clojure" name="algo.monads" rev="0.1.6" />
+    <dependency org="org.clojure" name="core.async" rev="0.3.465" />
+    <dependency org="org.clojure" name="core.cache" rev="0.6.5" />
+    <dependency org="org.clojure" name="core.logic" rev="0.8.11" />
+    <dependency org="org.clojure" name="core.memoize" rev="0.5.9" />
+    <!-- core.typed seems to have broken deps at the moment -->
+    <!-- <dependency org="org.clojure" name="core.typed" rev="0.4.3" /> -->
+    <dependency org="org.clojure" name="data.csv" rev="0.1.4" />
+    <dependency org="org.clojure" name="data.json" rev="0.2.6" />
+    <dependency org="org.clojure" name="data.zip" rev="0.1.2" />
+    <dependency org="org.clojure" name="java.jdbc" rev="0.7.4" />
+    <dependency org="org.clojure" name="test.check" rev="0.9.0" />
+    <dependency org="org.clojure" name="tools.analyzer" rev="0.6.9" />
+    <dependency org="org.clojure" name="tools.analyzer.jvm" rev="0.7.1" />
+    <dependency org="org.clojure" name="tools.cli" rev="0.3.5" />
+    <dependency org="org.clojure" name="tools.logging" rev="0.4.0" />
+    <dependency org="org.clojure" name="tools.namespace" rev="0.2.11" />
+    <dependency org="org.clojure" name="tools.nrepl" rev="0.2.13" />
+    <!-- Had a circular dependency -->
+    <!-- <dependency org="org.clojure" name="tools.reader" rev="1.1.1" /> -->
+    <dependency org="org.mozilla" name="rhino" rev="1.7.7.2" />
+    <dependency org="com.google.javascript" name="closure-compiler"
+                rev="v20171203" />
+    <dependency org="org.clojure" name="clojurescript" rev="1.9.946" />
+    <dependency org="com.google.guava" name="guava" rev="23.5-jre" />
+    <dependency org="com.google.protobuf" name="protobuf-java" rev="3.5.0" />
+    <dependency org="com.google.protobuf" name="protobuf-lite" rev="3.0.1" />
+    <dependency org="com.google.protobuf" name="protoc" rev="3.5.0" />
+    <dependency org="javax.mail" name="mail" rev="1.4.7" />
+    <dependency org="javax.websocket" name="javax.websocket-api" rev="1.1" />
+    <dependency org="org.eclipse.jetty" name="jetty-server"
+                rev="9.4.8.v20171121" />
+    <dependency org="org.postgresql" name="postgresql" rev="42.1.4" />
+    <dependency org="org.ogce" name="xpp3" rev="1.1.6" />
+    <dependency org="org.jsoup" name="jsoup" rev="1.11.2" />
+    <dependency org="org.yaml" name="snakeyaml" rev="1.19" />
+    <dependency org="org.xerial" name="sqlite-jdbc" rev="3.20.0" />
+    <dependency org="com.cognitect" name="transit-clj" rev="0.8.300" />
+    <dependency org="io.grpc" name="grpc-all" rev="1.8.0" />
+    <dependency org="joda-time" name="joda-time" rev="2.9.9" />
+    <!-- These failed for various reasons.  Perhaps not in Central. -->
+    <!-- <dependency org="ring" name="ring-jetty-adapter" rev="1.6.3" /> -->
+    <!-- <dependency org="ring" name="ring-servlet" rev="1.6.3" /> -->
+    <!-- <dependency org="io.netty" name="netty-all" rev="4.1.19.Final" /> -->
+    <!-- <dependency org="clj-http" name="clj-http" rev="3.7.0" /> -->
+    <!-- <dependency org="leiningen" name="leiningen" rev="2.8.1" /> -->
+  </dependencies>
+</ivy-module>

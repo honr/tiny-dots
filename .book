@@ -20,6 +20,7 @@
 ~/.inputrc etc/inputrc
 ~/.local
 ~/.local/bin
+~/.local/bin/cljivy bin/cljivy
 ~/.local/bin/cr bin/cr
 ~/.local/bin/html_to_vector.clj bin/html_to_vector.clj
 ~/.local/bin/lein bin/lein
@@ -39,6 +40,7 @@
 ~/.local/share/java
 ~/.local/share/java/classes
 ~/.local/share/java/classes/bin ~/.local/bin
+~/.local/share/java/ivy.xml clj/ivy.xml
 ~/.local/share/java/project.clj clj/project.clj
 ~/.local/src ~/Lake/go
 ~/.pythonrc python/pythonrc

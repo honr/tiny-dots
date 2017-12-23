@@ -1,0 +1,52 @@
+#!/bin/bash
+
+CACHE="$HOME/.local/var/ivy"
+JAR="$HOME/.local/share/java/ivy.jar"
+LIB="$HOME/.local/share/java/lib"
+IVYURL=http://central.maven.org/maven2/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar
+
+function download-ivy-maybe() {
+  if [[ ! -e "$JAR" ]] ; then
+    mkdir -p "$HOME/.local/share/java"
+    curl -L -o "$JAR" "$IVYURL"
+  fi
+  if [[ ! -d "$CACHE" ]] ; then
+    mkdir -p "$CACHE"
+  fi
+}
+
+function ivy-minimal() {
+  java -jar "$JAR"
+}
+
+function ivy() {
+  download-ivy-maybe
+  java -jar "$JAR" -cache "$CACHE" "$@"
+}
+
+function update() {
+  pushd "$HOME/.local/share/java" 2>/dev/null
+  ivy -types jar \
+      -retrieve "lib/[artifact]-[revision](-[classifier]).[ext]" \
+      -ivy "$HOME/.local/share/java/ivy.xml"
+  popd 2>/dev/null
+}
+
+function get() {
+  local name="$1" # E.g.: "org.clojure/clojure"
+  local revision="$2" # E.g.: 1.9.1
+  shift 2
+  local org="${name%/*}"
+  local module="${name#*/}"
+  echo "Retrieving: {Org: $org, Module: $module, Revision: $revision}"
+  ivy -types jar \
+      -retrieve "lib/[artifact]-[revision](-[classifier]).[ext]" \
+      -dependency "$org" "$module" "$revision" \
+      "$@"
+}
+
+function clojure1.8() {
+  java -cp "$LIB/*" -jar "$LIB/clojure-1.8.0.jar" "$@"
+}
+
+"$@"
