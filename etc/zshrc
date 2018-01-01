@@ -67,11 +67,11 @@ e.pwd() {
 }
 
 clj() {
-  if [[ "$1" == "-i" ]] ; then
+  if [[ "$1" == "-c" ]] ; then
       shift
-      clove -i clojure "$@"
+      clove -c clojure "$@"
   else
-    clove -c clojure "$@"
+    clove -i clojure "$@"
   fi
 }
 
