@@ -11,7 +11,7 @@ main() {
     return
   fi
   local STY="$1"
-  if tmux attach-session -t "$STY" ; then
+  if tmux attach-session -t "$STY" 2>/dev/null ; then
     return
   fi
 

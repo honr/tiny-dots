@@ -1,3 +1,10 @@
+#!/bin/zsh
+
+# zshenv: all types
+# zprofile, zlogin, zlogout: login shells
+# zshrc: interactive shells
+# The order is: zshenv, zprofile, zshrc, zlogin, run, zlogout
+
 # On linux: "linux", on Mac OS X: "darwin".
 UNAME="$(uname)"
 case "$UNAME" in

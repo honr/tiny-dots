@@ -1,5 +1,10 @@
 #!/bin/zsh
 
+# zshenv: all types
+# zprofile, zlogin, zlogout: login shells
+# zshrc: interactive shells
+# The order is: zshenv, zprofile, zshrc, zlogin, run, zlogout
+
 HISTFILE=~/.history/zsh
 HISTSIZE=32768
 SAVEHIST=65536
@@ -75,14 +80,6 @@ clj() {
   fi
 }
 
-sx() {
-  if [[ -z "$1" ]] ; then
-    screen -ls
-  else
-    STY="$1" screen -xR "$1"
-  fi
-}
-
 ee() {
   if [[ "$1" =~ ^- ]] ; then
       emacsclient "$@"
@@ -93,16 +90,16 @@ ee() {
   fi
 }
 
-edit-sx() {
+edit-tt() {
   local ws="$1"
   if [[ -z "$ws" ]] ; then
-    ws="$STY_SHORT"
+    ws="$STY"
   fi
   if [[ -z "$ws" ]] ; then
     echo "A ws name should be specified."
     echo 1
   fi
-  ee "$HOME/.screen/$ws"
+  ee "$HOME/.tmux/$ws"
 }
 
 br() {

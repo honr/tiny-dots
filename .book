@@ -22,13 +22,11 @@
 ~/.local/bin
 ~/.local/bin/cljivy bin/cljivy
 ~/.local/bin/cr bin/cr
+~/.local/bin/git-mkrepo bin/git-mkrepo
 ~/.local/bin/html_to_vector.clj bin/html_to_vector.clj
-~/.local/bin/lein bin/lein
 ~/.local/bin/pool bin/pool
-~/.local/bin/sx bin/sx
 ~/.local/bin/tt bin/tt
 ~/.local/bin/url_decode.clj bin/url_decode.clj
-~/.local/bin/visit-in-screen bin/visit-in-screen
 ~/.local/bin/ws.dir bin/ws.dir
 ~/.local/bin/xml-from-vector.clj bin/xml-from-vector.clj
 ~/.local/bin/xml-to-vector.clj bin/xml-to-vector.clj
@@ -41,12 +39,10 @@
 ~/.local/share/java/classes
 ~/.local/share/java/classes/bin ~/.local/bin
 ~/.local/share/java/ivy.xml clj/ivy.xml
-~/.local/share/java/project.clj clj/project.clj
 ~/.local/src ~/Lake/go
 ~/.pythonrc python/pythonrc
 ~/.tmux.conf etc/tmux.conf
 ~/.xprofile etc/xprofile
 ~/.Xresources etc/Xresources
-~/.zprofile etc/zprofile
 ~/.zshenv etc/zshenv
 ~/.zshrc etc/zshrc
