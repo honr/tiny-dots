@@ -1,13 +1,13 @@
 #!/bin/bash
 
 CACHE="$HOME/.local/var/ivy"
-JAR="$HOME/.local/share/java/ivy.jar"
-LIB="$HOME/.local/share/java/lib"
-IVYURL=http://central.maven.org/maven2/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar
+LJ_DIR="$HOME/.local/share/java"
+JAR="$LJ_DIR/ivy.jar"
+IVYURL="http://central.maven.org/maven2/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar"
 
 function download-ivy-maybe() {
   if [[ ! -e "$JAR" ]] ; then
-    mkdir -p "$HOME/.local/share/java"
+    mkdir -p "$LJ_DIR"
     curl -L -o "$JAR" "$IVYURL"
   fi
   if [[ ! -d "$CACHE" ]] ; then
@@ -25,10 +25,10 @@ function ivy() {
 }
 
 function update() {
-  pushd "$HOME/.local/share/java" 2>/dev/null
+  pushd "$LJ_DIR" 2>/dev/null
   ivy -types jar \
       -retrieve "lib/[artifact]-[revision](-[classifier]).[ext]" \
-      -ivy "$HOME/.local/share/java/ivy.xml"
+      -ivy "$LJ_DIR/ivy.xml"
   popd 2>/dev/null
 }
 
@@ -46,7 +46,8 @@ function get() {
 }
 
 function clojure1.8() {
-  java -cp "$LIB/*" -jar "$LIB/clojure-1.8.0.jar" "$@"
+  local classpath="$LJ_DIR/classes:$LJ_DIR/lib/*"
+  java -cp "$classpath" -jar "$LJ_DIR/lib/clojure-1.8.0.jar" "$@"
 }
 
 "$@"

@@ -1,0 +1,7 @@
+#!/bin/zsh
+exit
+
+# Join array with the specified separator
+# strings.Join(path, "\n")
+echo "${(j'\n')path}"
+--------------------------------------------------------------------------------
