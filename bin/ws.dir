@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 
 # Find the value corresponding to given keys in a string->string table or return
 # an empty string and a non-zero exit value.  Lines in file should look like:

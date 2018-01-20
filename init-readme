@@ -1,0 +1,20 @@
+POOL=Pool/base Pool/base/bin/pool install
+
+cp Pool/base/etc/Xresources ~/.Xresources
+touch .local/etc/Xresources-host
+# and modify to your taste.  For example:
+.Xresources:
+#include ".local/etc/Xresources-common"
+#include ".local/etc/Xresources-dark"
+#include ".local/etc/Xresources-host"
+
+.local/etc/Xresources-host:
+Xcursor.theme:  DMZ-Black
+Xcursor.size:   36
+Xcursor.theme_core: 1
+Xft.dpi: 162
+emacs.font: PT Mono-11
+XTerm*VT100.faceName: DejaVuSansMono
+XTerm.VT100.faceSize: 10
+UXTerm*VT100.faceName: DejaVuSansMono
+UXTerm.VT100.faceSize: 10

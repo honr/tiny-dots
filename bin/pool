@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Symlinks sadly cannot link to paths relative to home; They are either
 # absolute or relative to where they are.  This script helps keep track of
@@ -41,7 +41,7 @@ if [[ -z "$1" ]] ; then
 fi
 BOOK="$POOL/.book"
 
-function cmd-add () {
+function cmd_add () {
   local dest="$1"
   local source="$2"
 
@@ -60,7 +60,7 @@ function cmd-add () {
   mv "$BOOK.new" "$BOOK"
 }
 
-function cmd-install () {
+function cmd_install () {
   local x=1
   local follow_symlinks
   local compress
@@ -138,5 +138,5 @@ function cmd-install () {
   fi
 }
 
-"cmd-$@"
+"cmd_$@"
 exit 0
