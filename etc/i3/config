@@ -26,9 +26,6 @@ set $ed emacsclient -a '' -nc
 set $sh zsh
 set $run exec --no-startup-id
 
-# Start on startup (but not on restarts).
-$run $sh -c 'emacs --daemon'
-
 set $currentWorkspace i3-msg -t get_workspaces | \
     jq -r '.[] | select(.focused==true) | .name'
 set $currentWorkspaceGroup i3-msg -t get_workspaces | \

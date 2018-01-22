@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 # zshenv: all types
 # zprofile, zlogin, zlogout: login shells
@@ -6,11 +6,12 @@
 # The order is: zshenv, zprofile, zshrc, zlogin, run, zlogout
 
 # On linux: "linux", on Mac OS X: "darwin".
-UNAME="$(uname)"
-case "$UNAME" in
-  Linux) UNAME=linux ;;
-  Darwin) UNAME=darwin ;;
-esac
+if [[ -z "$UNAME" ]] ; then
+    case "$(uname)" in
+      Linux) export UNAME=linux ;;
+      Darwin) export UNAME=darwin ;;
+    esac
+fi
 
 export PATH="$HOME/.local/bin/$UNAME:$HOME/.local/bin:$HOME/.opt/bin:$PATH"
 export GOPATH="$HOME/.local"

@@ -1,6 +1,9 @@
 #!/bin/sh
 
-# Reverse the direction of mouse wheel (swap buttons 5<->4, and 7<->6).
+source "$HOME/.zshenv" 2>/dev/null
+emacs --daemon &
+
+# Reverse the direction of mouse wheel.
 xinput list | grep -v 'XTEST' |
     sed -e \
         '/slave *pointer/b useful;
