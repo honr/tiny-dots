@@ -1,20 +1,19 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 source "$HOME/.zshenv" 2>/dev/null
 emacs --daemon &
 
 # Reverse the direction of mouse wheel.
-xinput list | grep -v 'XTEST' |
-    sed -e \
-        '/slave *pointer/b useful;
-         d; # Delete anything else.
-         :useful s/[⎜↳ ]*\(.*\) *id=\([0-9]*\).*/\2 \1/g' | \
-    while read id name
-    do
-      printf "[id: %02d] %s\n" "$id" "$name"
-      xinput set-prop "$id" 'libinput Natural Scrolling Enabled' 1
-      xinput set-prop "$id" 'libinput Accel Speed' 0.6
-    done
+xinput list | grep 'slave[ ]*pointer' | grep -v 'XTEST' | \
+    sed -e '/slave *pointer/b useful;
+          d; # Delete anything else.
+          :useful s/[⎜↳ ]*\(.*\) *id=\([0-9]*\).*/\2 \1/g' | \
+              while read id name
+              do
+                printf "[id: %02d] %s\n" "$id" "$name"
+                xinput set-prop "$id" 'libinput Natural Scrolling Enabled' 1
+                xinput set-prop "$id" 'libinput Accel Speed' 0.6
+              done
 
 # According to some documentaions when /etc/default/keyboard is properly
 # configured[1], the following setxkbmap line should be redundant.  However,
