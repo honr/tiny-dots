@@ -54,6 +54,8 @@
  '(show-paren-mismatch-face      ((t (:foreground "#FFFFFF" :background "#FF0000"))))
  '(tool-bar                      ((t (:foreground "#777777" :background "#111111"))))
  '(tooltip                       ((t (:foreground "#777777" :background "#333333"))))
+
+ '(vertical-border               ((t (:foreground "#444444" :background "#777777"))))
  '(widget-button-face            ((t (:foreground "#888888" :weight bold))))
  '(widget-field-face             ((t (:foreground "#999999" :weight bold)))))
 

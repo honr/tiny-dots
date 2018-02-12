@@ -389,6 +389,9 @@ the selected frame."
     (global-set-key (kbd "; j h") 'face-and-theme-set-face-height)
     (global-set-key (kbd "; j t") 'face-and-theme-set-macos-terminal-face))
 
+  (progn
+    (global-set-key (kbd "; o") 'org-agenda-list-stuck-projects))
+
   ;; A set of symbols:
   (progn
     (global-set-key (kbd "; g") prefix-arg)

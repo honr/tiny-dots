@@ -172,6 +172,10 @@
                     ,(pop-up-frame-parameters-on-this-workspace))
                   nil))
 
+(defun ns-framecontrol-make-frame-tmp ()
+  (interactive)
+  (switch-to-buffer-other-frame (get-buffer-create (make-temp-name "tmp "))))
+
 (defun ns-framecontrol-nudge (&optional frame)
   (interactive)
   (let ((bounds (third (ns-framecontrol-get-grbi frame))))
@@ -256,6 +260,15 @@
       (interactive)
       (ns-framecontrol-nudge-frame-in-direction frame dir)))
 
+(defun ns-framecontrol-vertframe (n)
+  (interactive "nNumber of vertical divisions: ")
+  (make-frame)
+  (set-frame-parameter nil 'width (- (* n 83) 3))
+  (dotimes (i (- n 1))
+    (split-window-right))
+  (balance-windows)
+  (ns-framecontrol-toggle-frame-vertical-size))
+
 ;; TODO: Iterations should happen when the Command key is held down and ` is
 ;; typed repeatedly, not when Command-` is typed followed by more ` keys.
 (defun ns-framecontrol-select-mru ()
@@ -282,6 +295,8 @@
 (global-set-key (kbd "s-=") 'toggle-frame-maximized)
 (global-set-key (kbd "s-\\") 'ns-framecontrol-toggle-frame-vertical-size)
 (global-set-key (kbd "s-n") 'ns-framecontrol-make-frame-scratch)
+(global-set-key (kbd "s-d") prefix-arg)
+(global-set-key (kbd "s-d t") 'ns-framecontrol-make-frame-tmp)
 (global-set-key (kbd "s-`") 'ns-framecontrol-select-mru)
 
 ;; TODO: Implement some select-by-direction commands.

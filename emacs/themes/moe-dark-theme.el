@@ -708,7 +708,7 @@ Moe, moe, kyun!")
   (custom-theme-set-variables
    'moe-dark
    `(ansi-color-names-vector [,black5 ,red0 ,green0 ,yellow1
-                                      ,blue1 ,purple1 ,blue0 ,white1])))
+                                      ,blue1 ,purple1 ,blue0 ,white1]))))
 
 
 (setq moe-theme-which-enabled 'dark)
