@@ -126,7 +126,8 @@
  '(python-indent-offset 2)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
- '(safe-local-variable-values '((major-mode . org-mode)))
+ '(safe-local-variable-values '((major-mode . mark-down-mode)
+                                (major-mode . clojure-mode)))
  '(sh-basic-offset 2)
  '(standard-indent 2)
  '(tab-width 2)
@@ -148,4 +149,3 @@
 (require 'config-tex nil t)
 (require 'config-site nil t)          ; Site-specific configurations.
 (require 'config-host nil t)          ; Host-specific configurations.
-
