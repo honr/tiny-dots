@@ -47,7 +47,7 @@
         (incf i))
       (cons (nth j coll) j))))
 
-(defun min-max-by (f coll)
+(defun min-and-max-by (f coll)
   "Returns ((x-min . min-index) (x-max . max-index)) where x-min is a value
    x in coll minimizing f(x), and min-index is its index in coll.  Similarly,
    x-max and max-index maximize f(x)."

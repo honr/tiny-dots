@@ -91,7 +91,7 @@
  '(custom-safe-themes t)
  '(custom-theme-directory "~/.emacs.d/themes")
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
- '(fill-column 78)
+ '(fill-column 80)
  '(flyspell-use-meta-tab nil)
  '(glasses-original-separator "")
  '(glasses-separator "-")
@@ -118,7 +118,7 @@
  '(org-html-preamble nil)
  '(org-html-style-default "<link rel=\"stylesheet\" href=\"style.css\"/>")
  '(org-replace-disputed-keys t)
- '(org-startup-folded 'showall) ; #+STARTUP: overview or content to override.
+ '(org-startup-folded 'showall) ; #+STARTUP: overview or content to override
  '(org-todo-keywords '("TODO" "CANCELLED" "PROGRESSING" "DONE"))
  '(package-selected-packages '(powerline))
  '(python-guess-indent nil)
@@ -126,6 +126,7 @@
  '(python-indent-offset 2)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
+ '(safe-local-variable-values '((major-mode . org-mode)))
  '(sh-basic-offset 2)
  '(standard-indent 2)
  '(tab-width 2)
@@ -147,3 +148,4 @@
 (require 'config-tex nil t)
 (require 'config-site nil t)          ; Site-specific configurations.
 (require 'config-host nil t)          ; Host-specific configurations.
+

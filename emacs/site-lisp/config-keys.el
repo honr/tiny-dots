@@ -44,8 +44,8 @@
 (defun buffer-file-name-as-kill ()
   "Copy the name of the file name of current buffer to the kill-ring"
   (interactive)
-  (when buffer-file-name
-    (kill-new buffer-file-name)))
+  (cond (buffer-file-name (kill-new buffer-file-name))
+        (list-buffers-directory (kill-new list-buffers-directory))))
 
 (require 'comint)
 (define-key comint-mode-map (kbd "M-p") 'comint-previous-matching-input-from-input)

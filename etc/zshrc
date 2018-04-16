@@ -113,6 +113,14 @@ br() {
   fi
 }
 
+randword() {
+  local wordsfile="/usr/share/dict/words"
+  local size="$(wc -l < $wordsfile)"
+  local rand1="$RANDOM"
+  local rand2="$RANDOM"
+  head -n "$(( ($rand1 << 15 | $rand2) % $size + 1))" "$wordsfile" | tail -n 1
+}
+
 source "$HOME/Pool/base/etc/zshrc.$UNAME" 2>/dev/null
 source "$HOME/Pool/site/etc/zshrc" 2>/dev/null
 source "$HOME/Pool/host/etc/zshrc" 2>/dev/null
