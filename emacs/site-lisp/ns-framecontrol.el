@@ -84,16 +84,22 @@
 
 ;; ----------------------------------------------------------------------
 
+(defvar ns-framecontrol-titlebar-height 22
+  "Height of the title area of a frame.")
+
 (defun ns-framecontrol-get-frame-coord (&optional frame)
-  "Get the coords rectangle (c) of a frame.  The coordinates are the (x, y) of
-   the top left point and the width, height of the frame.  For nil input,
-   return the coords of the currently selected frame."
+  "Get the coords rectangle (c) of a frame.  The coordinates are
+   (left top width height), that is, the (x, y) of the top left point and the
+   width, height of the frame.  When `frame' is nil, assumes the currently
+   selected frame."
   (let* ((p (frame-parameters frame))
          (aa (cdr (assq 'left p)))
          (a (if (listp aa) (cadr aa) aa))
          (bb (cdr (assq 'top p)))
          (b (if (listp bb) (cadr bb) bb)))
-    (list a b (frame-pixel-width frame) (frame-pixel-height frame))))
+    (list a b
+          (frame-pixel-width frame)
+          (frame-pixel-height frame))))
 
 (defun ns-framecontrol-get-gi (fc mal)
   "Given a frame-coord (fc) and a monitor attributes list (mal), find the
@@ -119,10 +125,12 @@
                         (first r)
                         (+ (first r) (third r) (- (third fc)))
                         (+ (first r) (third r))))
-        (nconc ys (list (- (second r) (fourth fc))
+        (nconc ys (list (- (second r) (+ ns-framecontrol-titlebar-height
+                                         (fourth fc)))
                         (second r)
                         (+ (second r) (fourth r) (- (fourth fc)))
-                        (+ (second r) (fourth r))))))
+                        (+ (second r)
+                           ns-framecontrol-titlebar-height (fourth r))))))
     (list (remove-duplicates (sort xs '<))
           (remove-duplicates (sort ys '<)))))
 
@@ -191,7 +199,13 @@
          (r (second grbi))
          (bounds (third grbi))
          (p (frame-parameters frame))
-         (max-num-lines (- (floor (/ (fourth g) 14.3)) 1))) ;; line-height?
+         (available-vertical-space (- (fourth g)
+                                      (second g)
+                                      ns-framecontrol-titlebar-height))
+         ;; 4.0 is perhaps the total height of the vertical box lines (around
+         ;; modeline, etc.).
+         (line-height (/ (- (fourth r) 4.0) (cdr (assq 'height p))))
+         (max-num-lines (floor (/ available-vertical-space line-height))))
     (modify-frame-parameters
      frame
      (if (< 45 (cdr (assq 'height p)))
@@ -206,8 +220,8 @@
 
 (defun ns-framecontrol-nudge-fn (x)
   (cond ((< x 0) (- (ns-framecontrol-nudge-fn (- x))))
-        ((<= x 160) 0)
-        (t (- x 160))))
+        ((<= x 290) 0)
+        (t (- x 290))))
 
 (defun ns-framecontrol-nudge-towards (a b)
   (+ b (ns-framecontrol-nudge-fn (- a b))))
@@ -241,10 +255,10 @@
        (:up `((top . ,(ns-framecontrol-nudge-towards
                        (second r)
                        (or
-                        (first (remove-if-not
-                                (lambda (y)
-                                  (<= (second bounds) y (- (second r) 1)))
-                                (second xs-and-ys)))
+                        (car (last (remove-if-not
+                                    (lambda (y)
+                                      (<= (second bounds) y (- (second r) 1)))
+                                    (second xs-and-ys))))
                         (second bounds))))))
        (:down `((top . ,(ns-framecontrol-nudge-towards
                          (second r)
