@@ -209,12 +209,12 @@
 (defun ns-framecontrol-nudge-towards (a b)
   (+ b (ns-framecontrol-nudge-fn (- a b))))
 
-(defun ns-framecontrol-next-directional-strict (initial
-                                                params-fn
-                                                order-fn
-                                                all-frames
-                                                current-value
-                                                current-size)
+(defun ns-framecontrol--next-directional-edge (initial
+                                               params-fn
+                                               order-fn
+                                               all-frames
+                                               current-value
+                                               current-size)
   (let ((best initial))
     (dolist (frame all-frames)
       (dolist (value (funcall params-fn
@@ -224,48 +224,42 @@
           (setq best value))))
     best))
 
-(defun ns-framecontrol-nudge-frame-in-direction-hor (r current-width)
-  (list (- (first r) current-width)
-        (first r)
-        (+ (first r) (third r) (- current-width))
-        (+ (first r) (third r))))
+(defun ns-framecontrol--direction-hor (r current-width)
+  (let ((left (first r))
+        (width (third r)))
+   (list (- left current-width)
+         left
+         (+ left width (- current-width))
+         (+ left width))))
 
-(defun ns-framecontrol-nudge-frame-in-direction-ver (r current-height)
-  (list (- (second r) (+ ns-framecontrol-titlebar-height current-height))
-        (second r)
-        (+ (second r) (fourth r) (- current-height))
-        (+ (second r) ns-framecontrol-titlebar-height (fourth r))))
+(defun ns-framecontrol--direction-ver (r current-height)
+  (let ((top (second r))
+        (height (fourth r)))
+    (list (- top (+ ns-framecontrol-titlebar-height current-height))
+          top
+          (+ top height (- current-height))
+          (+ top ns-framecontrol-titlebar-height height))))
 
 (defun ns-framecontrol-nudge-frame-in-direction (frame direction)
   (let* ((frame (or frame (selected-frame)))
          (fc (ns-framecontrol-get-frame-coord frame))
          (mal (display-monitor-attributes-list))
-         (grbi (ns-framecontrol-get-grbi frame))
-         (bounds (third grbi))
+         (bounds (third (ns-framecontrol-get-grbi frame)))
          (frames (ns-framecontrol-get-current-monitor-frames fc mal))
-         (left (first fc))
-         (top (second fc))
-         (width (third fc))
-         (height (fourth fc))
          (value (case direction
-                  (:left (ns-framecontrol-next-directional-strict
-                          (first bounds)
-                          'ns-framecontrol-nudge-frame-in-direction-hor
-                          '< frames left width))
-                  (:right (ns-framecontrol-next-directional-strict
-                           (third bounds)
-                           'ns-framecontrol-nudge-frame-in-direction-hor
-                           '> frames left width))
-                  (:up (ns-framecontrol-next-directional-strict
-                        (second bounds)
-                        'ns-framecontrol-nudge-frame-in-direction-ver
-                        '< frames top height))
-                  (:down (ns-framecontrol-next-directional-strict
-                          (fourth bounds)
-                          'ns-framecontrol-nudge-frame-in-direction-ver
-                          '> frames top height)))))
+                  (:left (ns-framecontrol--next-directional-edge
+                          (first bounds) 'ns-framecontrol--direction-hor '<
+                          frames (first fc) (third fc)))
+                  (:right (ns-framecontrol--next-directional-edge
+                           (third bounds) 'ns-framecontrol--direction-hor '>
+                           frames (first fc) (third fc)))
+                  (:up (ns-framecontrol--next-directional-edge
+                        (second bounds) 'ns-framecontrol--direction-ver '<
+                        frames (second fc) (fourth fc)))
+                  (:down (ns-framecontrol--next-directional-edge
+                          (fourth bounds) 'ns-framecontrol--direction-ver '>
+                          frames (second fc) (fourth fc))))))
     (when value
-      (message "value: %s" value)
       (modify-frame-parameters
        frame
        (case direction
@@ -274,12 +268,12 @@
          (:up `((top . ,(ns-framecontrol-nudge-towards top value))))
          (:down `((top . ,(ns-framecontrol-nudge-towards top value)))))))))
 
-(defun ns-framecontrol-next-directional (initial
-                                         param-fn
-                                         order-fn
-                                         all-frames
-                                         current-frame
-                                         current-frame-fc)
+(defun ns-framecontrol--next-directional (initial
+                                          param-fn
+                                          order-fn
+                                          all-frames
+                                          current-frame
+                                          current-frame-fc)
   (let ((best (cons initial nil))
         (seen-current nil))
     ;; Assuming we are trying to find the next frame to the left.  If there are
@@ -304,13 +298,13 @@
          (mal (display-monitor-attributes-list))
          (frames (ns-framecontrol-get-current-monitor-frames fc mal))
          (next-frame (case direction
-                       (:left (ns-framecontrol-next-directional
+                       (:left (ns-framecontrol--next-directional
                                -100000 'first '< frames frame fc))
-                       (:right (ns-framecontrol-next-directional
+                       (:right (ns-framecontrol--next-directional
                                 100000 'first '> (nreverse frames) frame fc))
-                       (:up (ns-framecontrol-next-directional
+                       (:up (ns-framecontrol--next-directional
                              -100000 'second '< frames frame fc))
-                       (:down (ns-framecontrol-next-directional
+                       (:down (ns-framecontrol--next-directional
                                100000 'second '> (nreverse frames) frame fc)))))
     (when next-frame
       (select-frame-set-input-focus next-frame))))
