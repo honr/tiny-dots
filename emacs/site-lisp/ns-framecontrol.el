@@ -105,7 +105,9 @@
   "Given a frame-coord (fc) and a monitor attributes list (mal), find the
    intersection area and index of the current monitor."
   (max-by (lambda (x) (rectangles-intersection-area fc x))
-          (mapcar (lambda (l) (cdr (assq 'workarea l)))
+          ;; 'geometry was 'workarea; But it didn't quite work well for multiple
+          ;; monitors.
+          (mapcar (lambda (l) (cdr (assq 'geometry l)))
                   mal)))
 
 (defun ns-framecontrol-get-current-mal (fc mal)
@@ -114,25 +116,6 @@
 (defun ns-framecontrol-get-current-monitor-frames (fc mal)
   (cdr (assq 'frames (ns-framecontrol-get-current-mal
                       fc mal))))
-
-(defun ns-framecontrol-get-current-monitor-interesting-lines (fc mal)
-  (let* ((g (car (ns-framecontrol-get-gi fc mal)))
-         (xs (list (first g) (third g)))
-         (ys (list (second g) (fourth g))))
-    (dolist (frame (ns-framecontrol-get-current-monitor-frames fc mal))
-      (let ((r (ns-framecontrol-get-frame-coord frame)))
-        (nconc xs (list (- (first r) (third fc))
-                        (first r)
-                        (+ (first r) (third r) (- (third fc)))
-                        (+ (first r) (third r))))
-        (nconc ys (list (- (second r) (+ ns-framecontrol-titlebar-height
-                                         (fourth fc)))
-                        (second r)
-                        (+ (second r) (fourth r) (- (fourth fc)))
-                        (+ (second r)
-                           ns-framecontrol-titlebar-height (fourth r))))))
-    (list (remove-duplicates (sort xs '<))
-          (remove-duplicates (sort ys '<)))))
 
 (defun ns-framecontrol-get-grbi (&optional frame)
   "Returns ((x-left y-top x-right y-bottom) of workarea aka g
@@ -153,9 +136,9 @@
      ;; Bounds (min-x, min-y, max-x, max-y) for (x-left, y-top) of the
      ;; frame. When (x-left, y-top) is moved within this range, the frame will
      ;; lie in the workarea.
-     (list (first g) (second g)
+     (list (first g) (+ ns-framecontrol-titlebar-height (second g))
            (- (third g) (third r))
-           (- (fourth g) (fourth r)))
+           (- (fourth g) (fourth r) ns-framecontrol-titlebar-height))
      ;; Index of g
      (cdr gi))))
 
@@ -226,53 +209,121 @@
 (defun ns-framecontrol-nudge-towards (a b)
   (+ b (ns-framecontrol-nudge-fn (- a b))))
 
+(defun ns-framecontrol-next-directional-strict (initial
+                                                params-fn
+                                                order-fn
+                                                all-frames
+                                                current-value
+                                                current-size)
+  (let ((best initial))
+    (dolist (frame all-frames)
+      (dolist (value (funcall params-fn
+                              (ns-framecontrol-get-frame-coord frame)
+                              current-size))
+        (when (funcall order-fn best value current-value)
+          (setq best value))))
+    best))
+
+(defun ns-framecontrol-nudge-frame-in-direction-hor (r current-width)
+  (list (- (first r) current-width)
+        (first r)
+        (+ (first r) (third r) (- current-width))
+        (+ (first r) (third r))))
+
+(defun ns-framecontrol-nudge-frame-in-direction-ver (r current-height)
+  (list (- (second r) (+ ns-framecontrol-titlebar-height current-height))
+        (second r)
+        (+ (second r) (fourth r) (- current-height))
+        (+ (second r) ns-framecontrol-titlebar-height (fourth r))))
+
 (defun ns-framecontrol-nudge-frame-in-direction (frame direction)
-  (let* ((mal (display-monitor-attributes-list))
-         (xs-and-ys (ns-framecontrol-get-current-monitor-interesting-lines
-                     (ns-framecontrol-get-frame-coord frame) mal))
+  (let* ((frame (or frame (selected-frame)))
+         (fc (ns-framecontrol-get-frame-coord frame))
+         (mal (display-monitor-attributes-list))
          (grbi (ns-framecontrol-get-grbi frame))
-         (r (second grbi))
-         (bounds (third grbi)))
-    (modify-frame-parameters
-     frame
-     (case direction
-       (:left `((left . ,(ns-framecontrol-nudge-towards
-                          (first r)
-                          (or
-                           (car (last (remove-if-not
-                                       (lambda (x)
-                                         (<= (first bounds) x (- (first r) 1)))
-                                       (first xs-and-ys))))
-                           (first bounds))))))
-       (:right `((left . ,(ns-framecontrol-nudge-towards
-                           (first r)
-                           (or
-                            (first (remove-if-not
-                                    (lambda (x)
-                                      (<= (+ (first r) 1) x (third bounds)))
-                                    (first xs-and-ys)))
-                            (third bounds))))))
-       (:up `((top . ,(ns-framecontrol-nudge-towards
-                       (second r)
-                       (or
-                        (car (last (remove-if-not
-                                    (lambda (y)
-                                      (<= (second bounds) y (- (second r) 1)))
-                                    (second xs-and-ys))))
-                        (second bounds))))))
-       (:down `((top . ,(ns-framecontrol-nudge-towards
-                         (second r)
-                         (or
-                          (first (remove-if-not
-                                  (lambda (y)
-                                    (<= (+ (second r) 1) y (fourth bounds)))
-                                  (second xs-and-ys)))
-                          (fourth bounds))))))))))
+         (bounds (third grbi))
+         (frames (ns-framecontrol-get-current-monitor-frames fc mal))
+         (left (first fc))
+         (top (second fc))
+         (width (third fc))
+         (height (fourth fc))
+         (value (case direction
+                  (:left (ns-framecontrol-next-directional-strict
+                          (first bounds)
+                          'ns-framecontrol-nudge-frame-in-direction-hor
+                          '< frames left width))
+                  (:right (ns-framecontrol-next-directional-strict
+                           (third bounds)
+                           'ns-framecontrol-nudge-frame-in-direction-hor
+                           '> frames left width))
+                  (:up (ns-framecontrol-next-directional-strict
+                        (second bounds)
+                        'ns-framecontrol-nudge-frame-in-direction-ver
+                        '< frames top height))
+                  (:down (ns-framecontrol-next-directional-strict
+                          (fourth bounds)
+                          'ns-framecontrol-nudge-frame-in-direction-ver
+                          '> frames top height)))))
+    (when value
+      (message "value: %s" value)
+      (modify-frame-parameters
+       frame
+       (case direction
+         (:left `((left . ,(ns-framecontrol-nudge-towards left value))))
+         (:right `((left . ,(ns-framecontrol-nudge-towards left value))))
+         (:up `((top . ,(ns-framecontrol-nudge-towards top value))))
+         (:down `((top . ,(ns-framecontrol-nudge-towards top value)))))))))
+
+(defun ns-framecontrol-next-directional (initial
+                                         param-fn
+                                         order-fn
+                                         all-frames
+                                         current-frame
+                                         current-frame-fc)
+  (let ((best (cons initial nil))
+        (seen-current nil))
+    ;; Assuming we are trying to find the next frame to the left.  If there are
+    ;; no frames f with f.left = current-frame.left, find the largest f.left
+    ;; with f.left < current-frame.left.  If there are some frame f with the
+    ;; same left, find f immediately before current-frame in the list.
+    (dolist (frame all-frames)
+      (let ((value (funcall param-fn (ns-framecontrol-get-frame-coord frame))))
+        (cond ((eq frame current-frame)
+               (setq seen-current t))
+              ((funcall order-fn
+                        (first best) value (funcall param-fn current-frame-fc))
+               (setq best (cons value frame)))
+              ((and seen-current (= value (funcall param-fn current-frame-fc)))
+               (setq best (cons value frame))
+               (return)))))
+    (cdr best)))
+
+(defun ns-framecontrol-select-frame-in-direction (frame direction)
+  (let* ((frame (or frame (selected-frame)))
+         (fc (ns-framecontrol-get-frame-coord frame))
+         (mal (display-monitor-attributes-list))
+         (frames (ns-framecontrol-get-current-monitor-frames fc mal))
+         (next-frame (case direction
+                       (:left (ns-framecontrol-next-directional
+                               -100000 'first '< frames frame fc))
+                       (:right (ns-framecontrol-next-directional
+                                100000 'first '> (nreverse frames) frame fc))
+                       (:up (ns-framecontrol-next-directional
+                             -100000 'second '< frames frame fc))
+                       (:down (ns-framecontrol-next-directional
+                               100000 'second '> (nreverse frames) frame fc)))))
+    (when next-frame
+      (select-frame-set-input-focus next-frame))))
 
 (defun ns-framecontrol-nudger (dir)
   #'(lambda (&optional frame)
       (interactive)
       (ns-framecontrol-nudge-frame-in-direction frame dir)))
+
+(defun ns-framecontrol-directional-selector (dir)
+  #'(lambda (&optional frame)
+      (interactive)
+      (ns-framecontrol-select-frame-in-direction frame dir)))
 
 (defun ns-framecontrol-vertframe (n)
   (interactive "nNumber of vertical divisions: ")
@@ -298,6 +349,10 @@
       (set-transient-map keymap t))))
 
 (global-set-key (kbd "s-;") 'ns-framecontrol-nudge)
+(global-set-key (kbd "s-<left>") (ns-framecontrol-directional-selector :left))
+(global-set-key (kbd "s-<right>") (ns-framecontrol-directional-selector :right))
+(global-set-key (kbd "s-<up>") (ns-framecontrol-directional-selector :up))
+(global-set-key (kbd "s-<down>") (ns-framecontrol-directional-selector :down))
 (global-set-key (kbd "s-S-<left>") (ns-framecontrol-nudger :left))
 (global-set-key (kbd "s-S-<right>") (ns-framecontrol-nudger :right))
 (global-set-key (kbd "s-S-<up>") (ns-framecontrol-nudger :up))
@@ -312,7 +367,5 @@
 (global-set-key (kbd "s-d") prefix-arg)
 (global-set-key (kbd "s-d t") 'ns-framecontrol-make-frame-tmp)
 (global-set-key (kbd "s-`") 'ns-framecontrol-select-mru)
-
-;; TODO: Implement some select-by-direction commands.
 
 (provide 'ns-framecontrol)
