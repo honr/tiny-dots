@@ -8,11 +8,6 @@
 ;;   edges: (x-left y-top x-right y-bottom)
 ;;   rect: (x-left y-top width height)
 
-(defun random-between (a b)
-  (cond ((= a b) a)
-        ((< a b) (+ a (random (- b a))))
-        (t (+ b (random (- a b))))))
-
 ;; Getting 'workarea from monitor attributes seems bogus for the second monitor
 ;; and beyond.  Compute top menubar height from the first monitor, and use the
 ;; to compute workarea.
@@ -39,6 +34,12 @@
      (- (third workarea-edges) frame-width)
      (- (fourth workarea-edges) frame-height))))
 
+(defun ns-frames--random (a b quantum)  ;; assumes a <= b
+  (if (= a b)
+      a
+    (let ((diff (random (- b a))))
+      (+ a (* quantum (/ diff quantum))))))
+
 (defun ns-frames-make-frame-scratch ()
   (interactive)
   (let* ((edges (ns-frames--workarea-edges nil))
@@ -50,8 +51,10 @@
        (reusable-frames . 0)
        (inhibit-same-window . t)
        (pop-up-frame-parameters
-        . ((left . ,(random-between (first edges) (- (third edges) width)))
-           (top . ,(random-between (second edges) (- (fourth edges) height))))))
+        . ((left . ,(ns-frames--random
+                     (first edges) (- (third edges) width) 145))
+           (top . ,(ns-frames--random
+                    (second edges) (- (fourth edges) height) 106)))))
      nil)))
 
 (defun ns-frames-make-frame-tmp ()
@@ -63,8 +66,8 @@
   (let ((bounds (ns-frames--bounds (selected-frame))))
     (modify-frame-parameters
      frame
-     `((left . ,(random-between (first bounds) (third bounds)))
-       (top . ,(random-between (second bounds) (fourth bounds)))))))
+     `((left . ,(ns-frames--random (first bounds) (third bounds) 145))
+       (top . ,(ns-frames--random (second bounds) (fourth bounds) 106))))))
 
 (defun ns-frames-toggle-frame-vertical-expansion ()
   (interactive)
@@ -90,7 +93,7 @@
          (last-height . ,(cdr (assq 'height p)))
          (last-top . ,(second outer-edges)))))))
 
-(defun ns-frames--nudge (frame axis initial order)
+(defun ns-frames--nudge (frame axis initial order-fn)
   (let* ((best initial)
          (edges (ns-frame-edges frame 'outer-edges))
          (a0 (case axis (:x (first edges)) (:y (second edges))))
@@ -100,7 +103,7 @@
              (a (case axis (:x (first edges)) (:y (second edges))))
              (b (case axis (:x (third edges)) (:y (fourth edges)))))
         (dolist (edge (list (- a (- b0 a0)) a (- b (- b0 a0)) b))
-          (when (funcall order best edge a0)
+          (when (funcall order-fn best edge a0)
             (setq best edge)))))
     (unless (= a0 best)
       (modify-frame-parameters
@@ -137,14 +140,14 @@
     ;; with f.left < current-frame.left.  If there are some frame f with the
     ;; same left, find f immediately before current-frame in the list.
     (dolist (frame all-frames)
-      (let ((value (funcall param-fn (ns-frame-edges frame 'outer-edges))))
+      (let ((edge (funcall param-fn (ns-frame-edges frame 'outer-edges)))
+            (current-edge (funcall param-fn current-edges)))
         (cond ((eq frame current-frame)
                (setq seen-current t))
-              ((funcall order-fn
-                        (first best) value (funcall param-fn current-edges))
-               (setq best (cons value frame)))
-              ((and seen-current (= value (funcall param-fn current-edges)))
-               (setq best (cons value frame))
+              ((funcall order-fn (first best) edge current-edge)
+               (setq best (cons edge frame)))
+              ((and seen-current (= edge current-edge))
+               (setq best (cons edge frame))
                (return)))))
     (when (cdr best)
       (select-frame-set-input-focus (cdr best)))))
@@ -153,10 +156,10 @@
   (let* ((frames (cdr (assq 'frames (frame-monitor-attributes frame)))))
     (case direction
       (:left (ns-frames--select-directional frame 'first -99999 '< frames))
-      (:right (ns-frames--select-directional frame 'first 99999 '> (nreverse
+      (:right (ns-frames--select-directional frame 'first 99999 '> (reverse
                                                                     frames)))
       (:up (ns-frames--select-directional frame 'second -99999 '< frames))
-      (:down (ns-frames--select-directional frame 'second 99999 '> (nreverse
+      (:down (ns-frames--select-directional frame 'second 99999 '> (reverse
                                                                     frames))))))
 
 (defun ns-frames-directional-selector (dir)

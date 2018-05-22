@@ -1,46 +1,66 @@
-#!/bin/bash
+#!/bin/zsh
 
 PROFILE_POOL="$HOME/Library/Application Support/Google/Chrome/Pool"
 
-app() {
+declare -A docs=()
+main() {
+  local program="$1"
+  shift 1
+  if [[ "$#" = 0 ]] ; then
+    echo "Usage:"
+    print -l ${(ok)functions} | while read f ; do
+      if [[ "$f" =~ '^[A-Z]' ]] ; then
+        echo "\$ ${program} ${(L)f} ${docs[$f]}"
+      fi
+    done
+    return
+  fi
+  local cmd="$1"
+  shift 1
+  "${(C)cmd}" "$@"
+}
+
+docs[App]="PROFILE URL
+  Open url as an app, in the given profile"
+App() {
   local profile="$1"
   local url="$2"
-
   open -n -a 'Google Chrome' --args \
       --no-referrer \
       --app="$url" \
       --user-data-dir="$PROFILE_POOL/$profile"
 }
 
-browse() {
+docs[Browse]="PROFILE URL
+  Browse url in the given profile"
+Browse() {
   local profile="$1"
   local url="$2"
-
   open -n -a 'Google Chrome' --args \
       --no-referrer \
       --user-data-dir="$PROFILE_POOL/$profile" \
       "$url"
 }
 
-dup() {
+docs[Clone]="SRC DST
+  Clone SRC profile over to DST"
+clone() {
  local profile_src="$1"
  local profile_dst="$2"
-
  if [[ -z "$1" ]] ; then
     echo "Source profile name not provided"
     exit 1
  fi
-
  if [[ -z "$2" ]] ; then
     echo "Target profile name not provided"
     exit 1
  fi
-
  rm -Rf "$PROFILE_POOL/$profile_dst"
  cp -R  "$PROFILE_POOL/$profile_src" "$PROFILE_POOL/$profile_dst"
 }
 
-dir() {
+docs[Cd]="PROFILE"
+Cd() {
  local profile="$1"
  if [[ -z "$1" ]] ; then
     echo "Profile name not provided"
@@ -49,4 +69,8 @@ dir() {
  echo "cd '$PROFILE_POOL/$profile'"
 }
 
-"$@"
+Ls() {
+  ls "$@" "$PROFILE_POOL"
+}
+
+main cr "$@"

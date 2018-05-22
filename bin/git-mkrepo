@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function main() {
+main() {
   local username="$1"
   local repo_name="$2"
   local repo_description="$3"

@@ -5,7 +5,7 @@ LJ_DIR="$HOME/.local/share/java"
 JAR="$LJ_DIR/ivy.jar"
 IVYURL="http://central.maven.org/maven2/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar"
 
-function download-ivy-maybe() {
+download-ivy-maybe() {
   if [[ ! -e "$JAR" ]] ; then
     mkdir -p "$LJ_DIR"
     curl -L -o "$JAR" "$IVYURL"
@@ -15,16 +15,16 @@ function download-ivy-maybe() {
   fi
 }
 
-function ivy-minimal() {
+ivy-minimal() {
   java -jar "$JAR"
 }
 
-function ivy() {
+ivy() {
   download-ivy-maybe
   java -jar "$JAR" -cache "$CACHE" "$@"
 }
 
-function update() {
+update() {
   pushd "$LJ_DIR" 2>/dev/null
   ivy -types jar \
       -retrieve "lib/[artifact]-[revision](-[classifier]).[ext]" \
@@ -32,7 +32,7 @@ function update() {
   popd 2>/dev/null
 }
 
-function get() {
+get() {
   local name="$1" # E.g.: "org.clojure/clojure"
   local revision="$2" # E.g.: 1.9.1
   shift 2
@@ -45,7 +45,7 @@ function get() {
       "$@"
 }
 
-function clojure1.8() {
+clojure1.8() {
   local classpath="$LJ_DIR/classes:$LJ_DIR/lib/*"
   java -cp "$classpath" -jar "$LJ_DIR/lib/clojure-1.8.0.jar" "$@"
 }

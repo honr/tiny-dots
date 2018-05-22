@@ -65,10 +65,9 @@ export ALTERNATE_EDITOR=""
 
 bell() { echo -e '\a' }
 
-la() { ls -larthF }
+la() { ls -larthF "$@" }
 
-e.pwd() {
-  pwd
+vcsinfo() {
   if [[ -n "${vcs_info_msg_1_}" ]] ; then
       echo -e "vcs info: ${vcs_info_msg_1_}"
   fi
@@ -86,23 +85,27 @@ clj() {
 ee() {
   if [[ "$1" =~ ^- ]] ; then
       emacsclient "$@"
-  elif [[ -z "$DISPLAY" ]] ; then
-    emacsclient -t "$@"
-  else
+  elif [[ -n "$DISPLAY" || "$UNAME" = "darwin" ]] ; then
     emacsclient -nc "$@"
+  else
+    emacsclient -t "$@"
   fi
 }
 
-edit-tt() {
+ee.tm() {
   local ws="$1"
   if [[ -z "$ws" ]] ; then
     ws="$STY"
   fi
   if [[ -z "$ws" ]] ; then
     echo "A ws name should be specified."
-    echo 1
+    return 1
   fi
   ee "$HOME/.tmux/$ws"
+}
+
+ee.cmd() {
+  ee "$(whence -v "$@" | grep -o '/.*')"
 }
 
 br() {
